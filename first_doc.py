@@ -1,8 +1,10 @@
 ## Premère mission : extraire du CSV
 
+from cmath import cos
 from math import dist
+from numpy import real
 import pandas as pd
-xls = pd.ExcelFile('ST transport\InstanceFinlandV1.xlsx')
+xls = pd.ExcelFile('InstanceFinlandV1.xlsx')
 df1 = pd.read_excel(xls, 'Employees')
 df2 = pd.read_excel(xls, 'Tasks')
 
@@ -15,7 +17,7 @@ TasksDico = df2.to_dict('records')
 def distance(id1,id2): #entrée : les taskid correspondantes
     foundid1, foundid2=False,False
     index=0
-    while not foundid1 and foundid2:
+    while not (foundid1 and foundid2):
         if TasksDico[index]['TaskId']==id1:
             foundid1=True
             long1=TasksDico[index]['Longitude']
@@ -25,4 +27,9 @@ def distance(id1,id2): #entrée : les taskid correspondantes
             long2=TasksDico[index]['Longitude']
             lat2=TasksDico[index]['Latitude']
         index+=1
-    return dist([long1,lat1],[long2,lat2])
+    # x=real((long2-long1)*cos(lat2/2+lat1/2))
+    # y=lat2-lat1
+    # z=
+    return dist([lat1,long1],[lat2,long2])
+
+print (distance('T18','T24'))
