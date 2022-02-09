@@ -4,6 +4,7 @@ from cmath import cos
 from math import dist
 from numpy import real
 import pandas as pd
+import math
 
 
 xls = pd.ExcelFile('InstanceFinlandV1.xlsx')
@@ -13,9 +14,8 @@ df2 = pd.read_excel(xls, 'Tasks')
 ## Deuxième mission : créer des dictionnaires de données
 EmployeesDico = df1.to_dict('records')
 TasksDico = df2.to_dict('records')
-#print (TasksDico)
+#print (EmployeesDico)
 
-import math
 
 def distance(id1,id2): 
     '''entrée : les taskid correspondantes, sortie : distance en km'''
@@ -36,8 +36,18 @@ def distance(id1,id2):
     d=(1.852*60*math.sqrt(delta_long**2+delta_latt**2))
     return d
 
-#print (distance('T18','T24'))
-
 def temps_trajet(id1,id2):
-    '''Calcul du temps de trajet entre deux tâches, en heures'''
-    return distance(id1,id2)/50
+    '''Calcul du temps de trajet entre deux tâches, en minutes'''
+    return distance(id1,id2)*60/50
+
+def competenceOK(EmployeeName,TaskId):
+    '''Retourne 1 si l'employé a le bon skill et un niveau suffisant pour effectuer la tâche'''
+    task_skill=next(item['Skill'] for item in TasksDico if item['TaskId'] == TaskId)
+    employee_skill=next(item['Skill'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
+    task_level=next(item['Level'] for item in TasksDico if item['TaskId'] == TaskId)
+    employee_level=next(item['Level'] for item in EmployeesDico if item['EmployeeName']==EmployeeName)
+    if task_level<=employee_level and task_skill==employee_skill:
+        return 1
+    else :
+        return 0
+    
