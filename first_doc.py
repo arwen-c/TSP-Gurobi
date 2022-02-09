@@ -26,3 +26,5 @@ def distance(id1,id2): #entrée : les taskid correspondantes
             lat2=TasksDico[index]['Latitude']
         index+=1
     return dist([long1,lat1],[long2,lat2])
+
+
