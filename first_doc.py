@@ -106,4 +106,8 @@ def vecteurFermetures():
         if res[1][2:]=='pm':
             h+=12 #modifications pour l'aprem
         F.append(h*60+m)
+<<<<<<< HEAD
     return F
+=======
+    return F
+>>>>>>> main
