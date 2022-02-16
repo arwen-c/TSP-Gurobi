@@ -14,7 +14,7 @@ df2 = pd.read_excel(xls, 'Tasks')
 # Deuxième mission : créer des dictionnaires de données
 EmployeesDico = df1.to_dict('records')
 TasksDico = df2.to_dict('records')
-#print (EmployeesDico)f
+# print (EmployeesDico)f
 
 
 def distance(id1, id2):
@@ -69,45 +69,45 @@ def matrice_distance(dic_taches):
             j = int(chaine_carac_id2[1:])
             matrice_des_distances[i, j] = distance(id1, id2)
     return matrice_des_distances
-    
+
+
 def matriceCompetences():
     '''Crée une matrice C_ni qui comporte un 1 si l'employé n peut faire la tache i'''
-    nombre_employes=len(EmployeesDico)
-    nombre_taches=len(TasksDico)
-    C=np.zeros((nombre_employes,nombre_taches))
-    for n in range(nombre_employes) :
+    nombre_employes = len(EmployeesDico)
+    nombre_taches = len(TasksDico)
+    C = np.zeros((nombre_employes, nombre_taches))
+    for n in range(nombre_employes):
         for i in range(nombre_taches):
-            C[n,i]=competenceOK(EmployeesDico[n]['EmployeeName'],TasksDico[i]['TaskId'])
+            C[n, i] = competenceOK(
+                EmployeesDico[n]['EmployeeName'], TasksDico[i]['TaskId'])
     return C
+
 
 def vecteurOuvertures():
     '''Crée un vecteur avec les heures d'ouvertures des tâches'''
-    nombre_taches=len(TasksDico)
-    O=[]
+    nombre_taches = len(TasksDico)
+    O = []
     for i in range(nombre_taches):
-        heure=TasksDico[i]['OpeningTime']
-        res=heure.split(':')
-        h=int(res[0]) #l'heure
-        m=int(res[1][:1]) #les minutes
-        if res[1][2:]=='pm':
-            h+=12 #modifications pour l'aprem
+        heure = TasksDico[i]['OpeningTime']
+        res = heure.split(':')
+        h = int(res[0])  # l'heure
+        m = int(res[1][:1])  # les minutes
+        if res[1][2:] == 'pm':
+            h += 12  # modifications pour l'aprem
         O.append(h*60+m)
     return O
 
+
 def vecteurFermetures():
     '''Crée un vecteur avec les heures de fermeture des tâches'''
-    nombre_taches=len(TasksDico)
-    F=[]
+    nombre_taches = len(TasksDico)
+    F = []
     for i in range(nombre_taches):
-        heure=TasksDico[i]['ClosingTime']
-        res=heure.split(':')
-        h=int(res[0]) #l'heure
-        m=int(res[1][:1]) #les minutes
-        if res[1][2:]=='pm':
-            h+=12 #modifications pour l'aprem
+        heure = TasksDico[i]['ClosingTime']
+        res = heure.split(':')
+        h = int(res[0])  # l'heure
+        m = int(res[1][:1])  # les minutes
+        if res[1][2:] == 'pm':
+            h += 12  # modifications pour l'aprem
         F.append(h*60+m)
-<<<<<<< HEAD
     return F
-=======
-    return F
->>>>>>> main
