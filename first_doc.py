@@ -56,7 +56,6 @@ def competenceOK(EmployeeName, TaskId):
         return 1
     else:
         return 0
-<<<<<<< HEAD
 
 
 def matrice_distance(dic_taches):
@@ -70,7 +69,6 @@ def matrice_distance(dic_taches):
             j = int(chaine_carac_id2[1:])
             matrice_des_distances[i, j] = distance(id1, id2)
     return matrice_des_distances
-=======
     
 def matriceCompetences():
     '''Crée une matrice C_ni qui comporte un 1 si l'employé n peut faire la tache i'''
@@ -81,4 +79,31 @@ def matriceCompetences():
         for i in range(nombre_taches):
             C[n,i]=competenceOK(EmployeesDico[n]['EmployeeName'],TasksDico[i]['TaskId'])
     return C
->>>>>>> develop
+
+def vecteurOuvertures():
+    '''Crée un vecteur avec les heures d'ouvertures des tâches'''
+    nombre_taches=len(TasksDico)
+    O=[]
+    for i in range(nombre_taches):
+        heure=TasksDico[i]['OpeningTime']
+        res=heure.split(':')
+        h=int(res[0]) #l'heure
+        m=int(res[1][:1]) #les minutes
+        if res[1][2:]=='pm':
+            h+=12 #modifications pour l'aprem
+        O.append(h*60+m)
+    return O
+
+def vecteurFermetures():
+    '''Crée un vecteur avec les heures de fermeture des tâches'''
+    nombre_taches=len(TasksDico)
+    F=[]
+    for i in range(nombre_taches):
+        heure=TasksDico[i]['ClosingTime']
+        res=heure.split(':')
+        h=int(res[0]) #l'heure
+        m=int(res[1][:1]) #les minutes
+        if res[1][2:]=='pm':
+            h+=12 #modifications pour l'aprem
+        F.append(h*60+m)
+    return F
