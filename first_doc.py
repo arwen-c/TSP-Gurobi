@@ -73,8 +73,6 @@ def matrice_distance(dic_taches):
 
     return matrice_des_distances
 
-print(matrice_distance(TasksDico))
-
 
 def matrice_temps_de_trajet(D): # prend en entré un tableau des distances D
     return D/(50/60) # il se déplace à 50km/h donc 50/60 km/min
