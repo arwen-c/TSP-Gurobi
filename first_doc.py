@@ -1,13 +1,15 @@
 # Premère mission : extraire du CSV
 
+from asyncio import Task
 from cmath import cos
 from math import dist
 import numpy as np
 import pandas as pd
 import math
 
+fichier_test = 'InstanceFinlandV1.xlsx'
 
-xls = pd.ExcelFile('InstanceFinlandV1.xlsx')
+xls = pd.ExcelFile(fichier_test)
 df1 = pd.read_excel(xls, 'Employees')
 df2 = pd.read_excel(xls, 'Tasks')
 
@@ -58,13 +60,13 @@ def competenceOK(EmployeeName, TaskId):
         return 0
 
 
-def matrice_distance(dic_taches):
-    x = len(dic_taches)
-    matrice_des_distances = np.zeros(x, x)
-    for id1 in dic_taches:
+def matrice_distance():
+    x = len(TasksDico)
+    matrice_des_distances = np.zeros((x, x))
+    for id1 in TasksDico:
         chaine_carac_id1 = str(id1)
         i = int(chaine_carac_id1[1:])
-        for id2 in dic_taches:
+        for id2 in TasksDico:
             chaine_carac_id2 = str(id2)
             j = int(chaine_carac_id2[1:])
             matrice_des_distances[i, j] = distance(id1, id2)
@@ -111,3 +113,63 @@ def vecteurFermetures():
             h += 12  # modifications pour l'aprem
         F.append(h*60+m)
     return F
+
+
+def vecteur_duree_tache():
+    """Pas besoin d'argument, on utilise les variables globales.
+    Renvoie le vecteur des durées de chaque tâche."""
+    x = len(TasksDico)
+    Vecteur_duree = np.zeros((x, x))
+    for k in range(x):
+        Vecteur_duree[int(TasksDico[k]['TaskId'][1:])
+                      ] = TasksDico[k]['TaskDuration']
+    return Vecteur_duree
+
+
+# Création du fichier solution
+
+
+def nom_fichier_resolution(nom_fichier, n_methode):
+    """nom_fichier est un string qui correspond au nom du fichier excel.
+    n_methode est le numéro de la méthode.
+    Renvoie le nom du fichier txt."""
+    L = nom_fichier.split('.')
+    return 'Solution' + L[0][9:] + 'ByV' + 'n_methode'+'.txt'
+
+
+def solution_fichier_txt(X, h):
+    """X et h sont des tableaux numpy. 
+    X est de dimension 3 et h de dimension 1.
+    Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
+    premiere_ligne = 'taskId;performed;employeeName;startTime;'
+    liste_des_lignes = [premiere_ligne]
+    n, x, y = X.shape()
+    employeeName = ''
+    for i in range(x):
+        j = 0
+        tache_i_ajoutee = False
+        while j < y and not(tache_i_ajoutee):
+            numero_employe = 0
+            while numero_employe < n and not(tache_i_ajoutee):
+                if X[numero_employe, i, j] == 1:
+                    employeeName = EmployeesDico[numero_employe]['EmployeeName']
+                    liste_des_lignes.append(
+                        'T' + str(i) + ';' + '1' + employeeName + ';' + h[i])
+                    tache_i_ajoutee = True
+                numero_employe = numero_employe + 1
+            j = j + 1
+        if not(tache_i_ajoutee):
+            liste_des_lignes.append(
+                'T' + str(i) + ';' + '0' + 'None' + ';' + 'None')
+    return liste_des_lignes
+
+
+def creation_fichier(nom_fichier, n_methode, X, h):
+    """nom_fichier est le nom du fichier utilisée pour créer les variables globales.
+    n_methode est le numéro de la méthode utilisée.
+    X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
+    Ne renvoie rien mais crée ou modifie le fichier .txt."""
+    file = open(nom_fichier_resolution(fichier_test, 1), "w")
+    file.write("\n".join(solution_fichier_txt(X, h)))
+    file.close()
+    return None
