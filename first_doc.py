@@ -74,6 +74,8 @@ def matrice_distance():
 
 
 def vecteur_duree_tache():
+    """Pas besoin d'argument, on utilise les variables globales.
+    Renvoie le vecteur des durées de chaque tâche."""
     x = len(TasksDico)
     Vecteur_duree = np.zeros((x, x))
     for k in range(x):
@@ -121,6 +123,10 @@ def solution_fichier_txt(X, h):
 
 
 def creation_fichier(nom_fichier, n_methode, X, h):
+    """nom_fichier est le nom du fichier utilisée pour créer les variables globales.
+    n_methode est le numéro de la méthode utilisée.
+    X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
+    Ne renvoie rien mais crée ou modifie le fichier .txt."""
     file = open(nom_fichier_resolution(fichier_test, 1), "w")
     file.write("\n".join(solution_fichier_txt(X, h)))
     file.close()
