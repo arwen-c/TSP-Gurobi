@@ -83,15 +83,27 @@ def matriceCompetences():
 def vecteurOuvertures():
     '''Crée un vecteur avec les heures d'ouvertures des tâches'''
     nombre_taches=len(TasksDico)
-    O=np.zeros(nombre_taches)
+    O=[]
     for i in range(nombre_taches):
-        O[i]=TasksDico[i]['OpeningTime']
+        heure=TasksDico[i]['OpeningTime']
+        res=heure.split(':')
+        h=int(res[0]) #l'heure
+        m=int(res[1][:1]) #les minutes
+        if res[1][2:]=='pm':
+            h+=12 #modifications pour l'aprem
+        O.append(h*60+m)
     return O
 
 def vecteurFermetures():
     '''Crée un vecteur avec les heures de fermeture des tâches'''
     nombre_taches=len(TasksDico)
-    F=np.zeros(nombre_taches)
+    F=[]
     for i in range(nombre_taches):
-        F[i]=TasksDico[i]['ClosingTime']
+        heure=TasksDico[i]['ClosingTime']
+        res=heure.split(':')
+        h=int(res[0]) #l'heure
+        m=int(res[1][:1]) #les minutes
+        if res[1][2:]=='pm':
+            h+=12 #modifications pour l'aprem
+        F.append(h*60+m)
     return F
