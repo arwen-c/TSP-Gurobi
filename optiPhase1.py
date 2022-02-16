@@ -9,6 +9,7 @@ from gurobipy import *
 # nbre_taches
 # D : tableau contenant la distance entre les tâches i et j en position (i,j)
 
+# tache factice avec le point de départ à ajouter
 
 def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
 
@@ -18,6 +19,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     M = 1440  # majorant des temps
     H = m.addMVar(shape=nbre_taches, lb=0, ub=1440)
     Y = m.addMVar(shape=(nbre_employe, nbre_taches, nbre_taches), lb=0)
+    '''#variable qui vaut 1 en position X[n,i,j] si la personne n fait le trajet de i vers j ??? '''
     X = m.addMVar(shape=(nbre_employe, nbre_taches,
                          nbre_taches),  vtype=GRB.BINARY)
     # modification des types des variables d'entrées pour s'assurer qu'elles conviennent
@@ -25,19 +27,13 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     D = np.array(D)
 
     # -- Ajout des constraintes --
-    # une même personne ne peut faire deux fois la même tache :
-    for n in range(nbre_employe):
-        for i in range(nbre_taches):
-            m.addConstr(X[n, i, i] == 0)
+
     # toute tâche doit avoir un départ et une arrivée
     for i in range(nbre_taches):
         # chaque tache a bien été faite
         m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
                         for j in range(nbre_taches)) == 2)
-        # chaque tâche doit bien être faite par la même personne
-        for n in range(nbre_employe):
-            m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
-                            for j in range(nbre_taches)) == 2)
+        # vérifier que la même personne arrive et parte de l'endroit donné
 
     for i in range(nbre_taches):
         for j in range(i):
