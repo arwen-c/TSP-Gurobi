@@ -2,7 +2,7 @@
 
 from cmath import cos
 from math import dist
-from numpy import real
+import numpy as np
 import pandas as pd
 import math
 
@@ -14,7 +14,7 @@ df2 = pd.read_excel(xls, 'Tasks')
 # Deuxième mission : créer des dictionnaires de données
 EmployeesDico = df1.to_dict('records')
 TasksDico = df2.to_dict('records')
-#print (EmployeesDico)
+#print (EmployeesDico)f
 
 
 def distance(id1, id2):
@@ -56,6 +56,7 @@ def competenceOK(EmployeeName, TaskId):
         return 1
     else:
         return 0
+<<<<<<< HEAD
 
 
 def matrice_distance(dic_taches):
@@ -69,3 +70,15 @@ def matrice_distance(dic_taches):
             j = int(chaine_carac_id2[1:])
             matrice_des_distances[i, j] = distance(id1, id2)
     return matrice_des_distances
+=======
+    
+def matriceCompetences():
+    '''Crée une matrice C_ni qui comporte un 1 si l'employé n peut faire la tache i'''
+    nombre_employes=len(EmployeesDico)
+    nombre_taches=len(TasksDico)
+    C=np.zeros((nombre_employes,nombre_taches))
+    for n in range(nombre_employes) :
+        for i in range(nombre_taches):
+            C[n,i]=competenceOK(EmployeesDico[n]['EmployeeName'],TasksDico[i]['TaskId'])
+    return C
+>>>>>>> develop
