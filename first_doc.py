@@ -67,18 +67,24 @@ def matrice_distance(dic_taches):
     for tache_1 in dic_taches :
         task_id_1 = tache_1["TaskId"]
         i = int(task_id_1[1:])
-        for tache_2 in dic_taches:
+        for tache_2 in dic_taches[i:]:
             task_id_2 = tache_2["TaskId"]
             j = int(task_id_2[1:])
             print(task_id_1, task_id_2)
             matrice_des_distances[i-1, j-1] = distance(task_id_1, task_id_2)
+<<<<<<< HEAD
     return matrice_des_distances
+=======
+            matrice_des_distances[j-1, i-1] = distance(task_id_1, task_id_2)
+>>>>>>> PACh
 
+    return matrice_des_distances
 
 
 def matrice_temps_de_trajet(D): # prend en entré un tableau des distances D
     return D/(50/60) # il se déplace à 50km/h donc 50/60 km/min
 
+<<<<<<< HEAD
 print(TasksDico[0])
 
 print(matrice_temps_de_trajet(matrice_distance(TasksDico)))
@@ -96,6 +102,9 @@ def matrice_distance():
     return matrice_des_distances
 
 
+=======
+    
+>>>>>>> PACh
 def matriceCompetences():
     '''Crée une matrice C_ni qui comporte un 1 si l'employé n peut faire la tache i'''
     nombre_employes = len(EmployeesDico)
@@ -136,6 +145,7 @@ def vecteurFermetures():
             h += 12  # modifications pour l'aprem
         F.append(h*60+m)
     return F
+<<<<<<< HEAD
 
 
 def vecteur_duree_tache():
@@ -197,3 +207,5 @@ def creation_fichier(nom_fichier, n_methode, X, h):
     file.close()
     return None
 >>>>>>> e9935c3c61bb3d434241984be79c6e13c34fd876
+=======
+>>>>>>> PACh
