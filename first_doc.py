@@ -2,7 +2,7 @@
 
 from cmath import cos
 from math import dist
-from numpy import real
+import numpy as np
 import pandas as pd
 import math
 
@@ -60,12 +60,22 @@ def competenceOK(EmployeeName, TaskId):
 
 def matrice_distance(dic_taches):
     x = len(dic_taches)
-    matrice_des_distances = np.zeros(x, x)
-    for id1 in dic_taches:
-        chaine_carac_id1 = str(id1)
-        i = int(chaine_carac_id1[1:])
-        for id2 in dic_taches:
-            chaine_carac_id2 = str(id2)
-            j = int(chaine_carac_id2[1:])
-            matrice_des_distances[i, j] = distance(id1, id2)
+    matrice_des_distances = np.zeros((x, x))
+    for tache_1 in dic_taches :
+        task_id_1 = tache_1["TaskId"]
+        i = int(task_id_1[1:])
+        for tache_2 in dic_taches:
+            task_id_2 = tache_2["TaskId"]
+            j = int(task_id_2[1:])
+            print(task_id_1, task_id_2)
+            matrice_des_distances[i-1, j-1] = distance(task_id_1, task_id_2)
     return matrice_des_distances
+
+
+
+def matrice_temps_de_trajet(D): # prend en entré un tableau des distances D
+    return D/(50/60) # il se déplace à 50km/h donc 50/60 km/min
+
+print(TasksDico[0])
+
+print(matrice_temps_de_trajet(matrice_distance(TasksDico)))
