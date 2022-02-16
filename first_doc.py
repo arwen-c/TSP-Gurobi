@@ -2,7 +2,7 @@
 
 from cmath import cos
 from math import dist
-from numpy import real
+import numpy as np
 import pandas as pd
 import math
 
@@ -51,3 +51,12 @@ def competenceOK(EmployeeName,TaskId):
     else :
         return 0
     
+def matriceCompetences():
+    '''Crée une matrice C_ni qui comporte un 1 si l'employé n peut faire la tache i'''
+    nombre_employes=len(EmployeesDico)
+    nombre_taches=len(TasksDico)
+    C=np.zeros((nombre_employes,nombre_taches))
+    for n in range(nombre_employes) :
+        for i in range(nombre_taches):
+            C[n,i]=competenceOK(EmployeesDico[n]['EmployeeName'],TasksDico[i]['TaskId'])
+    return C
