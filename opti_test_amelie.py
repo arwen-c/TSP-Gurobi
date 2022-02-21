@@ -86,5 +86,4 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     return m.objVal
 
 
-#print(optimisation_1([[1, 1], [1, 1]], 2, 2, [
-      [0, 10], [10, 0]], [10, 120], [0, 0], [1300, 1300]))
+#print(optimisation_1([[1, 1], [1, 1]], 2, 2, [[0, 10], [10, 0]], [10, 120], [0, 0], [1300, 1300]))
