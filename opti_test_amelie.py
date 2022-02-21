@@ -83,7 +83,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     print("X =", X.x)
     print("H =", H.x)
     print("avec pour valeur de l'objectif z =", m.objVal)
-    return m.objVal
+    return X.x, H.x, m.objVal
 
 
 #print(optimisation_1([[1, 1], [1, 1]], 2, 2, [[0, 10], [10, 0]], [10, 120], [0, 0], [1300, 1300]))
