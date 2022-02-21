@@ -14,7 +14,7 @@ df2 = pd.read_excel(xls, 'Tasks')
 # Deuxième mission : créer des dictionnaires de données
 EmployeesDico = df1.to_dict('records')
 TasksDico = df2.to_dict('records')
-#print (EmployeesDico)f
+print (TasksDico)
 
 
 def distance(id1, id2):
