@@ -9,14 +9,16 @@ import math
 
 fichier_test = 'InstanceFinlandV1.xlsx'
 
-xls = pd.ExcelFile(fichier_test)
-df1 = pd.read_excel(xls, 'Employees')
-df2 = pd.read_excel(xls, 'Tasks')
+def extraction_data (path):
+    xls = pd.ExcelFile(fichier_test)
+    df1 = pd.read_excel(xls, 'Employees')
+    df2 = pd.read_excel(xls, 'Tasks')
 
-# Deuxième mission : créer des dictionnaires de données
-EmployeesDico = df1.to_dict('records')
-TasksDico = df2.to_dict('records')
-# print (EmployeesDico)f
+    # Deuxième mission : créer des dictionnaires de données
+    EmployeesDico = df1.to_dict('records')
+    TasksDico = df2.to_dict('records')
+    #print (EmployeesDico)
+    return EmployeesDico, TasksDico
 
 
 def distance(id1, id2):
