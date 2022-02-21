@@ -72,7 +72,6 @@ def matrice_distance(dic_taches):
         for tache_2 in dic_taches[i:]:
             task_id_2 = tache_2["TaskId"]
             j = int(task_id_2[1:])
-            print(task_id_1, task_id_2)
             matrice_des_distances[i-1, j-1] = distance(task_id_1, task_id_2)
             matrice_des_distances[j-1, i-1] = distance(task_id_1, task_id_2)
     return matrice_des_distances
@@ -143,16 +142,17 @@ def nom_fichier_resolution(nom_fichier, n_methode):
     n_methode est le numéro de la méthode.
     Renvoie le nom du fichier txt."""
     L = nom_fichier.split('.')
-    return 'Solution' + L[0][9:] + 'ByV' + 'n_methode'+'.txt'
+    n_methode = str(n_methode)
+    return 'Solution' + L[0][8:] + 'ByV' + n_methode + '.txt'
 
 
 def solution_fichier_txt(X, h):
-    """X et h sont des tableaux numpy. 
+    """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
     premiere_ligne = 'taskId;performed;employeeName;startTime;'
     liste_des_lignes = [premiere_ligne]
-    n, x, y = X.shape()
+    n, x, y = X.shape
     employeeName = ''
     for i in range(x):
         j = 0
@@ -169,7 +169,7 @@ def solution_fichier_txt(X, h):
             j = j + 1
         if not(tache_i_ajoutee):
             liste_des_lignes.append(
-                'T' + str(i) + ';' + '0' + 'None' + ';' + 'None')
+                'T' + str(i) + ';' + '0' + ';' + 'None' + ';' + 'None' + ';')
     return liste_des_lignes
 
 
@@ -178,7 +178,11 @@ def creation_fichier(nom_fichier, n_methode, X, h):
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
-    file = open(nom_fichier_resolution(fichier_test, 1), "w")
+    file = open(nom_fichier_resolution(nom_fichier, n_methode), "w")
     file.write("\n".join(solution_fichier_txt(X, h)))
     file.close()
     return None
+
+
+# test création de fichier
+print(creation_fichier(fichier_test, 1, np.zeros((1, 3, 3)), [0, 0, 0]))
