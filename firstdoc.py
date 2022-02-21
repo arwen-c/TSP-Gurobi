@@ -9,7 +9,8 @@ import math
 
 fichier_test = 'InstanceFinlandV1.xlsx'
 
-def extraction_data (path):
+
+def extraction_data(path):
     xls = pd.ExcelFile(fichier_test)
     df1 = pd.read_excel(xls, 'Employees')
     df2 = pd.read_excel(xls, 'Tasks')
@@ -21,7 +22,7 @@ def extraction_data (path):
     return EmployeesDico, TasksDico
 
 
-def distance(id1, id2):
+def distance(id1, id2, TasksDico):
     '''entrée : les taskid correspondantes, sortie : distance en km'''
     foundid1, foundid2 = False, False
     index = 0
@@ -62,11 +63,10 @@ def competenceOK(EmployeeName, TaskId):
         return 0
 
 
-
 def matrice_distance(dic_taches):
     x = len(dic_taches)
     matrice_des_distances = np.zeros((x, x))
-    for tache_1 in dic_taches :
+    for tache_1 in dic_taches:
         task_id_1 = tache_1["TaskId"]
         i = int(task_id_1[1:])
         for tache_2 in dic_taches[i:]:
@@ -78,10 +78,8 @@ def matrice_distance(dic_taches):
     return matrice_des_distances
 
 
-
-def matrice_temps_de_trajet(D): # prend en entré un tableau des distances D
-    return D/(50/60) # il se déplace à 50km/h donc 50/60 km/min
-
+def matrice_temps_de_trajet(D):  # prend en entré un tableau des distances D
+    return D/(50/60)  # il se déplace à 50km/h donc 50/60 km/min
 
 
 def matriceCompetences():
