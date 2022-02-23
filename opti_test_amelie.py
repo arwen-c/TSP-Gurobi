@@ -32,47 +32,53 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     M = 1440  # majorant des temps
     H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
     # Y = m.addMVar(shape=(nbre_employe, nbre_taches+2 *
-    #                     nbre_employe, nbre_taches+2*nbre_employe), lb=0)
+    #                      nbre_employe, nbre_taches+2*nbre_employe), lb=0)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
                          nbre_taches+2*nbre_employe),  vtype=GRB.BINARY)
     # modification des types des variables d'entrées pour s'assurer qu'elles conviennent
     C = np.array(C)
     D = np.array(D)
 
-    print(D)
-
+    #
+    # taille du tableau modifié = nombre de tâches réelles + nombre de tâches fictives
+    t = len(Debut)
     # -- Ajout des constraintes --
-    # toute tâche doit avoir un départ et une arrivée
-    for i in range(nbre_taches):
-        # chaque trajet a bien été fait une seule fois
+
+    # chaque trajet a bien été fait une seule fois
+    for i in range(t):
         m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
-                        for j in range(nbre_taches)) == 1)
-    # graphe : entrée ==sortie INCOMPATIBLE BORDS
-        for n in range(nbre_employe):
-            for j in range(nbre_taches):
-                m.addConstr(sum(X[n, j, k] for k in range(nbre_taches)) == sum(
-                    X[n, i, j] for i in range(nbre_taches)))
+                        for j in range(t)) == 1)  # fait sur les lignes. Devrait être fait sur les colonnes ?
+    
+    # Toute tâche à un départ et une arrivée faites par la même personne - INCOMPATIBLE BORDS
+    for n in range(nbre_employe):
+        for j in range(nbre_taches):
+            m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
+                X[n, i, j] for i in range(t)))
+    
     # effets de bord
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
                         for j in range(nbre_taches)) == 1)  # depart du depot
-        m.addConstr(sum(X[n, j, nbre_taches+nbre_employe+n]
-                        for j in range(nbre_taches)) == 1)  # arrivee au depot
+        m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
+                        for i in range(nbre_taches)) == 1)  # arrivee au depot
 
-    for i in range(len(Debut)):  # Taches réelles + taches fictives
-        for j in range(len(Debut)):
+    for i in range(t):  # Taches réelles + taches fictives
+        for j in range(t):
             for n in range(nbre_employe):
                 # l'employé doit être capable d'effectuer les 2 tâches
                 m.addConstr(X[n, i, j] <= C[n, i])
                 m.addConstr(X[n, i, j] <= C[n, j])
+
+                # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
+                m.addConstr(X[n, i, i] == 0)
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
                 m.addConstr(H[j]+Duree[j] <= Fin[j])
                 m.addConstr(H[j] >= Debut[j])
                 # la personne n a le temps de faire la tache j à la suite de la tache i
-                m.addConstr(
-                    X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.83333) <= H[j])
+                m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.83333)
+                            <= H[j])  # 
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
                 # m.addConstr(Y[n, i, j]+X[n, i, j] *
                 #             (Duree[i]+D[i, j]/0.83333) <= H[j])
@@ -82,7 +88,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
 
     # -- Ajout de la fonction objectif. Produit terme à terme
     m.setObjective(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
-                       for i in range(nbre_taches+2*nbre_employe) for i in range(nbre_taches+2*nbre_employe)), GRB.MINIMIZE)
+                       for i in range(t) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
@@ -93,6 +99,3 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     print("H =", H.x)
     print("avec pour valeur de l'objectif z =", m.objVal)
     return X.x, H.x, m.objVal
-
-
-# print(optimisation_1([[1, 1], [1, 1]], 2, 2, [[0, 10], [10, 0]], [10, 120], [0, 0], [1300, 1300]))
