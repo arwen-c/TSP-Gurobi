@@ -116,7 +116,8 @@ def affichage_graphique(longitudes, lattitudes, long_employe, latt_employe, empl
         if employe not in employes_unique:
             employes_unique += [employe]
 
-    my_colors = ["r", "g", "b"]
+    my_colors = ["r", "g", "b", "c", "m", "y",
+                 "k", "r", "g", "b", "c", "m", "y", "k"]
     for i in range(len(employes_unique)):
         # longitudes_employe = []
         # for j in range(len(employes)):
