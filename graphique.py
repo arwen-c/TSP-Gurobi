@@ -1,9 +1,20 @@
 import matplotlib.pyplot as plt
 
 
-def affichage_graphique(lattitudes, longitudes, solutions):
-    plt.plot(longitudes, lattitudes, "o")
+def affichage_graphique_test(lattitudes, longitudes):
+
+    employee_1 = [1, 3, 8, 9]
+    employee_2 = [2, 4, 5, 6, 7]
+
+    longitudes_1 = [longitudes[i] for i in employee_1]
+    lattitudes_1 = [lattitudes[i] for i in employee_1]
+    longitudes_2 = [longitudes[i] for i in employee_2]
+    lattitudes_2 = [lattitudes[i] for i in employee_2]
+    plt.plot(longitudes_1, lattitudes_1, "-o", color="g")
+    plt.plot(longitudes_2, lattitudes_2, "-o", color="b")
+    plt.plot()
     plt.show()
+
     return None
 
 # Améliorations :
@@ -37,4 +48,65 @@ longitudes = [-0.31939224223757195,
               -0.9365361007032235,
               -0.8062453230620741]
 
-affichage_graphique(lattitudes, longitudes, 1)
+# affichage_graphique_test(lattitudes, longitudes)
+
+
+def lecture(filename):
+
+    # lecture du fichier solution
+    solution_file = open(filename, "r")
+    word = ''
+    taches = []
+    employes = []
+    for line in solution_file.readlines()[1:]:
+        count = 0
+        # print("ligne : {}".format(line))
+        for element in line:
+            if element == ";":
+                # print(word)
+                count += 1
+                if count == 1:
+                    # print("\n word : {} - tâches : {}".format(word, taches))
+                    # print("word : {} - len : {}".format(word, len(word)))
+                    if len(word) == 3:
+                        taches += [word[1:3]]
+                    elif len(word) == 4:
+                        taches += [word[1:4]]
+                    else:
+                        taches += [word]
+                elif count == 3:
+                    employes = employes + [word]
+                    # print("word : {}".format(word))
+                    # print("employé : {}".format(employes))
+                word = ''
+            else:
+                word += element
+    return employes, taches
+
+
+def affichage_graphique(longitudes, lattitudes, employes, taches):
+    employes_unique = []
+    for employe in employes:
+        if employe not in employes_unique:
+            employes_unique += [employe]
+
+    my_colors = ["r", "g", "b"]
+    for i in range(len(employes_unique)):
+        # longitudes_employe = []
+        # for j in range(len(employes)):
+        #     if employes[j] == employes_unique[i]:
+        #         longitudes_employe.append(longitudes[j])
+        longitudes_employe = [longitudes[j] for j in range(
+            len(employes)) if employes[j] == employes_unique[i]]
+        lattitudes_employe = [lattitudes[j] for j in range(
+            len(employes)) if employes[j] == employes_unique[i]]
+        plt.plot(longitudes_employe, lattitudes_employe,
+                 "-o", color=my_colors[i], label=str(employes_unique[i]))
+
+    plt.legend()
+    plt.show()
+    return None
+
+
+affichage_graphique(longitudes, lattitudes, lecture("SolutionBordeauxV1ByV1.txt")[
+                    0], lecture("SolutionBordeauxV1ByV1.txt")[1])
