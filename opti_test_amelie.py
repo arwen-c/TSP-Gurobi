@@ -30,7 +30,8 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     m = Model("Modele exact simple")
     # -- ajout variables de décisions --
     M = 1440  # majorant des temps
-    H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
+    H = m.addMVar(shape=nbre_taches+2*nbre_employe,
+                  vtype=GRB.CONTINUOUS, lb=0, ub=M)
     # Y = m.addMVar(shape=(nbre_employe, nbre_taches+2 *
     #                     nbre_employe, nbre_taches+2*nbre_employe), lb=0)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
@@ -38,8 +39,6 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     # modification des types des variables d'entrées pour s'assurer qu'elles conviennent
     C = np.array(C)
     D = np.array(D)
-
-    print(D)
 
     # -- Ajout des constraintes --
     # toute tâche doit avoir un départ et une arrivée

@@ -6,7 +6,8 @@ import math
 import numpy as np
 
 from firstdoc import *
-from opti_test_amelie import ajout_domicile, optimisation_1
+# from opti_test_amelie import ajout_domicile, optimisation_1
+from opti_test_v2 import ajout_domicile, optimisation_1
 
 # Entrée - TO DO
 # chemin d'accès à l'excel de données
