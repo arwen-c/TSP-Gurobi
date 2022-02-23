@@ -9,7 +9,16 @@ from gurobipy import *
 # nbre_taches
 # D : tableau contenant la distance entre les tâches i et j en position (i,j)
 
-# tache factice avec le point de départ à ajouter
+# insertion des tâches factice avec le point de départ à ajouter
+def ajout_domicile(TasksDico, EmployeesDico):
+    for row in EmployeesDico:
+        # ajout d'une tâche au départ du domicile
+        TasksDico.append({'TaskId': 'Depart'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
+                          'TaskDuration': 0, 'Skill': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
+        # ajout de l'arrivée au domicile
+        TasksDico.append({'TaskId': 'Arrivee'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
+                          'TaskDuration': 0, 'Skill': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
+
 
 def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
 
@@ -33,7 +42,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
         # chaque tache a bien été faite
         m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
                         for j in range(nbre_taches)) == 2)
-        # vérifier que la même personne arrive et parte de l'endroit donné
+        # vérifier que la même personne arrive et parte de l'endroit donné -> modif Amélie
 
     for i in range(nbre_taches):
         for j in range(i):
@@ -64,8 +73,8 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     print("X =", X.x)
     print("H =", H.x)
     print("avec pour valeur de l'objectif z =", m.objVal)
-    return m.objVal
+    return X.x, H.x, m.objVal
 
 
-print(optimisation_1([[1, 1], [1, 1]], 2, 2, [
-      [0, 10], [10, 0]], [10, 120], [0, 0], [1300, 1300]))
+# print(optimisation_1([[1, 1], [1, 1]], 2, 2, [
+#      [0, 10], [10, 0]], [10, 120], [0, 0], [1300, 1300]))
