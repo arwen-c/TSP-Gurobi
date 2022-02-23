@@ -102,6 +102,10 @@ def affichage_graphique(longitudes, lattitudes, employes, taches):
             len(employes)) if employes[j] == employes_unique[i]]
         plt.plot(longitudes_employe, lattitudes_employe,
                  "-o", color=my_colors[i], label=str(employes_unique[i]))
+        for j in range(len(employes)):
+            if employes[j] == employes_unique[i]:
+                plt.annotate(str(taches[j]),
+                             (longitudes[j], lattitudes[j]))
 
     plt.legend()
     plt.show()
