@@ -17,6 +17,7 @@ df2 = pd.read_excel(xls, 'Tasks')
 EmployeesDico = df1.to_dict('records')
 TasksDico = df2.to_dict('records')
 # print (EmployeesDico)f
+print(TasksDico)
 
 
 def distance(id1, id2):
@@ -151,7 +152,7 @@ def solution_fichier_txt(X, h):
     liste_des_lignes = [premiere_ligne]
     n, x, y = X.shape
     employeeName = ''
-    for i in range(x):
+    for i in range(x - 2*n):
         j = 0
         tache_i_ajoutee = False
         while j < y and not(tache_i_ajoutee):
@@ -160,13 +161,13 @@ def solution_fichier_txt(X, h):
                 if X[numero_employe, i, j] == 1:
                     employeeName = EmployeesDico[numero_employe]['EmployeeName']
                     liste_des_lignes.append(
-                        'T' + str(i) + ';' + '1' + employeeName + ';' + h[i])
+                        'T' + str(i+1) + ';' + '1' + employeeName + ';' + h[i])
                     tache_i_ajoutee = True
                 numero_employe = numero_employe + 1
             j = j + 1
         if not(tache_i_ajoutee):
             liste_des_lignes.append(
-                'T' + str(i) + ';' + '0' + ';' + 'None' + ';' + 'None' + ';')
+                'T' + str(i) + ';' + '0' + ';' + ';' + ';')
     return liste_des_lignes
 
 
