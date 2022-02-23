@@ -1,4 +1,4 @@
 taskId;performed;employeeName;startTime;
-T0;0;None;None;
-T1;0;None;None;
-T2;0;None;None;
+T0;0;;;
+T1;0;;;
+T2;0;;;
