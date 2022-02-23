@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from firstdoc import extraction_data
 
 
 def affichage_graphique_test(lattitudes, longitudes):
@@ -84,7 +85,32 @@ def lecture(filename):
     return employes, taches
 
 
-def affichage_graphique(longitudes, lattitudes, employes, taches):
+def extraire_coordonnees(path):
+    EmployeesDico, TasksDico = extraction_data(path)
+    return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico)
+
+# Vecteur des longitudes
+
+
+def vecteur_longitudes(TasksDico):
+    """Renvoie le vecteur des longitudes de chaque tâche."""
+    Vecteur_long = []
+    for row in TasksDico:
+        Vecteur_long.append(row['Longitude'])
+    return Vecteur_long
+
+# Vecteur des latitudes
+
+
+def vecteur_latitudes(TasksDico):
+    """Renvoie le vecteur des latitudes de chaque tâche."""
+    Vecteur_lat = []
+    for row in TasksDico:
+        Vecteur_lat.append(row['Latitude'])
+    return Vecteur_lat
+
+
+def affichage_graphique(longitudes, lattitudes, employes, taches, nom_ville):
     employes_unique = []
     for employe in employes:
         if employe not in employes_unique:
@@ -107,10 +133,30 @@ def affichage_graphique(longitudes, lattitudes, employes, taches):
                 plt.annotate(str(taches[j]),
                              (longitudes[j], lattitudes[j]))
 
+    plt.title(str(nom_ville))
     plt.legend()
     plt.show()
     return None
 
 
-affichage_graphique(longitudes, lattitudes, lecture("SolutionBordeauxV1ByV1.txt")[
-                    0], lecture("SolutionBordeauxV1ByV1.txt")[1])
+# longitudes, lattitudes = extraire_coordonnees(path='InstanceBordeauxV1.xlsx')
+
+
+# affichage_graphique(longitudes, lattitudes, lecture("SolutionBordeauxV1ByV1.txt")[
+#                     0], lecture("SolutionBordeauxV1ByV1.txt")[1])
+
+
+def afficher(nom_ville):
+    path1 = "Instance"+str(nom_ville)+"V1.xlsx"
+    path2 = "Solution"+str(nom_ville)+"V1ByV1.txt"
+
+    print(path1, path2)
+
+    longitudes, lattitudes = extraire_coordonnees(path=path1)
+    employes, taches = lecture(path2)
+
+    affichage_graphique(longitudes, lattitudes, employes, taches, nom_ville)
+    return None
+
+
+afficher("Bordeaux")
