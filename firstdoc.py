@@ -161,7 +161,7 @@ def solution_fichier_txt(X, h):
                 if X[numero_employe, i, j] == 1:
                     employeeName = EmployeesDico[numero_employe]['EmployeeName']
                     liste_des_lignes.append(
-                        'T' + str(i+1) + ';' + '1' + employeeName + ';' + h[i])
+                        'T' + str(i+1) + ';' + '1' + str(employeeName) + ';' + str(round(h[i])))
                     tache_i_ajoutee = True
                 numero_employe = numero_employe + 1
             j = j + 1
