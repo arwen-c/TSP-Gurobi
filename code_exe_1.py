@@ -10,7 +10,7 @@ from opti_test_amelie import ajout_domicile, optimisation_1
 
 # Entrée - TO DO
 # chemin d'accès à l'excel de données
-path = 'InstanceItalyV1.xlsx'
+path = 'InstanceBordeauxV1.xlsx'
 
 # Corps du code
 
