@@ -87,7 +87,7 @@ def lecture(filename):
 
 def extraire_coordonnees(path):
     EmployeesDico, TasksDico = extraction_data(path)
-    return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico)
+    return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico), vecteur_longitudes(EmployeesDico), vecteur_latitudes(EmployeesDico)
 
 # Vecteur des longitudes
 
@@ -110,7 +110,7 @@ def vecteur_latitudes(TasksDico):
     return Vecteur_lat
 
 
-def affichage_graphique(longitudes, lattitudes, employes, taches, nom_ville):
+def affichage_graphique(longitudes, lattitudes, long_employe, latt_employe, employes, taches, nom_ville):
     employes_unique = []
     for employe in employes:
         if employe not in employes_unique:
@@ -126,6 +126,13 @@ def affichage_graphique(longitudes, lattitudes, employes, taches, nom_ville):
             len(employes)) if employes[j] == employes_unique[i]]
         lattitudes_employe = [lattitudes[j] for j in range(
             len(employes)) if employes[j] == employes_unique[i]]
+
+        # Attention, ça marche que si les employés ont le même domicile
+        longitudes_employe.insert(0, long_employe[0])
+        lattitudes_employe.insert(0, latt_employe[0])
+        longitudes_employe += [long_employe[0]]
+        lattitudes_employe += [latt_employe[0]]
+
         plt.plot(longitudes_employe, lattitudes_employe,
                  "-o", color=my_colors[i], label=str(employes_unique[i]))
         for j in range(len(employes)):
@@ -150,12 +157,12 @@ def afficher(nom_ville):
     path1 = "Instance"+str(nom_ville)+"V1.xlsx"
     path2 = "Solution"+str(nom_ville)+"V1ByV1.txt"
 
-    print(path1, path2)
-
-    longitudes, lattitudes = extraire_coordonnees(path=path1)
+    longitudes, lattitudes, long_employe, latt_employe = extraire_coordonnees(
+        path=path1)
     employes, taches = lecture(path2)
 
-    affichage_graphique(longitudes, lattitudes, employes, taches, nom_ville)
+    affichage_graphique(longitudes, lattitudes, long_employe,
+                        latt_employe, employes, taches, nom_ville)
     return None
 
 
