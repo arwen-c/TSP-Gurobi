@@ -167,7 +167,7 @@ def solution_fichier_txt(X, h):
             j = j + 1
         if not(tache_i_ajoutee):
             liste_des_lignes.append(
-                'T' + str(i) + ';' + '0' + ';' + ';' + ';')
+                'T' + str(i+1) + ';' + '0' + ';' + ';' + ';')
     return liste_des_lignes
 
 
