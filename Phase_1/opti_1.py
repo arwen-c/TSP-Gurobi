@@ -33,6 +33,8 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
                          nbre_taches+2*nbre_employe),  vtype=GRB.BINARY)
+    Y = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
+                         nbre_taches+2*nbre_employe),  vtype=GRB.CONTINUOUS, lb=0)
 
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
@@ -77,8 +79,16 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
                 m.addConstr(H[j]+Duree[j] <= Fin[j])
                 m.addConstr(H[j] >= Debut[j])
                 # la personne n a le temps de faire la tache j à la suite de la tache i
-                m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.83333)
+                # m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.83333)
+                #             <= H[j])
+                m.addConstr(H[i]+X[n, i, j]*(Duree[i]+D[i, j]/0.83333)
                             <= H[j])
+                # m.addConstr(X[n, i, j] * H[i] == Y[n, i, j])
+                # m.addConstr(H[i] >= Y[n, i, j])
+                # m.addConstr(Y[n, i, j] <= X[n, i, j] * M)
+                # m.addConstr(Y[n, i, j] >= H[i]-M*(1-X[n, i, j]))
+                # m.addConstr(
+                #     Y[n, i, j] + X[n, i, j] * (Duree[i]+D[i, j]/0.83333) <= H[j])
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
     # -- Ajout de la fonction objectif.
