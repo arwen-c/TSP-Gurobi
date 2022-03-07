@@ -40,9 +40,9 @@ def distance(id1, id2):
     return d
 
 
-def temps_trajet(id1, id2):
-    '''Calcul du temps de trajet entre deux tâches, en minutes'''
-    return distance(id1, id2)*60/50
+# def temps_trajet(id1, id2):
+#     '''Calcul du temps de trajet entre deux tâches, en minutes'''
+#     return distance(id1, id2)*60/50
 
 
 def competenceOK(EmployeeName, TaskId):
