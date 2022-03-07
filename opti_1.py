@@ -2,8 +2,6 @@
 import numpy as np
 from gurobipy import *
 
-from firstdoc import Tab_dist_reel, TasksDico
-
 
 def ajout_domicile(TasksDico, EmployeesDico):
     """Modification des données pour insérer des tâches factices de départ et de retour au dépot ou domicile."""
@@ -19,7 +17,7 @@ def ajout_domicile(TasksDico, EmployeesDico):
     return(TasksEnhanced)
 
 
-def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_trajet = Tab_dist_reel(TasksDico)):
+def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_trajet):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
