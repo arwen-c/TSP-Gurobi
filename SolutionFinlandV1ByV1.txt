@@ -1,4 +1,0 @@
-taskId;performed;employeeName;startTime;
-T0;0;;;
-T1;0;;;
-T2;0;;;
