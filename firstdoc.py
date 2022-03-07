@@ -1,16 +1,14 @@
-# Premère mission : extraire du CSV
-
-from asyncio import Task
 from cmath import cos
 from math import dist
 import numpy as np
 import pandas as pd
 import math
 
-# fichier_test = 'InstanceFinlandV1.xlsx'
+# extraction des données des fichiers exceln, transformation en dictionnaires
 
 
 def extraction_data(path):
+    """Permet dextraction des données."""
     xls = pd.ExcelFile(path)
     df1 = pd.read_excel(xls, 'Employees')
     df2 = pd.read_excel(xls, 'Tasks')
@@ -18,12 +16,13 @@ def extraction_data(path):
     # Deuxième mission : créer des dictionnaires de données
     EmployeesDico = df1.to_dict('records')
     TasksDico = df2.to_dict('records')
-    # print (EmployeesDico)
+
     return EmployeesDico, TasksDico
 
 
+# calcule la distance entre deux points dont on connait les coordonnées GPS
 def distance(id1, id2, TasksDico):
-    '''entrée : les taskid correspondantes, sortie : distance en km'''
+    '''entrée : les taskid correspondantes, le dictionnaire de données, sortie : distance en km'''
     foundid1, foundid2 = False, False
     index = 0
     while not (foundid1 and foundid2):
@@ -36,10 +35,10 @@ def distance(id1, id2, TasksDico):
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
-    delta_long = long2-long1
+    delta_long = long2-long1  # calcule de la différence de longitude
     delta_latt = lat2-lat1
-    d = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
-    return d
+    distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+    return distance
 
 
 def temps_trajet(id1, id2):
@@ -48,7 +47,7 @@ def temps_trajet(id1, id2):
 
 
 def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
-    '''Retourne 1 si l'employé a le bon skill et un niveau suffisant pour effectuer la tâche'''
+    '''Retourne 1 si l'employé a le bon skill et un niveau suffisant pour effectuer la tâche, 0 sinon'''
     task_skill = next(item['Skill']
                       for item in TasksDico if item['TaskId'] == TaskId)
     employee_skill = next(
@@ -121,7 +120,7 @@ def vecteurFermetures(TasksDico):
     return F
 
 
-def vecteur_duree_tache(TasksDico):
+def vecteurDurees(TasksDico):
     """Pas besoin d'argument, on utilise les variables globales.
     Renvoie le vecteur des durées de chaque tâche."""
     Vecteur_duree = []
@@ -159,7 +158,7 @@ def solution_fichier_txt(X, h, EmployeesDico):
                 if X[numero_employe, i, j] == 1:
                     employeeName = EmployeesDico[numero_employe]['EmployeeName']
                     liste_des_lignes.append(
-                        'T' + str(i+1) + ';' + '1' + str(employeeName) + ';' + str(round(h[i])))
+                        'T' + str(i+1) + ';' + '1' + ';' + str(employeeName) + ';' + str(round(h[i])) + ';')
                     tache_i_ajoutee = True
                 numero_employe = numero_employe + 1
             j = j + 1
@@ -178,7 +177,3 @@ def creation_fichier(nom_fichier, n_methode, X, h, EmployeesDico):
     file.write("\n".join(solution_fichier_txt(X, h, EmployeesDico)))
     file.close()
     return None
-
-
-# test création de fichier
-# print(creation_fichier(fichier_test, 1, np.zeros((1, 3, 3)), [0, 0, 0]))
