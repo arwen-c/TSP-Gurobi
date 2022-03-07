@@ -4,7 +4,7 @@ from numpy import real
 
 
 from firstdoc import *
-from opti_test_amelie import ajout_domicile, optimisation_1
+from opti_1 import ajout_domicile, optimisation_1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
