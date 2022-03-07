@@ -6,6 +6,8 @@ from math import dist
 import numpy as np
 import pandas as pd
 import math
+import requests, json 
+
 
 fichier_test = 'InstanceFinlandV1.xlsx'
 
@@ -45,6 +47,48 @@ def temps_trajet(id1, id2):
     '''Calcul du temps de trajet entre deux tâches, en minutes'''
     return distance(id1, id2)*60/50
 
+########## TEMPS DE TRAJET EXACTS ######################
+
+def get_long_lat(TasksDico):
+    Coord = []
+    for task in TasksDico:
+        Coord.append((task['Latitude'],task['Longitude']))
+    return Coord
+    
+
+def Tab_dist_reel(TasksDico):
+    Coord = get_long_lat(TasksDico)
+    source = []
+    dest = ''
+    n = len(TasksDico)
+    for i in range (n):
+        source.append(str(Coord[i])[1:-1])
+        dest += str(Coord[i])[1:-1]
+        if i < n-1 :
+                dest += "|"
+    
+    api_key = 'AIzaSyBpTuIRxdkXcbhQ8LS6sGNDPGR4Shr0xFs'
+
+    url ='https://maps.googleapis.com/maps/api/distancematrix/json?'
+    
+    mat_temps_traj = np.zeros((n,n))
+
+    for i in range(n):
+
+        r = requests.get(url + 'origins=' + source[i] +
+                        '&destinations=' + dest +
+                        '&key=' + api_key) 
+                            
+        x = r.json() 
+        for j in range(n):
+            if x["rows"][0]["elements"][j]["status"] != 'ZERO_RESULTS':
+                mat_temps_traj[i,j] = x["rows"][0]["elements"][j]["duration"]["value"]/60
+            else :
+                mat_temps_traj[i,j] = None
+
+    return mat_temps_traj
+
+##################################################33
 
 def competenceOK(EmployeeName, TaskId):
     '''Retourne 1 si l'employé a le bon skill et un niveau suffisant pour effectuer la tâche'''
