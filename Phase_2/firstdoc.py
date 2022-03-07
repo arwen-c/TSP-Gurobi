@@ -138,7 +138,9 @@ def nom_fichier_resolution(nom_fichier, n_methode):
     Renvoie le nom du fichier txt."""
     L = nom_fichier.split('.')
     n_methode = str(n_methode)
-    return 'Solution' + L[0][8:] + 'ByV' + n_methode + '.txt'
+    # return 'Solution' + L[0][8:] + 'ByV' + n_methode + '.txt' # ancienne version sans arborescence pour les fichiers excels
+    # nouvelle version avec arborescence pour les fichiers excels
+    return 'Phase_1/Solutions/Solution' + L[0][28:] + 'ByV' + n_methode + '.txt'
 
 
 def solution_fichier_txt(X, h, EmployeesDico):
