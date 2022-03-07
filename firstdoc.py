@@ -9,21 +9,22 @@ import math
 import requests, json 
 
 
-fichier_test = 'InstanceFinlandV1.xlsx'
+# fichier_test = 'InstanceFinlandV1.xlsx'
 
-def extraction_data (path):
-    xls = pd.ExcelFile(fichier_test)
+
+def extraction_data(path):
+    xls = pd.ExcelFile(path)
     df1 = pd.read_excel(xls, 'Employees')
     df2 = pd.read_excel(xls, 'Tasks')
 
     # Deuxième mission : créer des dictionnaires de données
     EmployeesDico = df1.to_dict('records')
     TasksDico = df2.to_dict('records')
-    #print (EmployeesDico)
+    # print (EmployeesDico)
     return EmployeesDico, TasksDico
 
 
-def distance(id1, id2):
+def distance(id1, id2, TasksDico):
     '''entrée : les taskid correspondantes, sortie : distance en km'''
     foundid1, foundid2 = False, False
     index = 0
@@ -90,7 +91,7 @@ def Tab_dist_reel(TasksDico):
 
 ##################################################33
 
-def competenceOK(EmployeeName, TaskId):
+def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
     '''Retourne 1 si l'employé a le bon skill et un niveau suffisant pour effectuer la tâche'''
     task_skill = next(item['Skill']
                       for item in TasksDico if item['TaskId'] == TaskId)
@@ -107,16 +108,14 @@ def competenceOK(EmployeeName, TaskId):
 
 
 def matrice_distance(dic_taches):
-    x = len(dic_taches)
-    matrice_des_distances = np.zeros((x, x))
+    matrice_des_distances = []
     for tache_1 in dic_taches:
         task_id_1 = tache_1["TaskId"]
-        i = int(task_id_1[1:])
-        for tache_2 in dic_taches[i:]:
+        ligne = []
+        for tache_2 in dic_taches:
             task_id_2 = tache_2["TaskId"]
-            j = int(task_id_2[1:])
-            matrice_des_distances[i-1, j-1] = distance(task_id_1, task_id_2)
-            matrice_des_distances[j-1, i-1] = distance(task_id_1, task_id_2)
+            ligne.append(distance(task_id_1, task_id_2, dic_taches))
+        matrice_des_distances.append(ligne)
     return matrice_des_distances
 
 
@@ -124,7 +123,7 @@ def matrice_temps_de_trajet(D):  # prend en entré un tableau des distances D
     return D/(50/60)  # il se déplace à 50km/h donc 50/60 km/min
 
 
-def matriceCompetences():
+def matriceCompetences(EmployeesDico, TasksDico):
     '''Crée une matrice C_ni qui comporte un 1 si l'employé n peut faire la tache i'''
     nombre_employes = len(EmployeesDico)
     nombre_taches = len(TasksDico)
@@ -132,11 +131,11 @@ def matriceCompetences():
     for n in range(nombre_employes):
         for i in range(nombre_taches):
             C[n, i] = competenceOK(
-                EmployeesDico[n]['EmployeeName'], TasksDico[i]['TaskId'])
+                EmployeesDico[n]['EmployeeName'], TasksDico[i]['TaskId'], TasksDico, EmployeesDico)
     return C
 
 
-def vecteurOuvertures():
+def vecteurOuvertures(TasksDico):
     '''Crée un vecteur avec les heures d'ouvertures des tâches'''
     nombre_taches = len(TasksDico)
     O = []
@@ -151,7 +150,7 @@ def vecteurOuvertures():
     return O
 
 
-def vecteurFermetures():
+def vecteurFermetures(TasksDico):
     '''Crée un vecteur avec les heures de fermeture des tâches'''
     nombre_taches = len(TasksDico)
     F = []
@@ -166,14 +165,12 @@ def vecteurFermetures():
     return F
 
 
-def vecteur_duree_tache():
+def vecteur_duree_tache(TasksDico):
     """Pas besoin d'argument, on utilise les variables globales.
     Renvoie le vecteur des durées de chaque tâche."""
-    x = len(TasksDico)
-    Vecteur_duree = np.zeros((x, x))
-    for k in range(x):
-        Vecteur_duree[int(TasksDico[k]['TaskId'][1:])
-                      ] = TasksDico[k]['TaskDuration']
+    Vecteur_duree = []
+    for row in TasksDico:
+        Vecteur_duree.append(row['TaskDuration'])
     return Vecteur_duree
 
 
@@ -189,7 +186,7 @@ def nom_fichier_resolution(nom_fichier, n_methode):
     return 'Solution' + L[0][8:] + 'ByV' + n_methode + '.txt'
 
 
-def solution_fichier_txt(X, h):
+def solution_fichier_txt(X, h, EmployeesDico):
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
@@ -206,26 +203,27 @@ def solution_fichier_txt(X, h):
                 if X[numero_employe, i, j] == 1:
                     employeeName = EmployeesDico[numero_employe]['EmployeeName']
                     liste_des_lignes.append(
-                        'T' + str(i) + ';' + '1' + employeeName + ';' + h[i])
+                        'T' + str(i) + ';' + '1' + ';' +
+                        str(employeeName) + ';' + str(h[i]) + ';')
                     tache_i_ajoutee = True
                 numero_employe = numero_employe + 1
             j = j + 1
         if not(tache_i_ajoutee):
             liste_des_lignes.append(
-                'T' + str(i) + ';' + '0' + ';' + 'None' + ';' + 'None' + ';')
+                'T' + str(i) + ';' + '0' + ';' + ';' + ';')
     return liste_des_lignes
 
 
-def creation_fichier(nom_fichier, n_methode, X, h):
+def creation_fichier(nom_fichier, n_methode, X, h, EmployeesDico):
     """nom_fichier est le nom du fichier utilisée pour créer les variables globales.
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
     file = open(nom_fichier_resolution(nom_fichier, n_methode), "w")
-    file.write("\n".join(solution_fichier_txt(X, h)))
+    file.write("\n".join(solution_fichier_txt(X, h, EmployeesDico)))
     file.close()
     return None
 
 
 # test création de fichier
-print(creation_fichier(fichier_test, 1, np.zeros((1, 3, 3)), [0, 0, 0]))
+# print(creation_fichier(fichier_test, 1, np.zeros((1, 3, 3)), [0, 0, 0]))
