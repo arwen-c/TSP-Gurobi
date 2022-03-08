@@ -81,8 +81,8 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
                 # la personne n a le temps de faire la tache j à la suite de la tache i
                 # m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.83333)
                 #             <= H[j])
-                m.addConstr(H[i]+X[n, i, j]*(Duree[i]+D[i, j]/0.83333)
-                            <= H[j])
+                m.addConstr(H[i]+X[n, i, j]*(Duree[i]+D[i, j] /
+                                             0.83333) <= H[j] + (1-X[n, i, j])*24*60)
                 # m.addConstr(X[n, i, j] * H[i] == Y[n, i, j])
                 # m.addConstr(H[i] >= Y[n, i, j])
                 # m.addConstr(Y[n, i, j] <= X[n, i, j] * M)
