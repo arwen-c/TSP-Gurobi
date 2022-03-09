@@ -8,7 +8,7 @@ from opti_1 import ajout_domicile, optimisation_1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'InstanceFinlandV1.xlsx'
+path = 'InstancesV1\InstanceFinlandV1.xlsx'
 
 
 # Corps du code
