@@ -1,6 +1,8 @@
 # Importations de module
 import numpy as np
 from gurobipy import *
+import time
+
 
 
 def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
@@ -20,8 +22,16 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUna
     
     ### AJOUTS INDISPONIBILITES EMPLOYES ###
     for row in EmployeesUnavailDico:
+
+        debut = int(row['Start'][:-6])*60 + int(row['Start'][-4:-2])
+        fin = int(row['End'][:-6])*60 + int(row['End'][-4:-2])
+        if debut[-2:] == "pm" :
+            debut += 12*60
+        if fin[-2:] == "pm" :
+            fin += 12*60
+            
         TasksEnhanced.append({'TaskId': 'Unavail' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
-                              'TaskDuration': row['End']-row['Start'], 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
+                              'TaskDuration': fin-debut, 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
       
     return(TasksEnhanced)
 
@@ -81,10 +91,10 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
 #         m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
 #                         for i in range(nbre_taches)) == 1)  # arrivée au dépôt
 
-#     # Contraintes incluants une somme
-#     for i in range(t):  # Tâches réelles + Tâches fictives
-#         for j in range(t):
-#             for n in range(nbre_employe):
+    # Contraintes incluants une somme
+    for i in range(t):  # Tâches réelles + Tâches fictives
+        for j in range(t):
+            for n in range(nbre_employe):
 #                 # l'employé doit être capable d'effectuer les 2 tâches
 #                 m.addConstr(X[n, i, j] <= C[n, i])
 #                 m.addConstr(X[n, i, j] <= C[n, j])
@@ -92,14 +102,15 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
 #                 # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
 #                 m.addConstr(X[n, i, i] == 0)
 
-#                 # - Effets temporels -
-#                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
-#                 m.addConstr(H[j]+Duree[j] <= Fin[j])
-#                 m.addConstr(H[j] >= Debut[j])
-#                 # la personne n a le temps de faire la tache j à la suite de la tache i
-#                 m.addConstr(X[n, i, j] * (H[i]+Duree[i]+temps_trajet[i, j])
-#                             <= H[j])
-#                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
+                # - Effets temporels -
+                # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
+                for k in range(len(Fin[j])):
+                    m.addConstr(H[j]+Duree[j] <= Fin[j][k])
+                    m.addConstr(H[j] >= Debut[j][k])
+                    # la personne n a le temps de faire la tache j à la suite de la tache i
+                    m.addConstr(X[n, i, j] * (H[i]+Duree[i]+temps_trajet[i, j])
+                                <= H[j])
+                # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
 #     # -- Ajout de la fonction objectif.
 #     # Produit terme à terme
