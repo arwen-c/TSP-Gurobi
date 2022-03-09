@@ -17,7 +17,7 @@ def ajout_domicile(TasksDico, EmployeesDico):
     return(TasksEnhanced)
 
 
-def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_trajet):
+def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -46,6 +46,11 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_tra
     # -- Ajout des constraintes --
 
     # Chaque trajet a bien été fait une seule fois
+    # Ancienne contrainte
+    # for i in range(t):
+    #     m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
+    #                     for j in range(t)) == 1)
+    # nouvelle contrainte
     for i in range(t):
         m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
                         for j in range(t)) == 1)
@@ -93,8 +98,14 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_tra
 
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
-    m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
-                       for i in range(t) for j in range(t)), GRB.MINIMIZE)
+    # f1
+    # m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
+    #                    for i in range(t) for j in range(t)), GRB.MINIMIZE)
+    # f2
+    # Il faudra mettre le ntR dans le fichier "code_exe_2"
+    # ntR = len(TasksDico)
+    m.setObjective(sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+                       for i in range(ntR) for j in range(t)), GRB.MAXIMIZE)
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution

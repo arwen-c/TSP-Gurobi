@@ -40,9 +40,12 @@ Debut = vecteurOuvertures(TasksDico)
 # liste des fins d'ouverture des tâches
 Fin = vecteurFermetures(TasksDico)
 
+# ajout du nombre de tâches réelles pour l'opti bi-objectifs
+ntR = len(TasksDico)
+
 # Optimisation gurobi
 solution = optimisation_1(Capacite, nbre_employe,
-                          nbre_taches, tab_distance, Duree, Debut, Fin)
+                          nbre_taches, tab_distance, Duree, Debut, Fin, ntR)
 
 # Création du fichier solution au format txt
 creation_fichier(path, 1, solution[0], solution[1], EmployeesDico)
