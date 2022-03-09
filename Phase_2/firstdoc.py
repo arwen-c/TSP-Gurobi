@@ -22,7 +22,6 @@ def extraction_data(path):
 
     return EmployeesDico, TasksDico
 
-
 # calcule la distance entre deux points dont on connait les coordonnées GPS
 def distance(id1, id2, TasksDico):
     '''entrée : les taskid correspondantes, le dictionnaire de données, sortie : distance en km'''
@@ -54,7 +53,7 @@ def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
                       for item in TasksDico if item['TaskId'] == TaskId)
     employee_level = next(
         item['Level'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
-    if task_level <= employee_level and task_skill == employee_skill:
+    if task_level <= employee_level and task_skill == employee_skill or task_skill == None:
         return 1
     else:
         return 0
@@ -127,9 +126,10 @@ def matriceCompetences(EmployeesDico, TasksDico):
     return C
 
 
-def vecteurOuvertures(TasksDico):
+def vecteurOuvertures(TasksDico, TasksUnavailDico):
     '''Crée un vecteur avec les heures d'ouvertures des tâches'''
     nombre_taches = len(TasksDico)
+    nombre_indispo_taches = len(TasksUnavailDico)
     O = []
     for i in range(nombre_taches):
         heure = TasksDico[i]['OpeningTime']
@@ -138,13 +138,24 @@ def vecteurOuvertures(TasksDico):
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
             h += 12  # modifications pour l'aprem
-        O.append(h*60+m)
+        O.append([h*60+m])
+        for j in range(nombre_indispo_taches):
+            if TasksUnavailDico[j]['TaskId'] == TasksDico[i]['TaskId']: # Si la les indisponibilités concernent bien la tache i
+                heure = TasksUnavailDico[j]['Start']
+                res = heure.split(':')
+                h = int(res[0])  # l'heure
+                m = int(res[1][:1])  # les minutes
+                if res[1][2:] == 'pm':
+                    h += 12  # modifications pour l'aprem
+                O[i].append(h*60+m)
     return O
 
 
-def vecteurFermetures(TasksDico):
+def vecteurFermetures(TasksDico, TasksUnavailDico):
     '''Crée un vecteur avec les heures de fermeture des tâches'''
     nombre_taches = len(TasksDico)
+    nombre_indispo_taches = len(TasksUnavailDico)
+
     F = []
     for i in range(nombre_taches):
         heure = TasksDico[i]['ClosingTime']
@@ -153,7 +164,16 @@ def vecteurFermetures(TasksDico):
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
             h += 12  # modifications pour l'aprem
-        F.append(h*60+m)
+        F.append([h*60+m])
+        for j in range(nombre_indispo_taches):
+            if TasksUnavailDico[j]['TaskId'] == TasksDico[i]['TaskId']: # Si la les indisponibilités concernent bien la tache i
+                heure = TasksUnavailDico[j]['End']
+                res = heure.split(':')
+                h = int(res[0])  # l'heure
+                m = int(res[1][:1])  # les minutes
+                if res[1][2:] == 'pm':
+                    h += 12  # modifications pour l'aprem
+                F[i].append(h*60+m)
     return F
 
 
