@@ -59,6 +59,7 @@ def lecture(filename):
     word = ''
     taches = []
     employes = []
+    start_times = []
     for line in solution_file.readlines()[1:]:
         count = 0
         # print("ligne : {}".format(line))
@@ -66,7 +67,7 @@ def lecture(filename):
             if element == ";":
                 # print(word)
                 count += 1
-                if count == 1:
+                if count == 1:  # si le mot est le numéro de la tâche
                     # print("\n word : {} - tâches : {}".format(word, taches))
                     # print("word : {} - len : {}".format(word, len(word)))
                     if len(word) == 3:
@@ -75,14 +76,16 @@ def lecture(filename):
                         taches += [word[1:4]]
                     else:
                         taches += [word]
-                elif count == 3:
+                elif count == 3:  # si le mot est le nom de l'employee
                     employes = employes + [word]
                     # print("word : {}".format(word))
                     # print("employé : {}".format(employes))
+                elif count == 4:  # si le mot est l'heure de début
+                    start_times = start_times + [word]
                 word = ''
             else:
                 word += element
-    return employes, taches
+    return employes, taches, start_times
 
 
 def extraire_coordonnees(path):
@@ -110,7 +113,27 @@ def vecteur_latitudes(TasksDico):
     return Vecteur_lat
 
 
-def affichage_graphique(longitudes, lattitudes, long_employe, latt_employe, employes, taches, nom_ville):
+# tri de list_to_order par ordre décroissant sur la list_used_for_order
+def order_list(list_to_order, list_used_for_order):
+    if len(list_used_for_order) != len(list_to_order):
+        return "Erreur : les listes à trier ne sont pas de la même dimension"
+    list_used_for_order_2 = list_used_for_order.copy()
+    order = [i for i in range(len(list_used_for_order_2))]
+    i = 0
+    while i < len(list_used_for_order_2) - 1:
+        if list_used_for_order_2[i] > list_used_for_order_2[i+1]:
+            list_used_for_order_2[i], list_used_for_order_2[i +
+                                                            1] = list_used_for_order_2[i+1], list_used_for_order_2[i]
+            order[i], order[i+1] = order[i+1], order[i]
+            i = -1
+        i = i + 1
+
+    list_to_order_2 = [list_to_order[indice] for indice in order]
+
+    return list_to_order_2
+
+
+def affichage_graphique(longitudes, lattitudes, long_employe, latt_employe, employes, taches, start_times, nom_ville):
     employes_unique = []
     for employe in employes:
         if employe not in employes_unique:
@@ -119,14 +142,21 @@ def affichage_graphique(longitudes, lattitudes, long_employe, latt_employe, empl
     my_colors = ["r", "g", "b", "c", "m", "y",
                  "k", "r", "g", "b", "c", "m", "y", "k"]
     for i in range(len(employes_unique)):
-        # longitudes_employe = []
-        # for j in range(len(employes)):
-        #     if employes[j] == employes_unique[i]:
-        #         longitudes_employe.append(longitudes[j])
+
         longitudes_employe = [longitudes[j] for j in range(
             len(employes)) if employes[j] == employes_unique[i]]
         lattitudes_employe = [lattitudes[j] for j in range(
             len(employes)) if employes[j] == employes_unique[i]]
+
+        start_times_employe = [start_times[j] for j in range(
+            len(employes)) if employes[j] == employes_unique[i]]
+
+        # On trie les longitudes/lattitudes des tâches des employés par ordre croissant de début de leurs tâches
+
+        lattitudes_employe = order_list(
+            lattitudes_employe, start_times_employe)
+        longitudes_employe = order_list(
+            longitudes_employe, start_times_employe)
 
         # Attention, ça marche que si les employés ont le même domicile
         longitudes_employe.insert(0, long_employe[0])
@@ -155,15 +185,15 @@ def affichage_graphique(longitudes, lattitudes, long_employe, latt_employe, empl
 
 
 def afficher(nom_ville):
-    path1 = "Instance"+str(nom_ville)+"V1.xlsx"
-    path2 = "Solution"+str(nom_ville)+"V1ByV1.txt"
+    path1 = "Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
+    path2 = "Phase_1/Solutions/Solution"+str(nom_ville)+"V1ByV1.txt"
 
     longitudes, lattitudes, long_employe, latt_employe = extraire_coordonnees(
         path=path1)
-    employes, taches = lecture(path2)
+    employes, taches, start_times = lecture(path2)
 
     affichage_graphique(longitudes, lattitudes, long_employe,
-                        latt_employe, employes, taches, nom_ville)
+                        latt_employe, employes, taches, start_times, nom_ville)
     return None
 
 
