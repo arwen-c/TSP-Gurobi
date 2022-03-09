@@ -162,7 +162,7 @@ def vecteurDurees(TasksDico):
     return Vecteur
 
 
-# Création du fichier solution
+# Focntions création du fichier solution
 
 def nomFichierResolution(nomFichier, nMethode):
     """nomFichier est un string qui correspond au nom du fichier excel.

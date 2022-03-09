@@ -1,6 +1,7 @@
 from cmath import cos
 from math import dist
 from numpy import real
+import time
 
 
 from firstdoc import *
@@ -9,7 +10,6 @@ from opti_1 import ajout_domicile, optimisation_1
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
 path = 'InstancesV1\InstanceFinlandV1.xlsx'
-
 
 # Corps du code
 
@@ -40,9 +40,15 @@ Debut = vecteurOuvertures(TasksDico)
 # liste des fins d'ouverture des tâches
 Fin = vecteurFermetures(TasksDico)
 
+debut = time.time()
+
+
 # Optimisation gurobi
 solution = optimisation_1(Capacite, nbre_employe,
                           nbre_taches, tab_distance, Duree, Debut, Fin)
+
+fin = time.time()
+print(fin - debut)
 
 # Création du fichier solution au format txt
 creation_fichier(path, 1, solution[0], solution[1], EmployeesDico)
