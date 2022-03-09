@@ -9,7 +9,12 @@ from opti_1 import ajout_domicile, optimisation_1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
+<<<<<<< HEAD
 path = 'InstancesV1\InstanceFinlandV1.xlsx'
+=======
+path = 'Phase_1/InstancesV1/InstanceBordeauxV1.xlsx'
+
+>>>>>>> PACh
 
 # Corps du code
 

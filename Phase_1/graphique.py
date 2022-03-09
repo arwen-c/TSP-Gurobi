@@ -155,8 +155,8 @@ def affichage_graphique(longitudes, lattitudes, long_employe, latt_employe, empl
 
 
 def afficher(nom_ville):
-    path1 = "Instance"+str(nom_ville)+"V1.xlsx"
-    path2 = "Solution"+str(nom_ville)+"V1ByV1.txt"
+    path1 = "Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
+    path2 = "Phase_1/Solutions/Solution"+str(nom_ville)+"V1ByV1.txt"
 
     longitudes, lattitudes, long_employe, latt_employe = extraire_coordonnees(
         path=path1)
