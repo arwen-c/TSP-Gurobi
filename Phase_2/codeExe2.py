@@ -1,22 +1,21 @@
-from cmath import cos
-from math import dist
-from numpy import real
+# Import de modules
 import time
 
-
-from usefulFunctions1 import *
-from opti_1 import ajout_domicile, optimisation_1
+# Import des fonctions permettant la résolution
+from usefulFunctions2 import *
+from opti_2 import ajoutTachesFictives, optimisation_1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase_1/InstancesV1/InstanceBordeauxV1.xlsx'
+path = 'Phase_2/InstancesV2/InstanceAustraliaV2.xlsx'
 
 
 # Corps du code
 
 
 # Extraction des données
-EmployeesDico, TasksDico = extraction_data(path)
+EmployeesDico, EmployeesUnavailDico, TasksDico, TasksUnavailDico = extractionData(
+    path)
 
 # Définition de variables
 nbre_taches = len(TasksDico)
@@ -25,10 +24,11 @@ nbre_taches_tot = nbre_taches + 2*nbre_employe
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
-TasksDico = ajout_domicile(TasksDico, EmployeesDico)
+TasksDico = ajoutTachesFictives(
+    TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico)
 
 # Calcul de la matrice des distances Distance
-tab_distance = matrice_distance(TasksDico)
+tab_distance = matriceDistance(TasksDico)
 
 # Création de Capacité, Durée, Début et Fin
 
@@ -37,19 +37,19 @@ Capacite = matriceCompetences(EmployeesDico, TasksDico)
 # liste des durées des tâches
 Duree = vecteurDurees(TasksDico)
 # liste des début d'ouverture des tâches
-Debut = vecteurOuvertures(TasksDico)
+Debut = vecteurOuvertures(TasksDico, TasksUnavailDico)
 # liste des fins d'ouverture des tâches
-Fin = vecteurFermetures(TasksDico)
+Fin = vecteurFermetures(TasksDico, TasksUnavailDico)
 
-debut = time.time()
+debutTemps = time.time()
 
 
 # Optimisation gurobi
 solution = optimisation_1(Capacite, nbre_employe,
                           nbre_taches, tab_distance, Duree, Debut, Fin)
 
-fin = time.time()
-print(fin - debut)
+finTemps = time.time()
+print(finTemps - debutTemps)
 
 # Création du fichier solution au format txt
-creation_fichier(path, 1, solution[0], solution[1], EmployeesDico)
+creationFichier(path, 1, solution[0], solution[1], EmployeesDico)

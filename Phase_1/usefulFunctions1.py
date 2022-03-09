@@ -1,19 +1,21 @@
-from cmath import cos
-from math import dist
+# Import de modules
 import numpy as np
 import pandas as pd
 import math
 
-# extraction des données des fichiers exceln, transformation en dictionnaires
+
+# Fonction récupération des données issues des excel
 
 
-def extraction_data(path):
-    """Permet dextraction des données."""
+def extractionData(path):
+    """Permet l'extraction des données depuis un fichier excel.
+    path est une chaîne de caratères correspondant à l'emplacement relatif du fichier.
+    Renvoie les différents dictionnaires permettant un traitement des données avec python."""
     xls = pd.ExcelFile(path)
     df1 = pd.read_excel(xls, 'Employees')
     df2 = pd.read_excel(xls, 'Tasks')
 
-    # Deuxième mission : créer des dictionnaires de données
+    # Création des dictionnaires de données
     EmployeesDico = df1.to_dict('records')
     TasksDico = df2.to_dict('records')
 
@@ -39,11 +41,6 @@ def distance(id1, id2, TasksDico):
     delta_latt = lat2-lat1
     distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
     return distance
-
-
-def temps_trajet(id1, id2):
-    '''Calcul du temps de trajet entre deux tâches, en minutes'''
-    return distance(id1, id2)*60/50
 
 
 def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
@@ -72,10 +69,6 @@ def matrice_distance(dic_taches):
             ligne.append(distance(task_id_1, task_id_2, dic_taches))
         matrice_des_distances.append(ligne)
     return matrice_des_distances
-
-
-def matrice_temps_de_trajet(D):  # prend en entré un tableau des distances D
-    return D/(50/60)  # il se déplace à 50km/h donc 50/60 km/min
 
 
 def matriceCompetences(EmployeesDico, TasksDico):

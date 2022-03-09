@@ -1,13 +1,10 @@
-from cmath import cos
-from math import dist
+# Import de modules
 import numpy as np
 import pandas as pd
 import math
 
-# from Phase_1.code_exe_1 import TasksDico
 
 # Fonction récupération des données issues des excel
-
 
 def extractionData(path):
     """Permet l'extraction des données depuis un fichier excel.
