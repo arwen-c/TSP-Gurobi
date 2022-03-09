@@ -1,8 +1,11 @@
+
+from asyncio import Task
 from cmath import cos
 from math import dist
 import numpy as np
 import pandas as pd
 import math
+import requests, json 
 
 # extraction des données des fichiers exceln, transformation en dictionnaires
 
@@ -41,11 +44,6 @@ def distance(id1, id2, TasksDico):
     return distance
 
 
-def temps_trajet(id1, id2):
-    '''Calcul du temps de trajet entre deux tâches, en minutes'''
-    return distance(id1, id2)*60/50
-
-
 def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
     '''Retourne 1 si l'employé a le bon skill et un niveau suffisant pour effectuer la tâche, 0 sinon'''
     task_skill = next(item['Skill']
@@ -74,8 +72,47 @@ def matrice_distance(dic_taches):
     return matrice_des_distances
 
 
-def matrice_temps_de_trajet(D):  # prend en entré un tableau des distances D
-    return D/(50/60)  # il se déplace à 50km/h donc 50/60 km/min
+########## TEMPS DE TRAJET EXACTS ######################
+
+def get_long_lat(TasksDico):
+    Coord = []
+    for task in TasksDico:
+        Coord.append((task['Latitude'],task['Longitude']))
+    return Coord
+    
+
+def Tab_dist_reel(TasksDico):
+    Coord = get_long_lat(TasksDico)
+    source = []
+    dest = []
+    n = len(TasksDico)
+    for i in range (n):
+        source.append(str(Coord[i])[1:-1])
+        dest.append(str(Coord[i])[1:-1])
+    
+    api_key = 'AIzaSyBpTuIRxdkXcbhQ8LS6sGNDPGR4Shr0xFs'
+
+    url ='https://maps.googleapis.com/maps/api/distancematrix/json?'
+    
+    mat_temps_traj = np.zeros((n,n))
+
+    for i in range(n):
+        for j in range(n):
+
+            r = requests.get(url + 'origins=' + source[i] +
+                            '&destinations=' + dest[j] +
+                            '&key=' + api_key) 
+                                
+            x = r.json() 
+
+            if x["rows"][0]["elements"][0]["status"] != 'ZERO_RESULTS':
+                mat_temps_traj[i,j] = x["rows"][0]["elements"][0]["duration"]["value"]/60
+            else :
+                mat_temps_traj[i,j] = None
+
+    return mat_temps_traj
+
+##################################################
 
 
 def matriceCompetences(EmployeesDico, TasksDico):
