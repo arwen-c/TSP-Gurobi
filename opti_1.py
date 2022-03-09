@@ -17,7 +17,7 @@ def ajout_domicile(TasksDico, EmployeesDico):
     return(TasksEnhanced)
 
 
-def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
+def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_trajet):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -77,13 +77,13 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
                 m.addConstr(H[j]+Duree[j] <= Fin[j])
                 m.addConstr(H[j] >= Debut[j])
                 # la personne n a le temps de faire la tache j à la suite de la tache i
-                m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.83333)
+                m.addConstr(X[n, i, j] * (H[i]+Duree[i]+temps_trajet[i, j])
                             <= H[j])
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
-    m.setObjective(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+    m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
                        for i in range(t) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle
