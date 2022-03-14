@@ -33,7 +33,7 @@ def distance(id1, id2, TasksDico):
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
-    while not (foundId1 and foundId2):
+    while not (foundId1 and foundId2) and index < len(TasksDico):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
             long1 = TasksDico[index]['Longitude']
@@ -43,9 +43,12 @@ def distance(id1, id2, TasksDico):
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
-    deltaLong = long2-long1  # calcule de la différence de longitude
-    deltaLatt = lat2-lat1
-    distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
+    if long1 is None or long2 is None:
+        distance = 0
+    else:
+        delta_long = long2-long1  # calcule de la différence de longitude
+        delta_latt = lat2-lat1
+        distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
     return distance
 
 

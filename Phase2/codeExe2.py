@@ -7,7 +7,7 @@ from opti2 import ajoutTachesFictives, optimisation2
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase_2/InstancesV2/InstanceAustraliaV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceAustraliaV2.xlsx'
 
 
 # Corps du code
