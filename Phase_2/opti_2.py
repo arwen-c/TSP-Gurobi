@@ -1,13 +1,16 @@
-import time
-from gurobipy import *
-import numpy as np
 # Importations de module
+import numpy as np
+from gurobipy import *
+import time
+from firstdoc import matrice_distance
+from usefulFunctions2 import *
+
 
 
 def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
 
     # (rechercher ajout_domicile dans tous les docs pour modifier par ajout_taches_fictives)
-    ### AJOUTS DOMICILES ###
+    ### AJOUTS DOMICILES ### 
     """Modification des données pour insérer des tâches factices de départ et de retour au dépot ou domicile."""
     TasksEnhanced = TasksDico.copy()
     for row in EmployeesDico:
@@ -18,22 +21,17 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUna
         # ajout de l'arrivée au domicile
         TasksEnhanced.append({'TaskId': 'Arrivee'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
                               'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
-
+    
     ### AJOUTS INDISPONIBILITES EMPLOYES ###
     for row in EmployeesUnavailDico:
 
-        debut = int(row['Start'][:-6])*60 + int(row['Start'][-4:-2])
-        fin = int(row['End'][:-6])*60 + int(row['End'][-4:-2])
-        if debut[-2:] == "pm":
-            debut += 12*60
-        if fin[-2:] == "pm":
-            fin += 12*60
-
+        debut = recuperationHeure(row["Start"])
+        fin = recuperationHeure(row["End"])
+            
         TasksEnhanced.append({'TaskId': 'Unavail' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
                               'TaskDuration': fin-debut, 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
-
+      
     return(TasksEnhanced)
-
 
 def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, temps_trajet, EmployeesDico, TasksEnhanced):
     """Variables dont on hérite des programmes précédents :
@@ -81,13 +79,14 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
     for n in range(nbre_employe):
         NomEmploye = EmployeesDico[n]['EmployeeName']
         for i_unavail in range(nbreIndispoEmploye):
-            # Il faut que ce soit le bon employé qui fasse la pause
+             # Il faut que ce soit le bon employé qui fasse la pause
             if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                                for i in range(nbre_taches)) == 1)  # arrivé à la pause
-            else:  # Un autre ne peux pas piquer la pause d'un autre
+                            for i in range(nbre_taches)) == 1) # arrivé à la pause
+            else : # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                                for i in range(nbre_taches)) == 0)  # arrivé à la pause
+                            for i in range(nbre_taches)) == 0) # arrivé à la pause
+
 
     # Effets de bord
     for n in range(nbre_employe):
@@ -133,3 +132,19 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
 
     # -- Affichage des solutions --
     return X.x, H.x, m.objVal
+
+
+EmployeesDico, EmployeesUnavailDico, TasksDico, TasksUnavailDico = extractionData("InstancesV2/InstanceBordeauxV2.xlsx")
+C = matriceCompetences(EmployeesDico, TasksDico)
+nbre_employe = len(EmployeesDico)
+nbre_taches = len(TasksDico)
+nbreIndispoEmploye = len(EmployeesUnavailDico)
+Duree = vecteurDurees(TasksDico)
+D = matrice_distance(TasksDico)
+Debut = vecteurOuvertures(TasksDico, TasksUnavailDico)
+Fin = vecteurFermetures(TasksDico, TasksUnavailDico)
+
+temps_trajet = np.array(D)/0.88
+TasksEnhanced = ajoutTachesFictives(TasksDico,EmployeesDico,EmployeesUnavailDico,TasksUnavailDico)
+
+print(optimisation_1(C,nbre_employe,nbre_taches,nbreIndispoEmploye,D,Duree,Debut,Fin,temps_trajet,EmployeesDico,TasksEnhanced))
