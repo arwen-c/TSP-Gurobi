@@ -17,7 +17,7 @@ path = 'Phase2/InstancesV2/InstanceAustraliaV2.xlsx'
 EmployeesDico, EmployeesUnavailDico, TasksDico, TasksUnavailDico = extractionData(
     path)
 
-# Définition de variables
+# Définition des nombres de tâches réelles
 nbre_taches = len(TasksDico)
 nbre_employe = len(EmployeesDico)
 nbreIndispoEmploye = len(EmployeesUnavailDico)
