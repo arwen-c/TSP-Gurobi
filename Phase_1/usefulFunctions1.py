@@ -1,62 +1,65 @@
-from cmath import cos
-from math import dist
+# Import de modules
 import numpy as np
 import pandas as pd
 import math
 
-# extraction des données des fichiers exceln, transformation en dictionnaires
+
+# Fonction récupération des données issues des excel
 
 
-def extraction_data(path):
-    """Permet dextraction des données."""
+def extractionData(path):
+    """Permet l'extraction des données depuis un fichier excel.
+    path est une chaîne de caratères correspondant à l'emplacement relatif du fichier.
+    Renvoie les différents dictionnaires permettant un traitement des données avec python."""
     xls = pd.ExcelFile(path)
     df1 = pd.read_excel(xls, 'Employees')
     df2 = pd.read_excel(xls, 'Tasks')
 
-    # Deuxième mission : créer des dictionnaires de données
+    # Création des dictionnaires de données
     EmployeesDico = df1.to_dict('records')
     TasksDico = df2.to_dict('records')
 
     return EmployeesDico, TasksDico
 
 
-# calcule la distance entre deux points dont on connait les coordonnées GPS
+# Fonctions utiles pour créer les matrices de données utiles
+
 def distance(id1, id2, TasksDico):
-    '''entrée : les taskid correspondantes, le dictionnaire de données, sortie : distance en km'''
-    foundid1, foundid2 = False, False
+    """Calcule la distance entre deux points dont on connait les coordonnées GPS.
+    Entrée : les taskid correspondantes et le dictionnaire de données.
+    Sortie : distance en km."""
+    foundId1, foundId2 = False, False
     index = 0
-    while not (foundid1 and foundid2):
+    while not (foundId1 and foundId2):
         if TasksDico[index]['TaskId'] == id1:
-            foundid1 = True
+            foundId1 = True
             long1 = TasksDico[index]['Longitude']
             lat1 = TasksDico[index]['Latitude']
         if TasksDico[index]['TaskId'] == id2:
-            foundid2 = True
+            foundId2 = True
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
-    delta_long = long2-long1  # calcule de la différence de longitude
-    delta_latt = lat2-lat1
-    distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+    deltaLong = long2-long1  # calcule de la différence de longitude
+    deltaLatt = lat2-lat1
+    distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
     return distance
 
 
-def temps_trajet(id1, id2):
-    '''Calcul du temps de trajet entre deux tâches, en minutes'''
-    return distance(id1, id2)*60/50
-
-
 def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
-    '''Retourne 1 si l'employé a le bon skill et un niveau suffisant pour effectuer la tâche, 0 sinon'''
-    task_skill = next(item['Skill']
-                      for item in TasksDico if item['TaskId'] == TaskId)
-    employee_skill = next(
+    """EmployeeName est une chaîne de caractères correspondant au nom d'un employé.
+    TaskId est l'identifiant d'une tâche.
+    TasksDico et EmployeesDico sont les dictionnaires contenant les informations respectives sur les tâches et les employés.
+    Retourne 1 si l'employé a la bonne compétence et un niveau suffisant pour effectuer la tâche, 0 sinon."""
+    taskSkill = next(item['Skill']
+                     for item in TasksDico if item['TaskId'] == TaskId)
+    employeeSkill = next(
         item['Skill'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
-    task_level = next(item['Level']
-                      for item in TasksDico if item['TaskId'] == TaskId)
-    employee_level = next(
+    taskLevel = next(item['Level']
+                     for item in TasksDico if item['TaskId'] == TaskId)
+    employeeLevel = next(
         item['Level'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
-    if task_level <= employee_level and task_skill == employee_skill:
+    if taskLevel <= employeeLevel and taskSkill == employeeSkill:
         return 1
     else:
         return 0
@@ -72,10 +75,6 @@ def matrice_distance(dic_taches):
             ligne.append(distance(task_id_1, task_id_2, dic_taches))
         matrice_des_distances.append(ligne)
     return matrice_des_distances
-
-
-def matrice_temps_de_trajet(D):  # prend en entré un tableau des distances D
-    return D/(50/60)  # il se déplace à 50km/h donc 50/60 km/min
 
 
 def matriceCompetences(EmployeesDico, TasksDico):

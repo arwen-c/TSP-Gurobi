@@ -1,7 +1,7 @@
-# Importations de module
-import numpy as np
-from gurobipy import *
 import time
+from gurobipy import *
+import numpy as np
+# Importations de module
 
 
 def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
