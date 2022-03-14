@@ -2,6 +2,8 @@
 import numpy as np
 import pandas as pd
 import math
+import openpyxl
+from guppy import hpy
 
 
 # Fonction récupération des données issues des excel
@@ -178,3 +180,29 @@ def creation_fichier(nom_fichier, n_methode, X, h, EmployeesDico):
     file.write("\n".join(solution_fichier_txt(X, h, EmployeesDico)))
     file.close()
     return None
+
+def performances1 (tpsExec, tailleEntree, tailleMemoire):
+    #Ecriture des critères de performance dans un excel
+    my_path = ".\performance1.xlsx"
+    my_wb = openpyxl.load_workbook(my_path)
+    my_sheet = my_wb.active
+    #on cherche à partir de quelle ligne écrire (écriture à la suite)
+    i=0
+    cell=my_sheet.cell(row = i, column = 1)
+    while cell.value !=None:
+        i+=1
+    #on ajoute les valeurs de performance obtenue du code
+    cell.value =tpsExec #temps d'execution en première colonne
+    cell=my_sheet.cell(row = i, column = 2)
+    cell.value =tailleEntree #taille des instances d'entrée en deuxième colonne
+    cell=my_sheet.cell(row = i, column = 3)
+    cell.value =tailleMemoire #taille de la mémoire occupée par le programme en troisième colonne
+    cell=my_sheet.cell(row = i, column = 6)
+    cell.value =phase #type de phase ayant conduit à la valeur donnée (phase 1 ou 2)
+    #on calcule àpartir de ces valeurs de nouveaux indicateurs
+    cell=my_sheet.cell(row = i, column = 4)
+    cell.value =tpsExec/tailleEntree
+    cell=my_sheet.cell(row = i, column = 5)
+    cell.value =tailleMemoire/tailleEntree
+    #on enregistre les données au sein de l'excel
+    my_wb.save(".\performance1.xlsx")
