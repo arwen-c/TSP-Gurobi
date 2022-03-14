@@ -106,7 +106,11 @@ def recuperationHeure(heure):
     h = int(res[0])  # l'heure
     m = int(res[1][:2])  # les minutes
     if res[1][2:] == 'pm':
-        h += 12  # modifications pour l'aprem
+        if res[0] != 12:
+            h += 12  # modifications pour l'aprem
+    else:
+        if res[0] == 12:
+            h = 0
     return h*60+m
 
 
