@@ -20,7 +20,6 @@ EmployeesDico, EmployeesUnavailDico, TasksDico, TasksUnavailDico = extractionDat
 # Définition de variables
 nbre_taches = len(TasksDico)
 nbre_employe = len(EmployeesDico)
-nbre_taches_tot = nbre_taches + 2*nbre_employe
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
