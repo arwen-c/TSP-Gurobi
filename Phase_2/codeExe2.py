@@ -45,8 +45,13 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
+ntR = len(TasksDico)
+borne = math.inf
 solution = optimisation_1(Capacite, nbre_employe,
-                          nbre_taches, tab_distance, Duree, Debut, Fin)
+                          nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne)
+
+print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
+    solution[2], solution[3]))
 
 finTemps = time.time()
 print(finTemps - debutTemps)

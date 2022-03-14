@@ -6,11 +6,10 @@ from firstdoc import matrice_distance
 from usefulFunctions2 import recuperationHeure
 
 
-
 def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
-    
+
     # (rechercher ajout_domicile dans tous les docs pour modifier par ajout_taches_fictives)
-    ### AJOUTS DOMICILES ### 
+    ### AJOUTS DOMICILES ###
     """Modification des données pour insérer des tâches factices de départ et de retour au dépot ou domicile."""
     TasksEnhanced = TasksDico.copy()
     for row in EmployeesDico:
@@ -21,19 +20,20 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUna
         # ajout de l'arrivée au domicile
         TasksEnhanced.append({'TaskId': 'Arrivee'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
                               'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
-    
+
     ### AJOUTS INDISPONIBILITES EMPLOYES ###
     for row in EmployeesUnavailDico:
 
         debut = recuperationHeure(row["Start"])
         fin = recuperationHeure(row["End"])
-            
+
         TasksEnhanced.append({'TaskId': 'Unavail' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
                               'TaskDuration': fin-debut, 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
-      
+
     return(TasksEnhanced)
 
-def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, temps_trajet, EmployeesDico, TasksEnhanced):
+
+def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, ntR, temps_trajet, EmployeesDico, TasksEnhanced, borne):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -79,14 +79,13 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
     for n in range(nbre_employe):
         NomEmploye = EmployeesDico[n]['EmployeeName']
         for i_unavail in range(nbreIndispoEmploye):
-             # Il faut que ce soit le bon employé qui fasse la pause
+            # Il faut que ce soit le bon employé qui fasse la pause
             if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                            for i in range(nbre_taches)) == 1) # arrivé à la pause
-            else : # Un autre ne peux pas piquer la pause d'un autre
+                                for i in range(nbre_taches)) == 1)  # arrivé à la pause
+            else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                            for i in range(nbre_taches)) == 0) # arrivé à la pause
-
+                                for i in range(nbre_taches)) == 0)  # arrivé à la pause
 
     # Effets de bord
     for n in range(nbre_employe):
@@ -123,13 +122,22 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
     #                    for i in range(t) for j in range(t)), GRB.MINIMIZE)
     # f2
     # Il faudra mettre le ntR dans le fichier "code_exe_2"
-    ntR = len(TasksDico)
+    # ntR = len(TasksDico)
+    m.addConstr(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+                    for i in range(t) for j in range(t)) <= borne)
     m.setObjective(sum(-X[n, i, j]*Duree[i] for n in range(nbre_employe)
                        for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
 
-    # -- Affichage des solutions --
-    return X.x, H.x, m.objVal
+    # Calcul de la valeur de l'autre fonction objectif
+    valeur = 0
+    nbre, x, y = X.x.shape
+    for n in range(nbre):
+        for i in range(x):
+            for j in range(y):
+                valeur += X.x[n, i, j]*D[i, j]
 
+    # -- Affichage des solutions --
+    return X.x, H.x, m.objVal, valeur
