@@ -1,13 +1,10 @@
-from cmath import cos
-from math import dist
+# Import de modules
 import numpy as np
 import pandas as pd
 import math
 
-# from Phase_1.code_exe_1 import TasksDico
 
 # Fonction récupération des données issues des excel
-
 
 def extractionData(path):
     """Permet l'extraction des données depuis un fichier excel.
@@ -109,7 +106,11 @@ def recuperationHeure(heure):
     h = int(res[0])  # l'heure
     m = int(res[1][:2])  # les minutes
     if res[1][2:] == 'pm':
-        h += 12  # modifications pour l'aprem
+        if res[0] != 12:
+            h += 12  # modifications pour l'aprem
+    else:
+        if res[0] == 12:
+            h = 0
     return h*60+m
 
 
