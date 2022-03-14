@@ -79,7 +79,6 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_tra
                 m.addConstr(H[j]+Duree[j] <= Fin[j])
                 m.addConstr(H[j] >= Debut[j])
                 # la personne n a le temps de faire la tache j à la suite de la tache i
-<<<<<<< HEAD:Phase_1/opti_1.py
                 # m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.83333)
                 #             <= H[j])
                 m.addConstr(H[i]+X[n, i, j]*(Duree[i]+D[i, j] /
@@ -90,10 +89,6 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_tra
                 # m.addConstr(Y[n, i, j] >= H[i]-M*(1-X[n, i, j]))
                 # m.addConstr(
                 #     Y[n, i, j] + X[n, i, j] * (Duree[i]+D[i, j]/0.83333) <= H[j])
-=======
-                m.addConstr(X[n, i, j] * (H[i]+Duree[i]+temps_trajet[i, j])
-                            <= H[j])
->>>>>>> origin/PACh:opti_1.py
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
     # -- Ajout de la fonction objectif.
