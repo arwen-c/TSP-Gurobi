@@ -184,18 +184,18 @@ def lignesSolution(X, h, TasksDico, EmployeesDico):
     nombreTaches = len(TasksDico)
     for i in range(nombreTaches):
         j = 0
-        tache_i_ajoutee = False
-        while j < y and not(tache_i_ajoutee):
-            numero_employe = 0
-            while numero_employe < n and not(tache_i_ajoutee):
-                if X[numero_employe, i, j] == 1:
-                    employeeName = EmployeesDico[numero_employe]['EmployeeName']
+        tacheiAjoutee = False
+        while j < y and not(tacheiAjoutee):
+            numeroEmploye = 0
+            while numeroEmploye < n and not(tacheiAjoutee):
+                if X[numeroEmploye, i, j] == 1:
+                    employeeName = EmployeesDico[numeroEmploye]['EmployeeName']
                     listeDesLignes.append(
                         'T' + str(i+1) + ';' + '1' + ';' + str(employeeName) + ';' + str(round(h[i])) + ';')
-                    tache_i_ajoutee = True
-                numero_employe = numero_employe + 1
+                    tacheiAjoutee = True
+                numeroEmploye = numeroEmploye + 1
             j = j + 1
-        if not(tache_i_ajoutee):
+        if not(tacheiAjoutee):
             listeDesLignes.append(
                 'T' + str(i+1) + ';' + '0' + ';' + ';' + ';')
     return listeDesLignes
@@ -206,7 +206,7 @@ def creationFichier(nomFichier, nMethode, X, h, TasksDico, EmployeesDico):
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
-    file = open(nomFichierResolution(nomFichier, nMethode), "w")
-    file.write("\n".join(lignesSolution(X, h, TasksDico, EmployeesDico)))
-    file.close()
+    fichier = open(nomFichierResolution(nomFichier, nMethode), "w")
+    fichier.write("\n".join(lignesSolution(X, h, TasksDico, EmployeesDico)))
+    fichier.close()
     return None
