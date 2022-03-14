@@ -33,8 +33,8 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
                          nbre_taches+2*nbre_employe),  vtype=GRB.BINARY)
-    Y = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
-                         nbre_taches+2*nbre_employe),  vtype=GRB.CONTINUOUS, lb=0)
+    # Y = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
+    #                      nbre_taches+2*nbre_employe),  vtype=GRB.CONTINUOUS, lb=0)
 
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
