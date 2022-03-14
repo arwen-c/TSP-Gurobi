@@ -32,7 +32,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUna
     return(TasksEnhanced)
 
 
-def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, ntR, EmployeesDico, TasksEnhanced, borne):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -125,7 +125,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     m.addConstr(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
                     for i in range(t) for j in range(t)) <= borne)
     m.setObjective(sum(-X[n, i, j]*Duree[i] for n in range(nbre_employe)
-                       for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
+                       for i in range(nbre_taches) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
