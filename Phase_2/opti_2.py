@@ -2,8 +2,7 @@
 import numpy as np
 from gurobipy import *
 import time
-from firstdoc import matrice_distance
-from usefulFunctions2 import recuperationHeure
+from usefulFunctions2 import recuperationHeure, matriceDistance
 
 
 def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):

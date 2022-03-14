@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import math
-
+from math import sin, cos, acos, pi
 
 # Fonction récupération des données issues des excel
 
@@ -27,6 +27,22 @@ def extractionData(path):
 
 # Fonctions utiles pour créer les matrices de données utiles
 
+def deg2rad(dd):
+    """Convertit un angle "degrés décimaux" en "radians"
+    """
+    return dd/180*math.pi
+
+def distanceGPS(latA, longA, latB, longB):
+    """Retourne la distance en mètres entre les 2 points A et B connus grâce à
+       leurs coordonnées GPS (en radians).
+    """
+    # Rayon de la terre en mètres (sphère IAG-GRS80)
+    RT = 6378137
+    # angle en radians entre les 2 points
+    S = acos(sin(latA)*sin(latB) + cos(latA)*cos(latB)*cos(abs(longB-longA)))
+    # distance entre les 2 points, comptée sur un arc de grand cercle
+    return S*RT
+
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
@@ -36,16 +52,16 @@ def distance(id1, id2, TasksDico):
     while not (foundId1 and foundId2):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
-            long1 = TasksDico[index]['Longitude']
-            lat1 = TasksDico[index]['Latitude']
+            long1 = deg2rad(TasksDico[index]['Longitude'])
+            lat1 = deg2rad(TasksDico[index]['Latitude'])
         if TasksDico[index]['TaskId'] == id2:
             foundId2 = True
-            long2 = TasksDico[index]['Longitude']
-            lat2 = TasksDico[index]['Latitude']
+            long2 = deg2rad(TasksDico[index]['Longitude'])
+            lat2 = deg2rad(TasksDico[index]['Latitude'])
         index += 1
-    deltaLong = long2-long1  # calcule de la différence de longitude
-    deltaLatt = lat2-lat1
-    distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
+
+    #distance d'arc entre deux points
+    distance = distanceGPS(lat1,lat2,long1,long2)/1000
     return distance
 
 
@@ -82,6 +98,8 @@ def matriceDistance(TasksDico):
             ligne.append(distance(taskId1, taskId2, TasksDico))
         matriceDesDistances.append(ligne)
     return matriceDesDistances
+
+print(matriceDistance(extractionData("InstancesV2/InstanceBordeauxV2.xlsx")[2]))
 
 
 def matriceCompetences(EmployeesDico, TasksDico):
