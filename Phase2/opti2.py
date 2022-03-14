@@ -1,6 +1,8 @@
-# Import de modules
+# Importations de module
 import numpy as np
 from gurobipy import *
+import time
+from usefulFunctions2 import recuperationHeure
 
 
 def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
@@ -20,13 +22,17 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUna
 
     ### AJOUTS INDISPONIBILITES EMPLOYES ###
     for row in EmployeesUnavailDico:
+
+        debut = recuperationHeure(row["Start"])
+        fin = recuperationHeure(row["End"])
+
         TasksEnhanced.append({'TaskId': 'Unavail' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
-                              'TaskDuration': row['End']-row['Start'], 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
+                              'TaskDuration': fin-debut, 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
 
     return(TasksEnhanced)
 
 
-def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, temps_trajet, EmployeesDico, TasksEnhanced):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, ntR, EmployeesDico, TasksEnhanced, borne):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -52,16 +58,21 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
     # -- Ajout des constraintes --
 
-#     # Chaque trajet a bien été fait une seule fois
-#     for i in range(t):
-#         m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
-#                         for j in range(t)) == 1)
+    # Chaque trajet a bien été fait une seule fois
+    # Ancienne contrainte
+    # for i in range(t):
+    #     m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
+    #                     for j in range(t)) == 1)
+    # nouvelle contrainte
+    for i in range(t):
+        m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
+                        for j in range(t)) <= 1)
 
-#     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
-#     for n in range(nbre_employe):
-#         for j in range(nbre_taches):
-#             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
-#                 X[n, i, j] for i in range(t)))
+    # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
+    for n in range(nbre_employe):
+        for j in range(nbre_taches):
+            m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
+                X[n, i, j] for i in range(t)))
 
     # Les employés font bien leur pauses :
     for n in range(nbre_employe):
@@ -75,41 +86,57 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 0)  # arrivé à la pause
 
+    # Effets de bord
+    for n in range(nbre_employe):
+        m.addConstr(sum(X[n, nbre_taches+n, j]
+                        for j in range(nbre_taches)) == 1)  # départ du dépôt
+        m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
+                        for i in range(nbre_taches)) == 1)  # arrivée au dépôt
 
-#     # Effets de bord
-#     for n in range(nbre_employe):
-#         m.addConstr(sum(X[n, nbre_taches+n, j]
-#                         for j in range(nbre_taches)) == 1)  # départ du dépôt
-#         m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
-#                         for i in range(nbre_taches)) == 1)  # arrivée au dépôt
+    # Contraintes incluants une somme
+    for i in range(t):  # Tâches réelles + Tâches fictives
+        for j in range(t):
+            for n in range(nbre_employe):
+                # l'employé doit être capable d'effectuer les 2 tâches
+                m.addConstr(X[n, i, j] <= C[n, i])
+                m.addConstr(X[n, i, j] <= C[n, j])
 
-#     # Contraintes incluants une somme
-#     for i in range(t):  # Tâches réelles + Tâches fictives
-#         for j in range(t):
-#             for n in range(nbre_employe):
-#                 # l'employé doit être capable d'effectuer les 2 tâches
-#                 m.addConstr(X[n, i, j] <= C[n, i])
-#                 m.addConstr(X[n, i, j] <= C[n, j])
+                # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
+                m.addConstr(X[n, i, i] == 0)
 
-#                 # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
-#                 m.addConstr(X[n, i, i] == 0)
+                # - Effets temporels -
+                # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
+                for k in range(len(Fin[j])):
+                    m.addConstr(H[j]+Duree[j] <= Fin[j][k])
+                    m.addConstr(H[j] >= Debut[j][k])
+                    # la personne n a le temps de faire la tache j à la suite de la tache i
+                    m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.833)
+                                <= H[j])
+                # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
-#                 # - Effets temporels -
-#                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
-#                 m.addConstr(H[j]+Duree[j] <= Fin[j])
-#                 m.addConstr(H[j] >= Debut[j])
-#                 # la personne n a le temps de faire la tache j à la suite de la tache i
-#                 m.addConstr(X[n, i, j] * (H[i]+Duree[i]+temps_trajet[i, j])
-#                             <= H[j])
-#                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
+    # -- Ajout de la fonction objectif.
+    # Produit terme à terme
+    # f1
+    # m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
+    #                    for i in range(t) for j in range(t)), GRB.MINIMIZE)
+    # f2
+    # Il faudra mettre le ntR dans le fichier "code_exe_2"
+    # ntR = len(TasksDico)
+    m.addConstr(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+                    for i in range(t) for j in range(t)) <= borne)
+    m.setObjective(sum(-X[n, i, j]*Duree[i] for n in range(nbre_employe)
+                       for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
 
-#     # -- Ajout de la fonction objectif.
-#     # Produit terme à terme
-#     m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
-#                        for i in range(t) for j in range(t)), GRB.MINIMIZE)
+    m.update()  # Mise à jour du modèle
+    m.optimize()  # Résolution
 
-#     m.update()  # Mise à jour du modèle
-#     m.optimize()  # Résolution
+    # Calcul de la valeur de l'autre fonction objectif
+    valeur = 0
+    nbre, x, y = X.x.shape
+    for n in range(nbre):
+        for i in range(x):
+            for j in range(y):
+                valeur += X.x[n, i, j]*D[i, j]
 
-#     # -- Affichage des solutions --
-#     return X.x, H.x, m.objVal
+    # -- Affichage des solutions --
+    return X.x, H.x, m.objVal, valeur
