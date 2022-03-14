@@ -21,11 +21,14 @@ def extraction_data(path):
 
 
 # calcule la distance entre deux points dont on connait les coordonnées GPS
+
+
+# Gestion de la localisation -- modif de la fonction distance
 def distance(id1, id2, TasksDico):
     '''entrée : les taskid correspondantes, le dictionnaire de données, sortie : distance en km'''
     foundid1, foundid2 = False, False
     index = 0
-    while not (foundid1 and foundid2):
+    while not (foundid1 and foundid2) and index<len(TasksDico):
         if TasksDico[index]['TaskId'] == id1:
             foundid1 = True
             long1 = TasksDico[index]['Longitude']
@@ -35,10 +38,32 @@ def distance(id1, id2, TasksDico):
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
-    delta_long = long2-long1  # calcule de la différence de longitude
-    delta_latt = lat2-lat1
-    distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+    if long1 is None or long2 is None:
+        distance = 0
+    else :
+        delta_long = long2-long1  # calcule de la différence de longitude
+        delta_latt = lat2-lat1
+        distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
     return distance
+
+# def distance(id1, id2, TasksDico):
+#     '''entrée : les taskid correspondantes, le dictionnaire de données, sortie : distance en km'''
+#     foundid1, foundid2 = False, False
+#     index = 0
+#     while not (foundid1 and foundid2):
+#         if TasksDico[index]['TaskId'] == id1:
+#             foundid1 = True
+#             long1 = TasksDico[index]['Longitude']
+#             lat1 = TasksDico[index]['Latitude']
+#         if TasksDico[index]['TaskId'] == id2:
+#             foundid2 = True
+#             long2 = TasksDico[index]['Longitude']
+#             lat2 = TasksDico[index]['Latitude']
+#         index += 1
+#     delta_long = long2-long1  # calcule de la différence de longitude
+#     delta_latt = lat2-lat1
+#     distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+#     return distance
 
 
 def temps_trajet(id1, id2):
@@ -100,7 +125,10 @@ def vecteurOuvertures(TasksDico):
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
-            h += 12  # modifications pour l'aprem
+            if res[0]!=12:
+                h += 12  # modifications pour l'aprem
+        else :
+            if res[0]==12 : h=0
         O.append(h*60+m)
     return O
 
@@ -115,7 +143,10 @@ def vecteurFermetures(TasksDico):
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
-            h += 12  # modifications pour l'aprem
+            if res[0]!=12:
+                h += 12  # modifications pour l'aprem
+        else :
+            if res[0]==12 : h=0
         F.append(h*60+m)
     return F
 

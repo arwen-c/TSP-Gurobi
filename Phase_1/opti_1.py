@@ -16,6 +16,14 @@ def ajout_domicile(TasksDico, EmployeesDico):
                               'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
     return(TasksEnhanced)
 
+def pauseDej(TasksDico, EmployeesDico):
+    """entrée : les dictionnaires de tâches totales et les dicos employes, sortie : le dictionnaire """
+    TasksEnhanced = TasksDico.copy()
+    for row in EmployeesDico:
+        # ajout d'une tâche d'une heure, sans lieu, entre midi et deux
+        TasksEnhanced.append({'TaskId': 'Dejeuner' + row['EmployeeName'], 'Latitude': None,    'Longitude': None,
+                              'TaskDuration': 60, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime':'12:00pm', 'ClosingTime': '14:00pm'})
+    return(TasksEnhanced)
 
 def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
     """Variables dont on hérite des programmes précédents :
@@ -47,8 +55,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
 
     # Chaque trajet a bien été fait une seule fois
     for i in range(t):
-        m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
-                        for j in range(t)) == 1)
+        m.addConstr(sum(X[n, i, j] for n in range(nbre_employe) for j in range(t)) == 1)
 
     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
     for n in range(nbre_employe):
@@ -90,6 +97,19 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
                 # m.addConstr(
                 #     Y[n, i, j] + X[n, i, j] * (Duree[i]+D[i, j]/0.83333) <= H[j])
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
+
+## Ajout de la tâche pause déjeuner pour chaque employé
+
+
+
+##Contraintes correspondant à la pause déjeuner
+# La pause déjeuner est obligatoire !
+    nbEmployes=nbre_employe
+    nbTaches=nbre_taches
+    for i in range(nbTaches, nbTaches+nbEmployes):
+        m.addConstr(sum(X[n, i, j] for n in range(nbEmployes) for j in range(nbTaches)) == 1)
+
+
 
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
