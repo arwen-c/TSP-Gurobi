@@ -106,6 +106,9 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
+
+### Il faut déclarer des nouvelles variables delta i qui valent 1 si l'heure est dans la fenetre d'ouverture
+
                 for k in range(len(Fin[j])):
                     m.addConstr(H[j]+Duree[j] <= Fin[j][k])
                     m.addConstr(H[j] >= Debut[j][k])
