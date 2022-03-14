@@ -3,7 +3,7 @@ import time
 
 # Import des fonctions permettant la résolution
 from usefulFunctions2 import *
-from opti_2 import ajoutTachesFictives, optimisation_1
+from opti2 import ajoutTachesFictives, optimisation2
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
@@ -45,8 +45,8 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-solution = optimisation_1(Capacite, nbre_employe,
-                          nbre_taches, tab_distance, Duree, Debut, Fin)
+solution = optimisation2(Capacite, nbre_employe,
+                         nbre_taches, tab_distance, Duree, Debut, Fin)
 
 finTemps = time.time()
 print(finTemps - debutTemps)
