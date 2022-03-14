@@ -25,7 +25,7 @@ def pauseDej(TasksDico, EmployeesDico):
                               'TaskDuration': 60, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime':'12:00pm', 'ClosingTime': '14:00pm'})
     return(TasksEnhanced)
 
-def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
+def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, temps_trajet):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -113,7 +113,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
 
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
-    m.setObjective(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+    m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
                        for i in range(t) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle
