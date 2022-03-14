@@ -1,6 +1,7 @@
 from cmath import cos
 from math import dist
 from numpy import real
+from gurobipy import *
 
 
 from firstdoc import *
@@ -43,9 +44,40 @@ Fin = vecteurFermetures(TasksDico)
 # ajout du nombre de tâches réelles pour l'opti bi-objectifs
 ntR = len(TasksDico)
 
-# Optimisation gurobi
-solution = optimisation_1(Capacite, nbre_employe,
-                          nbre_taches, tab_distance, Duree, Debut, Fin, ntR)
+# borne = 700
+# # Optimisation gurobi
+# solution = optimisation_1(Capacite, nbre_employe,
+#                           nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne)
 
-# Création du fichier solution au format txt
-creation_fichier(path, 1, solution[0], solution[1], EmployeesDico)
+# # affichage multi objectif
+# print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
+#     solution[2], solution[3]))
+
+
+# # Création du fichier solution au format txt
+# creation_fichier(path, 1, solution[0], solution[1], EmployeesDico)
+
+
+def epsilon_contrainte():
+    epsilon = 10
+    borne = math.inf
+    valeurObjectifs = []
+    valeurBornes = []
+    possible = True
+    while possible:
+        try:
+            solution = optimisation_1(Capacite, nbre_employe,
+                                      nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne)
+            borne = solution[3]-epsilon
+            valeurObjectifs.append(solution[2])
+            valeurBornes.append(solution[3])
+            break
+        except gurobipy.GurobiError:  # si on ne trouve plus de solution avec la borne imposée sur l'une des fonctions objectifs
+            possible = False
+        # solution[3] = f1(solution)
+    return valeurObjectifs, valeurBornes
+
+
+# print(epsilon_contrainte())
+print("La liste des valeurs objetifs est : {} et la liste des valeurs de l'autre fonction objectif est : {}".format(
+    epsilon_contrainte()[0], epsilon_contrainte()[1]))

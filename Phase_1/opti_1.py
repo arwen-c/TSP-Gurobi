@@ -17,7 +17,7 @@ def ajout_domicile(TasksDico, EmployeesDico):
     return(TasksEnhanced)
 
 
-def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR):
+def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR, borne):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -99,11 +99,14 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR):
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
     # f1
-    # m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
+    # m.setObjective(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
     #                    for i in range(t) for j in range(t)), GRB.MINIMIZE)
     # f2
     # Il faudra mettre le ntR dans le fichier "code_exe_2"
     # ntR = len(TasksDico)
+    # epsilon = 400
+    m.addConstr(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+                    for i in range(t) for j in range(t)) <= borne)
     m.setObjective(sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
                        for i in range(ntR) for j in range(t)), GRB.MAXIMIZE)
 
@@ -111,4 +114,13 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR):
     m.optimize()  # Résolution
 
     # -- Affichage des solutions --
-    return X.x, H.x, m.objVal
+
+    # return X.x, H.x, m.objVal, borne
+    valeur = 0
+    nbre, x, y = X.x.shape
+    for n in range(nbre):
+        for i in range(x):
+            for j in range(y):
+                valeur += X.x[n, i, j]*D[i, j]
+
+    return X.x, H.x, m.objVal, valeur
