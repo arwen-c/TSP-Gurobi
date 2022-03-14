@@ -20,6 +20,7 @@ EmployeesDico, EmployeesUnavailDico, TasksDico, TasksUnavailDico = extractionDat
 # Définition de variables
 nbre_taches = len(TasksDico)
 nbre_employe = len(EmployeesDico)
+nbreIndispoEmploye = len(EmployeesUnavailDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
@@ -44,8 +45,8 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-solution = optimisation2(Capacite, nbre_employe,
-                         nbre_taches, tab_distance, Duree, Debut, Fin)
+solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
+                         tab_distance, Duree, Debut, Fin, nbre_taches, EmployeesDico, TasksDico, 10000)
 
 finTemps = time.time()
 print(finTemps - debutTemps)

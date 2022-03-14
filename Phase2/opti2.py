@@ -32,7 +32,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUna
     return(TasksEnhanced)
 
 
-def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, ntR, temps_trajet, EmployeesDico, TasksEnhanced, borne):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, ntR, EmployeesDico, TasksEnhanced, borne):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -110,7 +110,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
                     m.addConstr(H[j]+Duree[j] <= Fin[j][k])
                     m.addConstr(H[j] >= Debut[j][k])
                     # la personne n a le temps de faire la tache j à la suite de la tache i
-                    m.addConstr(X[n, i, j] * (H[i]+Duree[i]+temps_trajet[i, j])
+                    m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.833)
                                 <= H[j])
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
