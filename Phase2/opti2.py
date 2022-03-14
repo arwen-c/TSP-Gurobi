@@ -26,7 +26,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUna
     return(TasksEnhanced)
 
 
-def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, temps_trajet, EmployeesDico, TasksEnhanced):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, temps_trajet, EmployeesDico, TasksEnhanced):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;

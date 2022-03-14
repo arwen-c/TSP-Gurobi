@@ -33,7 +33,7 @@ def distance(id1, id2, TasksDico):
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
-    while not (foundId1 and foundId2):
+    while not (foundId1 and foundId2) and index < len(TasksDico):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
             long1 = TasksDico[index]['Longitude']
@@ -43,9 +43,12 @@ def distance(id1, id2, TasksDico):
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
-    deltaLong = long2-long1  # calcule de la différence de longitude
-    deltaLatt = lat2-lat1
-    distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
+    if long1 is None or long2 is None:
+        distance = 0
+    else:
+        delta_long = long2-long1  # calcule de la différence de longitude
+        delta_latt = lat2-lat1
+        distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
     return distance
 
 
@@ -184,18 +187,18 @@ def lignesSolution(X, h, TasksDico, EmployeesDico):
     nombreTaches = len(TasksDico)
     for i in range(nombreTaches):
         j = 0
-        tache_i_ajoutee = False
-        while j < y and not(tache_i_ajoutee):
-            numero_employe = 0
-            while numero_employe < n and not(tache_i_ajoutee):
-                if X[numero_employe, i, j] == 1:
-                    employeeName = EmployeesDico[numero_employe]['EmployeeName']
+        tacheiAjoutee = False
+        while j < y and not(tacheiAjoutee):
+            numeroEmploye = 0
+            while numeroEmploye < n and not(tacheiAjoutee):
+                if X[numeroEmploye, i, j] == 1:
+                    employeeName = EmployeesDico[numeroEmploye]['EmployeeName']
                     listeDesLignes.append(
                         'T' + str(i+1) + ';' + '1' + ';' + str(employeeName) + ';' + str(round(h[i])) + ';')
-                    tache_i_ajoutee = True
-                numero_employe = numero_employe + 1
+                    tacheiAjoutee = True
+                numeroEmploye = numeroEmploye + 1
             j = j + 1
-        if not(tache_i_ajoutee):
+        if not(tacheiAjoutee):
             listeDesLignes.append(
                 'T' + str(i+1) + ';' + '0' + ';' + ';' + ';')
     return listeDesLignes
@@ -206,7 +209,7 @@ def creationFichier(nomFichier, nMethode, X, h, TasksDico, EmployeesDico):
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
-    file = open(nomFichierResolution(nomFichier, nMethode), "w")
-    file.write("\n".join(lignesSolution(X, h, TasksDico, EmployeesDico)))
-    file.close()
+    fichier = open(nomFichierResolution(nomFichier, nMethode), "w")
+    fichier.write("\n".join(lignesSolution(X, h, TasksDico, EmployeesDico)))
+    fichier.close()
     return None

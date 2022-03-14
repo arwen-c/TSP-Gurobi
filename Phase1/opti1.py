@@ -3,7 +3,7 @@ import numpy as np
 from gurobipy import *
 
 
-def ajout_domicile(TasksDico, EmployeesDico):
+def ajoutDomicile(TasksDico, EmployeesDico):
     """Modification des données pour insérer des tâches factices de départ et de retour au dépot ou domicile."""
     TasksEnhanced = TasksDico.copy()
     for row in EmployeesDico:
@@ -16,16 +16,8 @@ def ajout_domicile(TasksDico, EmployeesDico):
                               'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
     return(TasksEnhanced)
 
-def pauseDej(TasksDico, EmployeesDico):
-    """entrée : les dictionnaires de tâches totales et les dicos employes, sortie : le dictionnaire """
-    TasksEnhanced = TasksDico.copy()
-    for row in EmployeesDico:
-        # ajout d'une tâche d'une heure, sans lieu, entre midi et deux
-        TasksEnhanced.append({'TaskId': 'Dejeuner' + row['EmployeeName'], 'Latitude': None,    'Longitude': None,
-                              'TaskDuration': 60, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime':'12:00pm', 'ClosingTime': '14:00pm'})
-    return(TasksEnhanced)
 
-def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
+def optimisation1(C, nbreEmploye, nbreTaches, D, Duree, Debut, Fin):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -38,11 +30,11 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
 
     # -- Ajout variables de décisions --
     M = 1440  # majorant des temps
-    H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
-    X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
-                         nbre_taches+2*nbre_employe),  vtype=GRB.BINARY)
-    Y = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe,
-                         nbre_taches+2*nbre_employe),  vtype=GRB.CONTINUOUS, lb=0)
+    H = m.addMVar(shape=nbreTaches+2*nbreEmploye, lb=0, ub=M)
+    X = m.addMVar(shape=(nbreEmploye, nbreTaches+2*nbreEmploye,
+                         nbreTaches+2*nbreEmploye),  vtype=GRB.BINARY)
+    Y = m.addMVar(shape=(nbreEmploye, nbreTaches+2*nbreEmploye,
+                         nbreTaches+2*nbreEmploye),  vtype=GRB.CONTINUOUS, lb=0)
 
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
@@ -55,25 +47,26 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
 
     # Chaque trajet a bien été fait une seule fois
     for i in range(t):
-        m.addConstr(sum(X[n, i, j] for n in range(nbre_employe) for j in range(t)) == 1)
+        m.addConstr(sum(X[n, i, j] for n in range(nbreEmploye)
+                        for j in range(t)) == 1)
 
     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
-    for n in range(nbre_employe):
-        for j in range(nbre_taches):
+    for n in range(nbreEmploye):
+        for j in range(nbreTaches):
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
                 X[n, i, j] for i in range(t)))
 
     # Effets de bord
-    for n in range(nbre_employe):
-        m.addConstr(sum(X[n, nbre_taches+n, j]
-                        for j in range(nbre_taches)) == 1)  # départ du dépôt
-        m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
-                        for i in range(nbre_taches)) == 1)  # arrivée au dépôt
+    for n in range(nbreEmploye):
+        m.addConstr(sum(X[n, nbreTaches+n, j]
+                        for j in range(nbreTaches)) == 1)  # départ du dépôt
+        m.addConstr(sum(X[n, i, nbreTaches+nbreEmploye+n]
+                        for i in range(nbreTaches)) == 1)  # arrivée au dépôt
 
     # Contraintes incluants une somme
     for i in range(t):  # Tâches réelles + Tâches fictives
         for j in range(t):
-            for n in range(nbre_employe):
+            for n in range(nbreEmploye):
                 # l'employé doit être capable d'effectuer les 2 tâches
                 m.addConstr(X[n, i, j] <= C[n, i])
                 m.addConstr(X[n, i, j] <= C[n, j])
@@ -98,22 +91,9 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin):
                 #     Y[n, i, j] + X[n, i, j] * (Duree[i]+D[i, j]/0.83333) <= H[j])
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
-## Ajout de la tâche pause déjeuner pour chaque employé
-
-
-
-##Contraintes correspondant à la pause déjeuner
-# La pause déjeuner est obligatoire !
-    nbEmployes=nbre_employe
-    nbTaches=nbre_taches
-    for i in range(nbTaches, nbTaches+nbEmployes):
-        m.addConstr(sum(X[n, i, j] for n in range(nbEmployes) for j in range(nbTaches)) == 1)
-
-
-
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
-    m.setObjective(sum(X[n, i, j]*temps_trajet[i, j] for n in range(nbre_employe)
+    m.setObjective(sum(X[n, i, j]*D[i, j]/0.833 for n in range(nbreEmploye)
                        for i in range(t) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle

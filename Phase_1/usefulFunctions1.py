@@ -24,15 +24,26 @@ def extractionData(path):
     return EmployeesDico, TasksDico
 
 
+<<<<<<< HEAD:Phase_1/firstdoc.py
+# calcule la distance entre deux points dont on connait les coordonnées GPS
+
+
+# Gestion de la localisation -- modif de la fonction distance
+=======
 # Fonctions utiles pour créer les matrices de données utiles
 
+>>>>>>> main:Phase_1/usefulFunctions1.py
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
+<<<<<<< HEAD:Phase_1/firstdoc.py
+    while not (foundid1 and foundid2) and index<len(TasksDico):
+=======
     while not (foundId1 and foundId2):
+>>>>>>> main:Phase_1/usefulFunctions1.py
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
             long1 = TasksDico[index]['Longitude']
@@ -42,10 +53,38 @@ def distance(id1, id2, TasksDico):
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
+<<<<<<< HEAD:Phase_1/firstdoc.py
+    if long1 is None or long2 is None:
+        distance = 0
+    else :
+        delta_long = long2-long1  # calcule de la différence de longitude
+        delta_latt = lat2-lat1
+        distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+=======
     deltaLong = long2-long1  # calcule de la différence de longitude
     deltaLatt = lat2-lat1
     distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
+>>>>>>> main:Phase_1/usefulFunctions1.py
     return distance
+
+# def distance(id1, id2, TasksDico):
+#     '''entrée : les taskid correspondantes, le dictionnaire de données, sortie : distance en km'''
+#     foundid1, foundid2 = False, False
+#     index = 0
+#     while not (foundid1 and foundid2):
+#         if TasksDico[index]['TaskId'] == id1:
+#             foundid1 = True
+#             long1 = TasksDico[index]['Longitude']
+#             lat1 = TasksDico[index]['Latitude']
+#         if TasksDico[index]['TaskId'] == id2:
+#             foundid2 = True
+#             long2 = TasksDico[index]['Longitude']
+#             lat2 = TasksDico[index]['Latitude']
+#         index += 1
+#     delta_long = long2-long1  # calcule de la différence de longitude
+#     delta_latt = lat2-lat1
+#     distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+#     return distance
 
 
 def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
@@ -101,7 +140,10 @@ def vecteurOuvertures(TasksDico):
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
-            h += 12  # modifications pour l'aprem
+            if res[0]!=12:
+                h += 12  # modifications pour l'aprem
+        else :
+            if res[0]==12 : h=0
         O.append(h*60+m)
     return O
 
@@ -116,7 +158,10 @@ def vecteurFermetures(TasksDico):
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
-            h += 12  # modifications pour l'aprem
+            if res[0]!=12:
+                h += 12  # modifications pour l'aprem
+        else :
+            if res[0]==12 : h=0
         F.append(h*60+m)
     return F
 

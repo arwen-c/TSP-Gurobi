@@ -1,11 +1,17 @@
 from cmath import cos
 from math import dist
+from click import pause
 from numpy import real
 import time
 
 
+<<<<<<< HEAD
+from firstdoc import *
+from opti_1 import ajout_domicile, optimisation_1, pauseDej
+=======
 from usefulFunctions1 import *
 from opti_1 import ajout_domicile, optimisation_1
+>>>>>>> main
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
@@ -21,11 +27,12 @@ EmployeesDico, TasksDico = extractionData(path)
 # Définition de variables
 nbre_taches = len(TasksDico)
 nbre_employe = len(EmployeesDico)
-nbre_taches_tot = nbre_taches + 2*nbre_employe
+nbre_taches_tot = nbre_taches + 3*nbre_employe
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
 TasksDico = ajout_domicile(TasksDico, EmployeesDico)
+TasksDico= pauseDej(TasksDico, EmployeesDico)
 
 # Calcul de la matrice des distances Distance
 tab_distance = matrice_distance(TasksDico)
@@ -61,4 +68,4 @@ performances1(fin - debut, Capacite.nbytes + Duree.nbytes+Debut.nbytes+Fin.nbyte
 print(fin - debut)
 
 # Création du fichier solution au format txt
-creation_fichier(path, 1, solution[0], solution[1], EmployeesDico)
+creation_fichier(path, 2, solution[0], solution[1], EmployeesDico)
