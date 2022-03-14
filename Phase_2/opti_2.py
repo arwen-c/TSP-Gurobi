@@ -3,12 +3,12 @@ import numpy as np
 from gurobipy import *
 import time
 from firstdoc import matrice_distance
-from usefulFunctions2 import *
+from usefulFunctions2 import recuperationHeure
 
 
 
 def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
-
+    
     # (rechercher ajout_domicile dans tous les docs pour modifier par ajout_taches_fictives)
     ### AJOUTS DOMICILES ### 
     """Modification des données pour insérer des tâches factices de départ et de retour au dépot ou domicile."""
@@ -133,18 +133,3 @@ def optimisation_1(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, D
     # -- Affichage des solutions --
     return X.x, H.x, m.objVal
 
-
-EmployeesDico, EmployeesUnavailDico, TasksDico, TasksUnavailDico = extractionData("InstancesV2/InstanceBordeauxV2.xlsx")
-C = matriceCompetences(EmployeesDico, TasksDico)
-nbre_employe = len(EmployeesDico)
-nbre_taches = len(TasksDico)
-nbreIndispoEmploye = len(EmployeesUnavailDico)
-Duree = vecteurDurees(TasksDico)
-D = matrice_distance(TasksDico)
-Debut = vecteurOuvertures(TasksDico, TasksUnavailDico)
-Fin = vecteurFermetures(TasksDico, TasksUnavailDico)
-
-temps_trajet = np.array(D)/0.88
-TasksEnhanced = ajoutTachesFictives(TasksDico,EmployeesDico,EmployeesUnavailDico,TasksUnavailDico)
-
-print(optimisation_1(C,nbre_employe,nbre_taches,nbreIndispoEmploye,D,Duree,Debut,Fin,temps_trajet,EmployeesDico,TasksEnhanced))
