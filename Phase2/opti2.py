@@ -109,9 +109,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 for k in range(len(Fin[j])):
                     m.addConstr(H[j]+Duree[j] <= Fin[j][k])
                     m.addConstr(H[j] >= Debut[j][k])
-                    # la personne n a le temps de faire la tache j à la suite de la tache i
-                    m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.833)
-                                <= H[j])
+                # la personne n a le temps de faire la tache j à la suite de la tache i
+                m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.833)
+                            <= H[j])
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
     # -- Ajout de la fonction objectif.
