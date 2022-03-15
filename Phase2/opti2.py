@@ -104,7 +104,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             for j in range(nbre_taches):
                 m.addConstr(L[n, i, j] <= X[n, i, j])
     # Une personne n'a droit qu'à une seule pause
-        m.addConstr(sum(X[n, i, j] for i in range(nbre_taches)
+        m.addConstr(sum(L[n, i, j] for i in range(nbre_taches)
                         for j in range(nbre_taches)) == 1)
 
     for i in range(t):  # Tâches réelles + Tâches fictives
