@@ -46,11 +46,12 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
     # -- Ajout variables de décisions --
     M = 1440  # majorant des temps
-    H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
+    H = m.addMVar(shape=nbre_taches+2*nbre_employe+nbreIndispoEmploye , lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
                          nbre_taches+2*nbre_employe+nbreIndispoEmploye),  vtype=GRB.BINARY)
     L = m.addMVar(shape=(nbre_employe, nbre_taches,
                          nbre_taches), vtype=GRB.BINARY)
+    delta = m.addMVar(shape=(nbre_taches+2*nbre_employe+nbreIndispoEmploye,5), vtype=GRB.BINARY)
 
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
@@ -118,10 +119,17 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
-                # nbreCreneauxJ=len(Fin[j])
-                # for k in range(nbreCreneauxJ):
-                #     m.addConstr(H[j]+Duree[j] <= Fin[j][k])
-                #     m.addConstr(H[j] >= Debut[j][k])
+                nbreCreneauxJ=len(Fin[j])
+
+                M = 60*24
+
+                for k in range(nbreCreneauxJ):
+                    m.addConstr(M*(1-delta[j,k]) <= H[j]-Debut[j][k])
+                    m.addConstr(H[j]-Debut[j][k] <= M*delta[j,k])
+                    m.addConstr(-M*(1-delta[j,k]) <= H[j]-Fin[j][k]+Duree[j])
+                    m.addConstr(H[j]-Fin[j][k]+Duree[j] <= M*delta[j,k])
+
+                m.addConstr(sum(delta[j,k] for k in range(nbreCreneauxJ)) == 1)
 
                 # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
                 if i < nbre_taches and j < nbre_taches:  # on est entre deux tâches réelles
