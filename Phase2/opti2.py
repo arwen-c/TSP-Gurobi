@@ -110,9 +110,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     for i in range(t):  # Tâches réelles + Tâches fictives
         for j in range(t):
             for n in range(nbre_employe):
-    #             # l'employé doit être capable d'effectuer les 2 tâches
-    #             m.addConstr(X[n, i, j] <= C[n, i])
-    #             m.addConstr(X[n, i, j] <= C[n, j])
+                # l'employé doit être capable d'effectuer les 2 tâches
+                m.addConstr(X[n, i, j] <= C[n, i])
+                m.addConstr(X[n, i, j] <= C[n, j])
 
                 # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
                 m.addConstr(X[n, i, i] == 0)
