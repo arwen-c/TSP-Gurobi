@@ -26,7 +26,6 @@ nbreIndispoEmploye = len(EmployeesUnavailDico)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
 TasksDico = ajoutTachesFictives(
     TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico)
-
 # Calcul de la matrice des distances Distance
 tab_distance = matriceDistance(TasksDico)
 

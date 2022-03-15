@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from firstdoc import extraction_data
+from usefulFunctions2 import extraction_data
 import folium
 
 def affichage_graphique_test(lattitudes, longitudes):
@@ -89,7 +89,7 @@ def lecture(filename):
 
 
 def extraire_coordonnees(nom_ville):
-    path="Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
+    path="Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
     EmployeesDico, TasksDico = extraction_data(path)
     return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico), vecteur_longitudes(EmployeesDico), vecteur_latitudes(EmployeesDico)
 
@@ -135,7 +135,7 @@ def order_list(list_to_order, list_used_for_order):
 
 
 def creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_ville):
-    path="Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
+    path="Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
     EmployeesDico, TasksDico = extraction_data(path)
     
     employes_unique = []
@@ -214,8 +214,8 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, start_times, nom_v
 
 
 def afficher(nom_ville):
-    path1 = "Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
-    path2 = "Phase_1/Solutions/Solution"+str(nom_ville)+"V1ByV1.txt"
+    path1 = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
+    path2 = "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2.txt"
 
     longitudes, lattitudes, long_employe, latt_employe = extraire_coordonnees(
         nom_ville)
@@ -232,8 +232,7 @@ def afficher(nom_ville):
         for j in range(len(listesPlot[i][0])):
             loc.append((listesPlot[i][0][j],listesPlot[i][1][j]))
             print(loc)
-    folium.PolyLine(loc,color='red',weight=2,opacity=0.8).add_to(m)
-    print('i added')
+        folium.PolyLine(loc,color='red',weight=2,opacity=0.8).add_to(m)
 
     m.save("testfolium.html")
     return None
