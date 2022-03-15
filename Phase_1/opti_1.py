@@ -116,8 +116,8 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR, born
     elif fonctionObjectif == 2:
         m.addConstr(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
                         for i in range(t) for j in range(t)) <= borne)
-        m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
-                            for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
+        m.setObjective(sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+                           for i in range(ntR) for j in range(t)), GRB.MAXIMIZE)
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution

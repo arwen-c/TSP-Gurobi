@@ -9,7 +9,7 @@ from opti_1 import ajout_domicile, optimisation_1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase_1/InstancesV1/InstanceBordeauxV1.xlsx'
+path = 'Phase_2/InstancesV2/InstanceBordeauxV2.xlsx'
 
 
 # Corps du code
@@ -60,14 +60,14 @@ ntR = len(TasksDico)
 
 def epsilon_contrainte():
     epsilon = 10
-    borne = math.inf
+    borne = 1000
     valeurObjectifs = []
     valeurBornes = []
     possible = True
     while possible:
         try:
             solution = optimisation_1(Capacite, nbre_employe,
-                                      nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne)
+                                      nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne, 1)
             borne = solution[3]-epsilon
             valeurObjectifs.append(solution[2])
             valeurBornes.append(solution[3])
