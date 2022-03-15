@@ -49,7 +49,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
                          nbre_taches+2*nbre_employe+nbreIndispoEmploye),  vtype=GRB.BINARY)
-    L = m.addMVar(shape=(nbre_employe, nbre_taches, nbre_taches), vtype=GRB.BINARY)
+    L = m.addMVar(shape=(nbre_employe, nbre_taches,
+                         nbre_taches), vtype=GRB.BINARY)
 
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
@@ -98,13 +99,13 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # Ajout des contraintes sur L
     # Une pause dej n'est possible qu'entre deux taches réalisées
     for n in range(nbre_employe):
-        for i in range (nbre_taches):
-            for j in range (nbre_taches):        
-                m.addConstr(L[n,i,j] <= X[n,i,j])
+        for i in range(nbre_taches):
+            for j in range(nbre_taches):
+                m.addConstr(L[n, i, j] <= X[n, i, j])
     # Une personne n'a droit qu'à une seule pause
-        m.addConstr(sum(X[n,i,j] for i in range(nbre_taches) for j in range (nbre_taches))==1)
+        m.addConstr(sum(X[n, i, j] for i in range(nbre_taches)
+                        for j in range(nbre_taches)) == 1)
 
-    
     for i in range(t):  # Tâches réelles + Tâches fictives
         for j in range(t):
             for n in range(nbre_employe):
@@ -122,12 +123,13 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 #     m.addConstr(H[j]+Duree[j] <= Fin[j][k])
                 #     m.addConstr(H[j] >= Debut[j][k])
 
-                    # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
-                # if i<nbre_taches and j<nbre_taches: #on est entre deux tâches réelles
-                #     m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.833) + L[n,i,j]*60
-                #                 <= H[j])
-                # else :
-                #     m.addConstr(X[n, i, j] * (H[i]+Duree[i]+D[i, j]/0.833) <= H[j])
+                # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
+                if i < nbre_taches and j < nbre_taches:  # on est entre deux tâches réelles
+                    m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
+                                <= H[j] + 24*60*(1-X[n, i, j]))
+                else:
+                    m.addConstr(
+                        H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
     # -- Ajout de la fonction objectif.
