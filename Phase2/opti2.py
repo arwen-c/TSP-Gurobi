@@ -46,7 +46,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
     # -- Ajout variables de décisions --
     M = 1440  # majorant des temps
-    H = m.addMVar(shape=nbre_taches+2*nbre_employe, lb=0, ub=M)
+    H = m.addMVar(shape=nbre_taches+2*nbre_employe +
+                  nbreIndispoEmploye, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
                          nbre_taches+2*nbre_employe+nbreIndispoEmploye),  vtype=GRB.BINARY)
     L = m.addMVar(shape=(nbre_employe, nbre_taches,
@@ -128,6 +129,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                     m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
                                 <= H[j] + 24*60*(1-X[n, i, j]))
                 else:
+                    # print("n : {}, i : {}, j : {}".format(n, i, j))
+                    # print("D[i, j] : {}".format(D[i, j]))
+                    # print("H[j] : {}".format(H[j]))
                     m.addConstr(
                         H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
