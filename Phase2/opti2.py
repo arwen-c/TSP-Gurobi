@@ -126,8 +126,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 for k in range(nbreCreneauxJ):
                     m.addConstr(M*(1-delta[j,k]) <= H[j]-Debut[j][k])
                     m.addConstr(H[j]-Debut[j][k] <= M*delta[j,k])
-                    m.addConstr(-M*(1-delta[j,k]) <= H[j]-Fin[j][k]+Duree[j])
-                    m.addConstr(H[j]-Fin[j][k]+Duree[j] <= M*delta[j,k])
+                    m.addConstr(-M*(1-delta[j,k]) <= -H[j]+Fin[j][k]-Duree[j])
+                    m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j,k])
 
                 m.addConstr(sum(delta[j,k] for k in range(nbreCreneauxJ)) == 1)
 
