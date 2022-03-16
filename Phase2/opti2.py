@@ -104,7 +104,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             for j in range(nbre_taches):
                 m.addConstr(L[n, i, j] <= X[n, i, j])
     # Une personne n'a droit qu'à une seule pause
-        m.addConstr(sum(X[n, i, j] for i in range(nbre_taches)
+        m.addConstr(sum(L[n, i, j] for i in range(nbre_taches)
                         for j in range(nbre_taches)) == 1)
 
     for i in range(t):  # Tâches réelles + Tâches fictives
@@ -119,20 +119,6 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
-<<<<<<< HEAD
-                # CETTE CONTRAINTE EST FORCEMENT NON VERIFIEE
-                # nbreCreneauxJ=len(Fin[j])
-                # for k in range(nbreCreneauxJ):
-                #     m.addConstr(H[j]+Duree[j] <= Fin[j][k])
-                #     m.addConstr(H[j] >= Debut[j][k])
-
-                # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
-                if i<nbre_taches and j<nbre_taches: #on est entre deux tâches réelles
-                    m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n,i,j]*60
-                                <= H[j] + 24*60*(1-X[n, i, j]))
-                else :
-                    m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
-=======
                 nbreCreneauxJ=len(Fin[j])
 
                 for k in range(nbreCreneauxJ):
@@ -154,7 +140,6 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 else:
                     m.addConstr(
                         H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
->>>>>>> main
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
     # -- Ajout de la fonction objectif.

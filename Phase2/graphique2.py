@@ -1,59 +1,11 @@
 import matplotlib.pyplot as plt
-from usefulFunctions2 import extraction_data
+from usefulFunctions2 import extractionData
 import folium
 
-def affichage_graphique_test(lattitudes, longitudes):
-
-    employee_1 = [1, 3, 8, 9]
-    employee_2 = [2, 4, 5, 6, 7]
-
-    longitudes_1 = [longitudes[i] for i in employee_1]
-    lattitudes_1 = [lattitudes[i] for i in employee_1]
-    longitudes_2 = [longitudes[i] for i in employee_2]
-    lattitudes_2 = [lattitudes[i] for i in employee_2]
-    plt.plot(longitudes_1, lattitudes_1, "-o", color="g")
-    plt.plot(longitudes_2, lattitudes_2, "-o", color="b")
-    plt.plot()
-    plt.show()
-
-    return None
-
-# Améliorations :
-# utiliser une couleur par employé pour les parcours
-# afficher le numéro de la tâche
-# mettre une flèche dans le sens de parcours
-# dessiner une petite maison dans la prairie
-# mettre un fond de carte maps
-
-
-lattitudes = [44.556549383420084,
-              44.967500952177986,
-              45.14421541464031,
-              45.264808304867096,
-              45.044422793402624,
-              45.19957452440505,
-              45.397697776585,
-              45.023479086796385,
-              45.29291368453335,
-              45.08146166752168,
-              ]
-
-longitudes = [-0.31939224223757195,
-              -0.6086852638150881,
-              -0.7342570469020379,
-              -0.7717887212411139,
-              -0.6687606009488057,
-              -0.7462077931750715,
-              -0.9668192708194538,
-              -0.8072126299796225,
-              -0.9365361007032235,
-              -0.8062453230620741]
-
-# affichage_graphique_test(lattitudes, longitudes)
 
 
 def lecture(filename):
-
+    '''entrée : nom du fichier solution, sortie : les vecteurs employes (noms), taches (numeros), start_times (minutes)'''
     # lecture du fichier solution
     solution_file = open(filename, "r")
     word = ''
@@ -88,14 +40,9 @@ def lecture(filename):
     return employes, taches, start_times
 
 
-def extraire_coordonnees(nom_ville):
-    path="Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
-    EmployeesDico, TasksDico = extraction_data(path)
-    return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico), vecteur_longitudes(EmployeesDico), vecteur_latitudes(EmployeesDico)
-
+# Fonctions auxiliaires
 # Vecteur des longitudes
-
-
+# Nécessitent de revenir à la liste des tâches, qui comporte les localisations
 def vecteur_longitudes(TasksDico):
     """Renvoie le vecteur des longitudes de chaque tâche."""
     Vecteur_long = []
@@ -104,8 +51,6 @@ def vecteur_longitudes(TasksDico):
     return Vecteur_long
 
 # Vecteur des latitudes
-
-
 def vecteur_latitudes(TasksDico):
     """Renvoie le vecteur des latitudes de chaque tâche."""
     Vecteur_lat = []
@@ -113,9 +58,15 @@ def vecteur_latitudes(TasksDico):
         Vecteur_lat.append(row['Latitude'])
     return Vecteur_lat
 
+def extraire_coordonnees(nom_ville):
+    '''entrée : nom de la ville, sortie : longitudes et latitudes des taches  dans l'ordre de leur ID'''
+    path="Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
+    EmployeesDico, _,TasksDico,_ = extractionData(path)
+    return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico),
 
 # tri de list_to_order par ordre décroissant sur la list_used_for_order
 def order_list(list_to_order, list_used_for_order):
+    '''Fonction auxiliaire'''
     if len(list_used_for_order) != len(list_to_order):
         return "Erreur : les listes à trier ne sont pas de la même dimension"
     list_used_for_order_2 = list_used_for_order.copy()
@@ -134,34 +85,43 @@ def order_list(list_to_order, list_used_for_order):
     return list_to_order_2
 
 
-def creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_ville):
+def creation_listes(nom_ville):
     path="Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
-    EmployeesDico, TasksDico = extraction_data(path)
+    EmployeesDico, _,TasksDico,_= extractionData(path)
     
+    filename= "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2.txt"
+    employes, taches, start_times= lecture(filename)
+
+    longitudes_taches, latitudes_taches = extraire_coordonnees(nom_ville)
     employes_unique = []
     #Liste des employés qui ne comporte qu'une fois chacun
     for employe in employes:
-        if employe not in employes_unique:
+        if employe not in employes_unique and employe!='':
             employes_unique += [employe]
 
     listesPlot=[]
     #cette liste contient : [employe[longitudes[l1l2l3],latitudes[m1m2m3]]]
     for i in range(len(employes_unique)):
         #on extrait les longitudes et latitudes des tâches effectuées par l'employé i
-        longitudes_employe = [longitudes[j] for j in range(
-            len(employes)) if employes[j] == employes_unique[i]]
-        lattitudes_employe = [lattitudes[j] for j in range(
-            len(employes)) if employes[j] == employes_unique[i]]
-
-        start_times_employe = [start_times[j] for j in range(
-            len(employes)) if employes[j] == employes_unique[i]]
+        longitudes_i=[]
+        lattitudes_i=[]
+        start_times_i=[]
+        for j in range (len(employes)):
+            id_tache=int(taches[j][1:])-1
+            # les taches sont dans l'ordre normal... pas dans l'ordre de sortie de lecture c'est le meme patatoide. Donc on doit relier la ligne j au numéro de la tâche
+            if employes[j]==employes_unique[i]:
+                print(taches[j])
+                print(id_tache)
+                longitudes_i.append(longitudes_taches[id_tache])
+                lattitudes_i.append(latitudes_taches[id_tache])
+                start_times_i.append(start_times[j])
 
         # On trie les longitudes/lattitudes des tâches des employés par ordre croissant de début de leurs tâches
 
-        lattitudes_employe = order_list(
-            lattitudes_employe, start_times_employe)
-        longitudes_employe = order_list(
-            longitudes_employe, start_times_employe)
+        lattitudes_i = order_list(
+            lattitudes_i, start_times_i)
+        longitudes_i = order_list(
+            longitudes_i, start_times_i)
 
         # Ajout des domiciles des employés
         found_name=False
@@ -172,16 +132,16 @@ def creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_v
                 longitude_domicile_i=EmployeesDico[j]['Longitude']
                 latitude_domicile_i=EmployeesDico[j]['Latitude']
             j+=1
-        longitudes_employe.insert(0, longitude_domicile_i)
-        lattitudes_employe.insert(0, latitude_domicile_i)
-        longitudes_employe += [longitude_domicile_i]
-        lattitudes_employe += [latitude_domicile_i]
+        longitudes_i.insert(0, longitude_domicile_i)
+        lattitudes_i.insert(0, latitude_domicile_i)
+        longitudes_i += [longitude_domicile_i]
+        lattitudes_i += [latitude_domicile_i]
 
-        listesPlot.append([longitudes_employe,lattitudes_employe])
+        listesPlot.append([longitudes_i,lattitudes_i])
     return listesPlot
 
-def graphiquePyplot(longitudes, lattitudes, employes, taches, start_times, nom_ville):
-    listesPlot=creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_ville)
+def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
+    listesPlot=creation_listes(nom_ville)
 
     my_colors = ["r", "g", "b", "c", "m", "y",
                  "k", "r", "g", "b", "c", "m", "y", "k"]
@@ -206,26 +166,19 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, start_times, nom_v
     return None
 
 
-# longitudes, lattitudes = extraire_coordonnees(path='InstanceBordeauxV1.xlsx')
-
-
-# affichage_graphique(longitudes, lattitudes, lecture("SolutionBordeauxV1ByV1.txt")[
-#                     0], lecture("SolutionBordeauxV1ByV1.txt")[1])
-
-
 def afficher(nom_ville):
     path1 = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
     path2 = "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2.txt"
 
-    longitudes, lattitudes, long_employe, latt_employe = extraire_coordonnees(
+    longitudes, lattitudes = extraire_coordonnees(
         nom_ville)
     employes, taches, start_times = lecture(path2)
 
-    graphiquePyplot(longitudes, lattitudes, employes, taches, start_times, nom_ville)
+    graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville)
 
     my_colors = ["r", "g", "b", "c", "m", "y", "k", "r", "g", "b", "c", "m", "y", "k"]
 
-    listesPlot=creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_ville)
+    listesPlot=creation_listes(nom_ville)
     m = folium.Map(location=[lattitudes[0],longitudes[0]],zoom_start=15)
     for i in range (len(listesPlot)):
         loc = []
@@ -237,6 +190,6 @@ def afficher(nom_ville):
     m.save("testfolium.html")
     return None
 
-afficher('Bordeaux')
+afficher('Australia')
 
 
