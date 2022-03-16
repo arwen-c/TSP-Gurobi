@@ -10,7 +10,7 @@ from opti2 import ajoutTachesFictives, optimisation2
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstanceAustraliaV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceBordeauxV2.xlsx'
 
 
 # Corps du code
@@ -49,7 +49,7 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-borne = 1000
+borne = 600
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
                          tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
 # affichage multi objectif
