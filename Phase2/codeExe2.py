@@ -1,5 +1,7 @@
 # Import de modules
 import time
+import sys
+from guppy import hpy
 
 # Import des fonctions permettant la résolution
 from usefulFunctions2 import *
@@ -49,7 +51,8 @@ solution = optimisation2(Capacite, nbre_employe,
                          nbre_taches, tab_distance, Duree, Debut, Fin)
 
 finTemps = time.time()
-print(finTemps - debutTemps)
+performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
+              sys.getsizeof(tab_distance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
 creationFichier(path, 1, solution[0], solution[1], EmployeesDico)
