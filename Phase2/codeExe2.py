@@ -55,7 +55,9 @@ print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction 
     solution[3], solution[4]))
 
 finTemps = time.time()
-print(finTemps - debutTemps)
+# print(finTemps - debutTemps)
+
+# print("L :{}".format(solution[2]))
 
 # Création du fichier solution au format txt
 creationFichier(path, 2, solution[0], solution[1], solution[2], TasksDicoNotModified, EmployeesDico)
