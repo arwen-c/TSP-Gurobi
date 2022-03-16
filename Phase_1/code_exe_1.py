@@ -5,13 +5,8 @@ from numpy import real
 import time
 
 
-<<<<<<< HEAD
-from firstdoc import *
-from opti_1 import ajout_domicile, optimisation_1, pauseDej
-=======
 from usefulFunctions1 import *
 from opti_1 import ajout_domicile, optimisation_1
->>>>>>> main
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
@@ -32,7 +27,7 @@ nbre_taches_tot = nbre_taches + 3*nbre_employe
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
 TasksDico = ajout_domicile(TasksDico, EmployeesDico)
-TasksDico= pauseDej(TasksDico, EmployeesDico)
+TasksDico = pauseDej(TasksDico, EmployeesDico)
 
 # Calcul de la matrice des distances Distance
 tab_distance = matrice_distance(TasksDico)
