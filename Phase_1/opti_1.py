@@ -119,6 +119,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR, born
         m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
                             for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
 
+    m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
 
@@ -132,6 +133,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR, born
             for i in range(x):
                 for j in range(y):
                     valeur += X.x[n, i, j]*Duree[i]
+        return X.x, H.x, m.objVal, -valeur
 
     elif fonctionObjectif == 2:
         nbre, x, y = X.x.shape
@@ -139,4 +141,4 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR, born
             for i in range(x):
                 for j in range(y):
                     valeur += X.x[n, i, j]*D[i, j]
-    return X.x, H.x, m.objVal, valeur
+        return -X.x, H.x, -m.objVal, valeur

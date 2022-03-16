@@ -1,7 +1,9 @@
 from cmath import cos
-from math import dist
+from math import *
 from numpy import real
 from gurobipy import *
+# from Phase_1.epsilonContrainte import plotSolutions1
+from epsilonContrainte import epsilonContrainte, plotSolutions1, plotSolutions2
 
 
 from firstdoc import *
@@ -81,3 +83,12 @@ def epsilon_contrainte():
 # print(epsilon_contrainte())
 # print("La liste des valeurs objetifs est : {} et la liste des valeurs de l'autre fonction objectif est : {}".format(
 #     epsilon_contrainte()[0], epsilon_contrainte()[1]))
+
+# print(epsilonContrainte(1, Capacite, nbre_employe,
+#                         nbre_taches, tab_distance, Duree, Debut, Fin, ntR))
+
+# plotSolutions1(*epsilonContrainte(1, Capacite, nbre_employe,
+#                                  nbre_taches, tab_distance, Duree, Debut, Fin, ntR))
+
+# plotSolutions2(Capacite, nbre_employe, nbre_taches,
+#                tab_distance, Duree, Debut, Fin, ntR)
