@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
-from firstdoc import extraction_data
-import folium
+from usefulFunctions2 import extractionData
+# import testfolium.html
+
 
 def affichage_graphique_test(lattitudes, longitudes):
 
@@ -89,7 +90,7 @@ def lecture(filename):
 
 
 def extraire_coordonnees(nom_ville):
-    path="Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
+    path = "Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
     EmployeesDico, TasksDico = extraction_data(path)
     return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico), vecteur_longitudes(EmployeesDico), vecteur_latitudes(EmployeesDico)
 
@@ -135,19 +136,19 @@ def order_list(list_to_order, list_used_for_order):
 
 
 def creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_ville):
-    path="Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
+    path = "Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
     EmployeesDico, TasksDico = extraction_data(path)
-    
+
     employes_unique = []
-    #Liste des employés qui ne comporte qu'une fois chacun
+    # Liste des employés qui ne comporte qu'une fois chacun
     for employe in employes:
         if employe not in employes_unique:
             employes_unique += [employe]
 
-    listesPlot=[]
-    #cette liste contient : [employe[longitudes[l1l2l3],latitudes[m1m2m3]]]
+    listesPlot = []
+    # cette liste contient : [employe[longitudes[l1l2l3],latitudes[m1m2m3]]]
     for i in range(len(employes_unique)):
-        #on extrait les longitudes et latitudes des tâches effectuées par l'employé i
+        # on extrait les longitudes et latitudes des tâches effectuées par l'employé i
         longitudes_employe = [longitudes[j] for j in range(
             len(employes)) if employes[j] == employes_unique[i]]
         lattitudes_employe = [lattitudes[j] for j in range(
@@ -164,36 +165,38 @@ def creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_v
             longitudes_employe, start_times_employe)
 
         # Ajout des domiciles des employés
-        found_name=False
-        j=0
-        while not found_name and j<len(EmployeesDico):
-            if employes_unique[i]==EmployeesDico[j]['EmployeeName']:
-                found_name=True
-                longitude_domicile_i=EmployeesDico[j]['Longitude']
-                latitude_domicile_i=EmployeesDico[j]['Latitude']
-            j+=1
+        found_name = False
+        j = 0
+        while not found_name and j < len(EmployeesDico):
+            if employes_unique[i] == EmployeesDico[j]['EmployeeName']:
+                found_name = True
+                longitude_domicile_i = EmployeesDico[j]['Longitude']
+                latitude_domicile_i = EmployeesDico[j]['Latitude']
+            j += 1
         longitudes_employe.insert(0, longitude_domicile_i)
         lattitudes_employe.insert(0, latitude_domicile_i)
         longitudes_employe += [longitude_domicile_i]
         lattitudes_employe += [latitude_domicile_i]
 
-        listesPlot.append([longitudes_employe,lattitudes_employe])
+        listesPlot.append([longitudes_employe, lattitudes_employe])
     return listesPlot
 
+
 def graphiquePyplot(longitudes, lattitudes, employes, taches, start_times, nom_ville):
-    listesPlot=creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_ville)
+    listesPlot = creation_listes(
+        longitudes, lattitudes, employes, taches, start_times, nom_ville)
 
     my_colors = ["r", "g", "b", "c", "m", "y",
                  "k", "r", "g", "b", "c", "m", "y", "k"]
 
     employes_unique = []
-    #Liste des employés qui ne comporte qu'une fois chacun
+    # Liste des employés qui ne comporte qu'une fois chacun
     for employe in employes:
         if employe not in employes_unique:
             employes_unique += [employe]
 
     for i in range(len(listesPlot)):
-        plt.plot(listesPlot[i][0],listesPlot[i][1],
+        plt.plot(listesPlot[i][0], listesPlot[i][1],
                  "-o", color=my_colors[i], label=str(employes_unique[i]))
         for j in range(len(employes)):
             if employes[j] == employes_unique[i]:
@@ -221,23 +224,25 @@ def afficher(nom_ville):
         nom_ville)
     employes, taches, start_times = lecture(path2)
 
-    graphiquePyplot(longitudes, lattitudes, employes, taches, start_times, nom_ville)
+    graphiquePyplot(longitudes, lattitudes, employes,
+                    taches, start_times, nom_ville)
 
-    my_colors = ["r", "g", "b", "c", "m", "y", "k", "r", "g", "b", "c", "m", "y", "k"]
+    my_colors = ["r", "g", "b", "c", "m", "y",
+                 "k", "r", "g", "b", "c", "m", "y", "k"]
 
-    listesPlot=creation_listes(longitudes, lattitudes, employes, taches, start_times, nom_ville)
-    m = folium.Map(location=[lattitudes[0],longitudes[0]],zoom_start=15)
-    for i in range (len(listesPlot)):
+    listesPlot = creation_listes(
+        longitudes, lattitudes, employes, taches, start_times, nom_ville)
+    m = folium.Map(location=[lattitudes[0], longitudes[0]], zoom_start=15)
+    for i in range(len(listesPlot)):
         loc = []
         for j in range(len(listesPlot[i][0])):
-            loc.append((listesPlot[i][0][j],listesPlot[i][1][j]))
+            loc.append((listesPlot[i][0][j], listesPlot[i][1][j]))
             print(loc)
-    folium.PolyLine(loc,color='red',weight=2,opacity=0.8).add_to(m)
+    folium.PolyLine(loc, color='red', weight=2, opacity=0.8).add_to(m)
     print('i added')
 
     m.save("testfolium.html")
     return None
 
+
 afficher('Bordeaux')
-
-
