@@ -18,7 +18,7 @@ def ajoutDomicile(tasksDico, employeesDico):
     return(tasksEnhanced)
 
 
-def optimisation1(capcite, nbreEmploye, nbreTaches, distance, duree, debut, fin):
+def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin):
     """Variables dont on hérite des programmes précédents :
     capacite = matrice des capacité de l'ouvrier n à faire la tache i ;
     distance = matrice contenant la distance entre les tâches i et j en position (i,j) ;
