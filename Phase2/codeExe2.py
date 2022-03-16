@@ -19,10 +19,10 @@ path = 'Phase2/InstancesV2/InstanceAustraliaV2.xlsx'
 EmployeesDico, EmployeesUnavailDico, TasksDico, TasksUnavailDico = extractionData(
     path)
 
-# Définition de variables
+# Définition des nombres de tâches réelles
 nbre_taches = len(TasksDico)
 nbre_employe = len(EmployeesDico)
-nbre_taches_tot = nbre_taches + 2*nbre_employe
+nbreIndispoEmploye = len(EmployeesUnavailDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
@@ -47,8 +47,12 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-solution = optimisation2(Capacite, nbre_employe,
-                         nbre_taches, tab_distance, Duree, Debut, Fin)
+borne = 700
+solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
+                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
+# affichage multi objectif
+print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
+    solution[2], solution[3]))
 
 finTemps = time.time()
 performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
