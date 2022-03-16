@@ -214,6 +214,7 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, start_times, nom_v
 
 
 def afficher(nom_ville):
+    '''retourne le graphique et enregistre un html avec la carte'''
     path1 = "Phase_1/InstancesV1/Instance"+str(nom_ville)+"V1.xlsx"
     path2 = "Phase_1/Solutions/Solution"+str(nom_ville)+"V1ByV1.txt"
 
@@ -231,11 +232,9 @@ def afficher(nom_ville):
         loc = []
         for j in range(len(listesPlot[i][0])):
             loc.append((listesPlot[i][0][j],listesPlot[i][1][j]))
-            print(loc)
     folium.PolyLine(loc,color='red',weight=2,opacity=0.8).add_to(m)
-    print('i added')
-
     m.save("testfolium.html")
+    #pour l'instant ça ne marche pas
     return None
 
 afficher('Bordeaux')

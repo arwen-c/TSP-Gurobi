@@ -22,26 +22,15 @@ def extractionData(path):
     return EmployeesDico, TasksDico
 
 
-<<<<<<< HEAD:Phase_1/firstdoc.py
-# calcule la distance entre deux points dont on connait les coordonnées GPS
-
-
-# Gestion de la localisation -- modif de la fonction distance
-=======
 # Fonctions utiles pour créer les matrices de données utiles
 
->>>>>>> main:Phase_1/usefulFunctions1.py
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
-<<<<<<< HEAD:Phase_1/firstdoc.py
     while not (foundid1 and foundid2) and index<len(TasksDico):
-=======
-    while not (foundId1 and foundId2):
->>>>>>> main:Phase_1/usefulFunctions1.py
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
             long1 = TasksDico[index]['Longitude']
@@ -51,18 +40,12 @@ def distance(id1, id2, TasksDico):
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
-<<<<<<< HEAD:Phase_1/firstdoc.py
     if long1 is None or long2 is None:
         distance = 0
     else :
         delta_long = long2-long1  # calcule de la différence de longitude
         delta_latt = lat2-lat1
         distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
-=======
-    deltaLong = long2-long1  # calcule de la différence de longitude
-    deltaLatt = lat2-lat1
-    distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
->>>>>>> main:Phase_1/usefulFunctions1.py
     return distance
 
 # def distance(id1, id2, TasksDico):
@@ -184,7 +167,7 @@ def nom_fichier_resolution(nom_fichier, n_methode):
     n_methode = str(n_methode)
     # return 'Solution' + L[0][8:] + 'ByV' + n_methode + '.txt' # ancienne version sans arborescence pour les fichiers excels
     # nouvelle version avec arborescence pour les fichiers excels
-    return 'Phase_1/Solutions/Solution' + L[0][28:] + 'ByV' + n_methode + '.txt'
+    return 'Phase_1/Solutions/Solution' + L[0][27:] + 'ByV' + n_methode + '.txt'
 
 
 def solution_fichier_txt(X, h, EmployeesDico):
