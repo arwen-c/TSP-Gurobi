@@ -188,5 +188,5 @@ def afficher(nom_ville):
     # m.save("testfolium.html")
     return None
 
-afficher('Bordeaux')
+afficher('Australia')
 
