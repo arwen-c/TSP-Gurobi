@@ -50,14 +50,21 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-borne = 10000
+
+# choisir 1 ou 2, en fonction de la fonction que l'on souhaite optimiser
+fonctionObjectif = 1
+# choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
+borne = 10000  # attention à mettre une valeur cohérente
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
-                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, 1)
+                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, fonctionObjectif)
 # affichage multi objectif
 print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
     solution[3], solution[4]))
 
-# plotSolutions1(1, *epsilonContrainte(2, Capacite, nbre_employe,
+
+# Pour tracer les graphiques des algorithmes epsilon Contraintes
+# fonctionObjectif = 1
+# plotSolutions1(fonctionObjectif, *epsilonContrainte(2, Capacite, nbre_employe,
 #                                      nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico))
 
 # plotSolutions2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
