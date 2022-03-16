@@ -1,5 +1,7 @@
 # Import de modules
 import time
+import sys
+from guppy import hpy
 import copy
 
 # Import des fonctions permettant la résolution
@@ -63,7 +65,8 @@ print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction 
 
 finTemps = time.time()
 # print(finTemps - debutTemps)
-
+performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
+              sys.getsizeof(tab_distance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
 creationFichier(path, 2, solution[0], solution[1],

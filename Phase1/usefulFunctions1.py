@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import math
+import openpyxl
 
 
 # Fonction récupération des données issues des excel
@@ -16,52 +17,52 @@ def extractionData(path):
     df2 = pd.read_excel(xls, 'Tasks')
 
     # Création des dictionnaires de données
-    EmployeesDico = df1.to_dict('records')
-    TasksDico = df2.to_dict('records')
+    employeesDico = df1.to_dict('records')
+    tasksDico = df2.to_dict('records')
 
-    return EmployeesDico, TasksDico
+    return employeesDico, tasksDico
 
 
 # Fonctions utiles pour créer les matrices de données utiles
 
-def distance(id1, id2, TasksDico):
+def distance(id1, id2, tasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
-    while not (foundId1 and foundId2) and index < len(TasksDico):
-        if TasksDico[index]['TaskId'] == id1:
+    while not (foundId1 and foundId2) and index < len(tasksDico):
+        if tasksDico[index]['TaskId'] == id1:
             foundId1 = True
-            long1 = TasksDico[index]['Longitude']
-            lat1 = TasksDico[index]['Latitude']
-        if TasksDico[index]['TaskId'] == id2:
+            long1 = tasksDico[index]['Longitude']
+            lat1 = tasksDico[index]['Latitude']
+        if tasksDico[index]['TaskId'] == id2:
             foundId2 = True
-            long2 = TasksDico[index]['Longitude']
-            lat2 = TasksDico[index]['Latitude']
+            long2 = tasksDico[index]['Longitude']
+            lat2 = tasksDico[index]['Latitude']
         index += 1
     if long1 is None or long2 is None:
         distance = 0
     else:
-        delta_long = long2-long1  # calcule de la différence de longitude
-        delta_latt = lat2-lat1
-        distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+        deltaLong = long2-long1  # calcule de la différence de longitude
+        deltaLatt = lat2-lat1
+        distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
     return distance
 
 
-def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
+def competenceOK(employeeName, taskId, tasksDico, employeesDico):
     """EmployeeName est une chaîne de caractères correspondant au nom d'un employé.
     TaskId est l'identifiant d'une tâche.
     TasksDico et EmployeesDico sont les dictionnaires contenant les informations respectives sur les tâches et les employés.
     Retourne 1 si l'employé a la bonne compétence et un niveau suffisant pour effectuer la tâche, 0 sinon."""
     taskSkill = next(item['Skill']
-                     for item in TasksDico if item['TaskId'] == TaskId)
+                     for item in tasksDico if item['TaskId'] == taskId)
     employeeSkill = next(
-        item['Skill'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
+        item['Skill'] for item in employeesDico if item['EmployeeName'] == employeeName)
     taskLevel = next(item['Level']
-                     for item in TasksDico if item['TaskId'] == TaskId)
+                     for item in tasksDico if item['TaskId'] == taskId)
     employeeLevel = next(
-        item['Level'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
+        item['Level'] for item in employeesDico if item['EmployeeName'] == employeeName)
     if taskLevel <= employeeLevel and taskSkill == employeeSkill:
         return 1
     else:
@@ -70,30 +71,30 @@ def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
 
 # Fonctions création des matrices nécessaires au calcul de la fonction coût et à la vérification des contraintes
 
-def matriceDistance(TasksDico):
+def matriceDistance(tasksDico):
     """TasksDico est le dictionnaire contenant les informations sur les tâches.
     Renvoie la matrice des distances entre les différentes tâches."""
     matriceDesDistances = []
-    for tache1 in TasksDico:
+    for tache1 in tasksDico:
         taskId1 = tache1["TaskId"]
         ligne = []
-        for tache2 in TasksDico:
+        for tache2 in tasksDico:
             taskId2 = tache2["TaskId"]
-            ligne.append(distance(taskId1, taskId2, TasksDico))
+            ligne.append(distance(taskId1, taskId2, tasksDico))
         matriceDesDistances.append(ligne)
     return matriceDesDistances
 
 
-def matriceCompetences(EmployeesDico, TasksDico):
+def matriceCompetences(employeesDico, tasksDico):
     """TasksDico et EmployeesDico sont les dictionnaires contenant les informations respectives sur les tâches et les employés.
     Renvoie une matrice C qui comporte un 1 si l'employé n peut faire la tache i et un 0 sinon."""
-    nombreEmployes = len(EmployeesDico)
-    nombreTaches = len(TasksDico)
+    nombreEmployes = len(employeesDico)
+    nombreTaches = len(tasksDico)
     C = np.zeros((nombreEmployes, nombreTaches))
     for n in range(nombreEmployes):
         for i in range(nombreTaches):
             C[n, i] = competenceOK(
-                EmployeesDico[n]['EmployeeName'], TasksDico[i]['TaskId'], TasksDico, EmployeesDico)
+                employeesDico[n]['EmployeeName'], tasksDico[i]['TaskId'], tasksDico, employeesDico)
     return C
 
 
@@ -114,13 +115,13 @@ def recuperationHeure(heure):
     return h*60+m
 
 
-def vecteurOuvertures(TasksDico):
+def vecteurOuvertures(tasksDico):
     """TasksDico est le dictionnaire contenant les informations respectives sur les tâches.
     Renvoie une liste avec l'heure d'ouverture de chaque tâche."""
-    nombre_taches = len(TasksDico)
+    nombreTaches = len(tasksDico)
     O = []
-    for i in range(nombre_taches):
-        heure = TasksDico[i]['OpeningTime']
+    for i in range(nombreTaches):
+        heure = tasksDico[i]['OpeningTime']
         res = heure.split(':')
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
@@ -130,13 +131,13 @@ def vecteurOuvertures(TasksDico):
     return O
 
 
-def vecteurFermetures(TasksDico):
+def vecteurFermetures(tasksDico):
     """TasksDico est le dictionnaire contenant les informations respectives sur les tâches.
     Renvoie une liste avec l'heure de fermeture de chaque tâche."""
-    nombre_taches = len(TasksDico)
+    nombreTaches = len(tasksDico)
     F = []
-    for i in range(nombre_taches):
-        heure = TasksDico[i]['ClosingTime']
+    for i in range(nombreTaches):
+        heure = tasksDico[i]['ClosingTime']
         res = heure.split(':')
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
@@ -146,13 +147,13 @@ def vecteurFermetures(TasksDico):
     return F
 
 
-def vecteurDurees(TasksDico):
+def vecteurDurees(tasksDico):
     """TasksDico est le dictionnaire contenant les informations sur les tâches.
     Renvoie le vecteur des durées de chaque tâche."""
-    Vecteur_duree = []
-    for row in TasksDico:
-        Vecteur_duree.append(row['TaskDuration'])
-    return Vecteur_duree
+    vecteurDuree = []
+    for row in tasksDico:
+        vecteurDuree.append(row['TaskDuration'])
+    return vecteurDuree
 
 
 # Création du fichier solution
@@ -169,7 +170,7 @@ def nomFichierResolution(nomFichier, nMethode):
     return 'Phase1/Solutions/Solution' + L[0][27:] + 'ByV' + nMethode + '.txt'
 
 
-def lignesSolution(X, h, EmployeesDico):
+def lignesSolution(X, h, employeesDico):
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
@@ -184,7 +185,7 @@ def lignesSolution(X, h, EmployeesDico):
             numeroEmploye = 0
             while numeroEmploye < n and not(tacheiAjoutee):
                 if X[numeroEmploye, i, j] == 1:
-                    employeeName = EmployeesDico[numeroEmploye]['EmployeeName']
+                    employeeName = employeesDico[numeroEmploye]['EmployeeName']
                     listeDesLignes.append(
                         'T' + str(i+1) + ';' + '1' + ';' + str(employeeName) + ';' + str(round(h[i])) + ';')
                     tacheiAjoutee = True
@@ -196,12 +197,41 @@ def lignesSolution(X, h, EmployeesDico):
     return listeDesLignes
 
 
-def creationFichier(nomFichier, nMethode, X, h, EmployeesDico):
+def creationFichier(nomFichier, nMethode, X, h, employeesDico):
     """nomFichier est le nom du fichier utilisée pour créer les variables globales.
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
     fichier = open(nomFichierResolution(nomFichier, nMethode), "w")
-    fichier.write("\n".join(lignesSolution(X, h, EmployeesDico)))
+    fichier.write("\n".join(lignesSolution(X, h, employeesDico)))
     fichier.close()
     return None
+
+
+def performances1(tpsExec, tailleEntree, tailleMemoire, instance):
+    # Ecriture des critères de performance dans un excel
+    myPath = "./performance1.xlsx"
+    myWb = openpyxl.load_workbook(myPath)
+    mySheet = myWb.active
+    # on cherche à partir de quelle ligne écrire (écriture à la suite)
+    i = 4
+    cell = mySheet.cell(row=i, column=1)
+    while cell.value != None:
+        i += 1
+        cell = mySheet.cell(row=i, column=1)
+    # on ajoute les valeurs de performance obtenue du code
+    cell.value = tpsExec  # temps d'execution en première colonne
+    cell = mySheet.cell(row=i, column=2)
+    cell.value = tailleEntree  # taille des instances d'entrée en deuxième colonne
+    cell = mySheet.cell(row=i, column=3)
+    # taille de la mémoire occupée par le programme en troisième colonne
+    cell.value = tailleMemoire
+    # on calcule àpartir de ces valeurs de nouveaux indicateurs
+    cell = mySheet.cell(row=i, column=4)
+    cell.value = tpsExec/tailleEntree
+    cell = mySheet.cell(row=i, column=5)
+    cell.value = tailleMemoire/tailleEntree
+    cell = mySheet.cell(row=i, column=6)
+    cell.value = instance
+    # on enregistre les données au sein de l'excel
+    myWb.save("./performance1.xlsx")
