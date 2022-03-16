@@ -110,8 +110,6 @@ def creation_listes(nom_ville):
             id_tache=int(taches[j][1:])-1
             # les taches sont dans l'ordre normal... pas dans l'ordre de sortie de lecture c'est le meme patatoide. Donc on doit relier la ligne j au numéro de la tâche
             if employes[j]==employes_unique[i]:
-                print(taches[j])
-                print(id_tache)
                 longitudes_i.append(longitudes_taches[id_tache])
                 lattitudes_i.append(latitudes_taches[id_tache])
                 start_times_i.append(start_times[j])
@@ -184,7 +182,7 @@ def afficher(nom_ville):
         loc = []
         for j in range(len(listesPlot[i][0])):
             loc.append((listesPlot[i][0][j],listesPlot[i][1][j]))
-            print(loc)
+            #print(loc)
         folium.PolyLine(loc,color='red',weight=2,opacity=0.8).add_to(m)
 
     m.save("testfolium.html")
