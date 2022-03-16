@@ -45,6 +45,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # -- Ajout variables de décisions --
     M = 1440  # majorant des temps
 
+    # -- Taille du tableau modifié = nombre de tâches réelles + nombre de tâches fictives --
+    t = len(Debut)
+
     nbreIndisMax = max(len(Fin[j]) for j in range(t))
 
     H = m.addMVar(shape=nbre_taches+2*nbre_employe +
@@ -59,9 +62,6 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
     D = np.array(D)
-
-    # -- Taille du tableau modifié = nombre de tâches réelles + nombre de tâches fictives --
-    t = len(Debut)
 
     # -- Ajout des contraintes --
 
