@@ -53,7 +53,7 @@ def optimisation_1(C, nbre_employe, nbre_taches, D, Duree, Debut, Fin, ntR, born
     # nouvelle contrainte
     for i in range(t):
         m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
-                        for j in range(t)) == 1)
+                        for j in range(t)) <= 1)
 
     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
     for n in range(nbre_employe):

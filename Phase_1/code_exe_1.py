@@ -10,7 +10,7 @@ from opti_1 import ajout_domicile, optimisation_1
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
 path = 'Phase_2/InstancesV2/InstanceBordeauxV2.xlsx'
-
+#path = 'Phase_1/InstancesV1/InstanceBordeauxV1.xlsx'
 
 # Corps du code
 
@@ -44,14 +44,14 @@ Fin = vecteurFermetures(TasksDico)
 # ajout du nombre de tâches réelles pour l'opti bi-objectifs
 ntR = len(TasksDico)
 
-# borne = 700
-# # Optimisation gurobi
-# solution = optimisation_1(Capacite, nbre_employe,
-#                           nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne)
+borne = math.inf
+# Optimisation gurobi
+solution = optimisation_1(Capacite, nbre_employe,
+                          nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne, 2)
 
-# # affichage multi objectif
-# print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
-#     solution[2], solution[3]))
+# affichage multi objectif
+print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
+    solution[2], solution[3]))
 
 
 # # Création du fichier solution au format txt
@@ -79,5 +79,5 @@ def epsilon_contrainte():
 
 
 # print(epsilon_contrainte())
-print("La liste des valeurs objetifs est : {} et la liste des valeurs de l'autre fonction objectif est : {}".format(
-    epsilon_contrainte()[0], epsilon_contrainte()[1]))
+# print("La liste des valeurs objetifs est : {} et la liste des valeurs de l'autre fonction objectif est : {}".format(
+#     epsilon_contrainte()[0], epsilon_contrainte()[1]))
