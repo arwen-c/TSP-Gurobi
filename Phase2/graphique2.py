@@ -1,10 +1,6 @@
 import matplotlib.pyplot as plt
 from usefulFunctions2 import extractionData
-<<<<<<< HEAD
-import folium
-=======
 #import folium
->>>>>>> samuelSolveOpti2
 
 
 
@@ -112,22 +108,14 @@ def creation_listes(nom_ville):
         start_times_i=[]
         for j in range (len(employes)):
             id_tache=int(taches[j][1:])-1
-<<<<<<< HEAD
-            # les taches sont dans l'ordre normal... pas dans l'ordre de sortie de lecture c'est le meme patatoide. Donc on doit relier la ligne j au numéro de la tâche
-=======
             # les taches sont dans l'ordre normal... pas dans l'ordre de sortie de lecture c'est le meme. Donc on doit relier la ligne j au numéro de la tâche
->>>>>>> samuelSolveOpti2
             if employes[j]==employes_unique[i]:
                 longitudes_i.append(longitudes_taches[id_tache])
                 lattitudes_i.append(latitudes_taches[id_tache])
                 start_times_i.append(start_times[j])
 
         # On trie les longitudes/lattitudes des tâches des employés par ordre croissant de début de leurs tâches
-<<<<<<< HEAD
-
-=======
         
->>>>>>> samuelSolveOpti2
         lattitudes_i = order_list(
             lattitudes_i, start_times_i)
         longitudes_i = order_list(
@@ -188,16 +176,6 @@ def afficher(nom_ville):
 
     #my_colors = ["r", "g", "b", "c", "m", "y", "k", "r", "g", "b", "c", "m", "y", "k"]
 
-<<<<<<< HEAD
-    listesPlot=creation_listes(nom_ville)
-    m = folium.Map(location=[lattitudes[0],longitudes[0]],zoom_start=15)
-    for i in range (len(listesPlot)):
-        loc = []
-        for j in range(len(listesPlot[i][0])):
-            loc.append((listesPlot[i][0][j],listesPlot[i][1][j]))
-            #print(loc)
-        folium.PolyLine(loc,color='red',weight=2,opacity=0.8).add_to(m)
-=======
     #listesPlot=creation_listes(nom_ville)
     # m = folium.Map(location=[lattitudes[0],longitudes[0]],zoom_start=15)
     # for i in range (len(listesPlot)):
@@ -206,14 +184,9 @@ def afficher(nom_ville):
     #         loc.append((listesPlot[i][0][j],listesPlot[i][1][j]))
     #         #print(loc)
     #     folium.PolyLine(loc,color='red',weight=2,opacity=0.8).add_to(m)
->>>>>>> samuelSolveOpti2
 
     # m.save("testfolium.html")
     return None
 
 afficher('Australia')
-<<<<<<< HEAD
-=======
-
->>>>>>> samuelSolveOpti2
 
