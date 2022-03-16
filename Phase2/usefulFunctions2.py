@@ -178,7 +178,7 @@ def nomFichierResolution(nomFichier, nMethode):
     return 'Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
 
 
-def lignesSolution(X, h, TasksDico, EmployeesDico):
+def lignesSolution(X, h, L, TasksDico, EmployeesDico, Duree):
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
@@ -203,15 +203,29 @@ def lignesSolution(X, h, TasksDico, EmployeesDico):
         if not(tacheiAjoutee):
             listeDesLignes.append(
                 'T' + str(i+1) + ';' + '0' + ';' + ';' + ';')
+    listeDesLignes.append(' ')  # saut de ligne
+    listeDesLignes.append('employeeName;lunchBreakStartTime;')
+    for numeroEmploye in range(n):
+        tachePrePauseTrouve = False
+        while i < nombreTaches and not(tachePrePauseTrouve):
+            j = 0
+            while j < nombreTaches and not(tachePrePauseTrouve):
+                if L[n, i, j] == 1:
+                    listeDesLignes.append(str(
+                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(h[i] + Duree[i])) + ';')
+                    tachePrePauseTrouve = True
+                j += j
+            i += i
     return listeDesLignes
 
 
-def creationFichier(nomFichier, nMethode, X, h, TasksDico, EmployeesDico):
+def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico, Duree):
     """nomFichier est le nom du fichier utilisée pour créer les variables globales.
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
     fichier = open(nomFichierResolution(nomFichier, nMethode), "w")
-    fichier.write("\n".join(lignesSolution(X, h, TasksDico, EmployeesDico)))
+    fichier.write("\n".join(lignesSolution(
+        X, h, L, TasksDico, EmployeesDico, Duree)))
     fichier.close()
     return None
