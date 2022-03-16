@@ -5,10 +5,11 @@ import copy
 # Import des fonctions permettant la résolution
 from usefulFunctions2 import *
 from opti2 import ajoutTachesFictives, optimisation2
+from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstanceAustraliaV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceBordeauxV2.xlsx'
 
 
 # Corps du code
@@ -25,7 +26,7 @@ nbreIndispoEmploye = len(EmployeesUnavailDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
-TasksDicoNotModified=copy.deepcopy(TasksDico)
+TasksDicoNotModified = copy.deepcopy(TasksDico)
 TasksDico = ajoutTachesFictives(
     TasksDico, EmployeesDico, EmployeesUnavailDico)
 
@@ -47,17 +48,23 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-borne = 1000
+borne = 10000
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
-                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
+                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, 1)
 # affichage multi objectif
 print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
     solution[3], solution[4]))
 
+# plotSolutions1(1, *epsilonContrainte(2, Capacite, nbre_employe,
+#                                      nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico))
+
+# plotSolutions2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
+#                tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico)
+
 finTemps = time.time()
 # print(finTemps - debutTemps)
 
-# print("L :{}".format(solution[2]))
 
 # Création du fichier solution au format txt
-creationFichier(path, 2, solution[0], solution[1], solution[2], TasksDicoNotModified, EmployeesDico)
+creationFichier(path, 2, solution[0], solution[1],
+                solution[2], TasksDicoNotModified, EmployeesDico)
