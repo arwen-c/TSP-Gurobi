@@ -4,7 +4,7 @@ from gurobipy import *
 from usefulFunctions2 import recuperationHeure
 
 
-def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
+def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico):
 
     # (rechercher ajout_domicile dans tous les docs pour modifier par ajout_taches_fictives)
     ### AJOUTS DOMICILES ###
@@ -44,6 +44,12 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
     # -- Ajout variables de décisions --
     M = 1440  # majorant des temps
+
+    # -- Taille du tableau modifié = nombre de tâches réelles + nombre de tâches fictives --
+    t = len(Debut)
+
+    nbreIndisMax = max(len(Fin[j]) for j in range(t))
+
     H = m.addMVar(shape=nbre_taches+2*nbre_employe +
                   nbreIndispoEmploye, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
@@ -51,14 +57,11 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     L = m.addMVar(shape=(nbre_employe, nbre_taches,
                          nbre_taches), vtype=GRB.BINARY)
     delta = m.addMVar(shape=(nbre_taches+2*nbre_employe +
-                             nbreIndispoEmploye, 5, 3), vtype=GRB.BINARY)
+                             nbreIndispoEmploye, nbreIndisMax, 3), vtype=GRB.BINARY)
 
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
     D = np.array(D)
-
-    # -- Taille du tableau modifié = nombre de tâches réelles + nombre de tâches fictives --
-    t = len(Debut)
 
     # -- Ajout des contraintes --
 
@@ -81,11 +84,17 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # Les employés font bien leur pauses (indisponibilités):
     for n in range(nbre_employe):
         NomEmploye = EmployeesDico[n]['EmployeeName']
+        print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
         for i_unavail in range(nbreIndispoEmploye):
             # Il faut que ce soit le bon employé qui fasse la pause
             if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 1)  # arrivé à la pause
+                m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
+                                for i in range(nbre_taches)) == 1)  # départ de la pause
+                # None
+                print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *
+                                                                                                                nbre_employe+i_unavail]['TaskId']))
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 0)  # arrivé à la pause
@@ -103,8 +112,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
         for i in range(nbre_taches):
             for j in range(nbre_taches):
                 m.addConstr(L[n, i, j] <= X[n, i, j])
-    # Une personne n'a droit qu'à une seule pause
-        m.addConstr(sum(X[n, i, j] for i in range(nbre_taches)
+    # Une personne fait une et une seule pause dej
+        m.addConstr(sum(L[n, i, j] for i in range(nbre_taches)
                         for j in range(nbre_taches)) == 1)
 
     for i in range(t):  # Tâches réelles + Tâches fictives
@@ -118,28 +127,34 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 #m.addConstr(X[n, i, i] == 0)
 
                 # - Effets temporels -
-                # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
+                # la tache j sera bien faite dans un intervalle de temps où elle est ouverte
                 nbreCreneauxJ = len(Fin[j])
 
                 for k in range(nbreCreneauxJ):
-                    # M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
+                    # -?M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
                     m.addConstr(-M*(1-delta[j, k, 1]) <= H[j]-Debut[j][k])
                     m.addConstr(H[j]-Debut[j][k] <= M*delta[j, k, 1])
                     # -M(1-delta) <= x1-x <= M.delta      x<x1 SSI delta>1
                     m.addConstr(-M*(1-delta[j, k, 2])
                                 <= -H[j]+Fin[j][k]-Duree[j])
                     m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j, k, 2])
-                    # il faut que les deux contraintes ci dessus soit vérifiées
+                    # il faut que les deux contraintes ci-dessus soient vérifiées
                     m.addConstr(delta[j, k, 0] ==
                                 delta[j, k, 1]*delta[j, k, 2])
-
+                # On ne va pas faire plusieurs fois la même tâche
                 m.addConstr(sum(delta[j, k, 0]
                                 for k in range(nbreCreneauxJ)) == 1)
+
+                # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
 
                 # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
                 if i < nbre_taches and j < nbre_taches:  # on est entre deux tâches réelles
                     m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
                                 <= H[j] + 24*60*(1-X[n, i, j]))
+                    m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
+                    m.addConstr(13*60-(1-L[n, i, j])*60*13 <= H[j])
+                    None
+
                 else:
                     m.addConstr(
                         H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
@@ -158,6 +173,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     m.setObjective(sum(-X[n, i, j]*Duree[i] for n in range(nbre_employe)
                        for i in range(nbre_taches) for j in range(t)), GRB.MINIMIZE)
 
+    m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
 
@@ -170,4 +186,4 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 valeur += X.x[n, i, j]*D[i, j]
 
     # -- Affichage des solutions --
-    return X.x, H.x, m.objVal, valeur
+    return X.x, H.x, L.x, m.objVal, valeur

@@ -14,3 +14,16 @@ Sur ce fichier se trouvent les différentes étapes d'optimisation avec le solve
 
 firstdoc
 Comporte toutes les fonctions auxiliaires, notamment d'extraction et de traitement des données.
+
+
+ETAPE 2 - Rendu le 14/03
+Fichiers utiles :
+
+codeExe2
+Exécutable principal. En modifiant le path, on peut obtenir les résultats pour les différentes instances.
+
+opti2
+Sur ce fichier se trouvent les différentes étapes d'optimisation avec le solveur Gurobi.
+
+usefulFunctions2
+Comporte toutes les fonctions auxiliaires, notamment d'extraction et de traitement des données.
