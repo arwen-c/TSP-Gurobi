@@ -11,7 +11,7 @@ from opti_1 import ajout_domicile, optimisation_1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase_2/InstancesV2/InstanceBordeauxV2.xlsx'
+path = 'Phase_2/InstancesV2/InstanceAustriaV2.xlsx'
 #path = 'Phase_1/InstancesV1/InstanceBordeauxV1.xlsx'
 
 # Corps du code
@@ -48,12 +48,12 @@ ntR = len(TasksDico)
 
 borne = math.inf
 # Optimisation gurobi
-solution = optimisation_1(Capacite, nbre_employe,
-                          nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne, 2)
+# solution = optimisation_1(Capacite, nbre_employe,
+#                           nbre_taches, tab_distance, Duree, Debut, Fin, ntR, borne, 1)
 
 # affichage multi objectif
-print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
-    solution[2], solution[3]))
+# print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
+#     solution[2], solution[3]))
 
 
 # # Création du fichier solution au format txt
@@ -87,8 +87,8 @@ def epsilon_contrainte():
 # print(epsilonContrainte(1, Capacite, nbre_employe,
 #                         nbre_taches, tab_distance, Duree, Debut, Fin, ntR))
 
-# plotSolutions1(*epsilonContrainte(1, Capacite, nbre_employe,
-#                                  nbre_taches, tab_distance, Duree, Debut, Fin, ntR))
+plotSolutions1(1, *epsilonContrainte(1, Capacite, nbre_employe,
+                                     nbre_taches, tab_distance, Duree, Debut, Fin, ntR))
 
-# plotSolutions2(Capacite, nbre_employe, nbre_taches,
-#                tab_distance, Duree, Debut, Fin, ntR)
+plotSolutions2(Capacite, nbre_employe, nbre_taches,
+               tab_distance, Duree, Debut, Fin, ntR)

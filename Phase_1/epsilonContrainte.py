@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 def epsilonContrainte(fonctionObjectif, Capacite, nbre_employe, nbre_taches, tab_distance, Duree, Debut, Fin, ntR):
     # fonctionObjectif vaut 1 si on optimise la fonction objectif numéro 1, avec la deuxième fonction bornée, et vaut 2 si c'est l'inverse
-    epsilon = 1
+    epsilon = 10
     borne = 1000000
     valeurObjectifs = []
     valeurBornes = []
@@ -27,7 +27,7 @@ def epsilonContrainte(fonctionObjectif, Capacite, nbre_employe, nbre_taches, tab
     return valeurObjectifs, valeurBornes
 
 
-def plotSolutions1(valeurObjectifs, valeurBornes, fonctionObjectif):
+def plotSolutions1(fonctionObjectif, valeurObjectifs, valeurBornes):
     plt.plot(valeurObjectifs, valeurBornes, "-o")
     plt.title("Optimisation sur : "+str(fonctionObjectif))
     plt.show()
