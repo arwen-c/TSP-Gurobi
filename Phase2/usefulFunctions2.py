@@ -211,7 +211,6 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
         while (i < nombreTaches and not(tachePrePauseTrouve)):
             j = 0
             while (j < nombreTaches and not(tachePrePauseTrouve)):
-                print (i,j,nombreTaches,'jesuisla')
                 if L[numeroEmploye, i, j] == 1:
                     listeDesLignes.append(str(
                         EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(h[i] + Duree[i])) + ';')
