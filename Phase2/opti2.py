@@ -93,8 +93,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
                                 for i in range(nbre_taches)) == 1)  # départ de la pause
                 # None
-                print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *
-                                                                                                                nbre_employe+i_unavail]['TaskId']))
+                # print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *
+                #                                                                                                 nbre_employe+i_unavail]['TaskId']))
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 0)  # arrivé à la pause
