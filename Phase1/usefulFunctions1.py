@@ -166,7 +166,7 @@ def nomFichierResolution(nomFichier, nMethode):
     nMethode = str(nMethode)
     # return 'Solution' + L[0][8:] + 'ByV' + n_methode + '.txt' # ancienne version sans arborescence pour les fichiers excels
     # nouvelle version avec arborescence pour les fichiers excels
-    return 'Phase1/Solutions/Solution' + L[0][28:] + 'ByV' + nMethode + '.txt'
+    return 'Phase1/Solutions/Solution' + L[0][27:] + 'ByV' + nMethode + '.txt'
 
 
 def lignesSolution(X, h, EmployeesDico):
