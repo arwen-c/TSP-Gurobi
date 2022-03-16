@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import math
+import openpyxl
 
 
 # Fonction récupération des données issues des excel
@@ -205,3 +206,32 @@ def creationFichier(nomFichier, nMethode, X, h, EmployeesDico):
     fichier.write("\n".join(lignesSolution(X, h, EmployeesDico)))
     fichier.close()
     return None
+
+
+def performances1(tpsExec, tailleEntree, tailleMemoire, instance):
+    # Ecriture des critères de performance dans un excel
+    my_path = "./performance1.xlsx"
+    my_wb = openpyxl.load_workbook(my_path)
+    my_sheet = my_wb.active
+    # on cherche à partir de quelle ligne écrire (écriture à la suite)
+    i = 4
+    cell = my_sheet.cell(row=i, column=1)
+    while cell.value != None:
+        i += 1
+        cell = my_sheet.cell(row=i, column=1)
+    # on ajoute les valeurs de performance obtenue du code
+    cell.value = tpsExec  # temps d'execution en première colonne
+    cell = my_sheet.cell(row=i, column=2)
+    cell.value = tailleEntree  # taille des instances d'entrée en deuxième colonne
+    cell = my_sheet.cell(row=i, column=3)
+    # taille de la mémoire occupée par le programme en troisième colonne
+    cell.value = tailleMemoire
+    # on calcule àpartir de ces valeurs de nouveaux indicateurs
+    cell = my_sheet.cell(row=i, column=4)
+    cell.value = tpsExec/tailleEntree
+    cell = my_sheet.cell(row=i, column=5)
+    cell.value = tailleMemoire/tailleEntree
+    cell = my_sheet.cell(row=i, column=6)
+    cell.value = instance
+    # on enregistre les données au sein de l'excel
+    my_wb.save("./performance1.xlsx")
