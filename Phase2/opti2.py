@@ -145,11 +145,16 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 m.addConstr(sum(delta[j, k, 0]
                                 for k in range(nbreCreneauxJ)) == 1)
 
+                # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
+
                 # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
                 if i < nbre_taches and j < nbre_taches:  # on est entre deux tâches réelles
-                    # m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
-                    #             <= H[j] + 24*60*(1-X[n, i, j]))
+                    m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
+                                <= H[j] + 24*60*(1-X[n, i, j]))
+                    m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
+                    m.addConstr(13*60-(1-L[n, i, j])*60*13 <= H[j])
                     None
+
                 else:
                     m.addConstr(
                         H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
@@ -181,4 +186,4 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 valeur += X.x[n, i, j]*D[i, j]
 
     # -- Affichage des solutions --
-    return X.x, H.x, m.objVal, valeur
+    return X.x, H.x, L.x, m.objVal, valeur

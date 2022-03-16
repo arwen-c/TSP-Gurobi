@@ -50,10 +50,11 @@ solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye
                          tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
 # affichage multi objectif
 print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
-    solution[2], solution[3]))
+    solution[3], solution[4]))
 
 finTemps = time.time()
 print(finTemps - debutTemps)
 
 # Création du fichier solution au format txt
-creationFichier(path, 2, solution[0], solution[1], TasksDico, EmployeesDico)
+# creationFichier(path, 2, solution[0], solution[1],
+#                 solution[2], TasksDico, EmployeesDico, Duree)
