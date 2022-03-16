@@ -115,9 +115,10 @@ def creation_listes(nom_ville):
                 start_times_i.append(start_times[j])
 
         # On trie les longitudes/lattitudes des tâches des employés par ordre croissant de début de leurs tâches
-
-        lattitudes_i = order_list(
+        print(lattitudes_i)
+        ordered_lattitudes_i = order_list(
             lattitudes_i, start_times_i)
+        print(ordered_lattitudes_i)
         longitudes_i = order_list(
             longitudes_i, start_times_i)
 
