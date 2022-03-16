@@ -181,4 +181,4 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 valeur += X.x[n, i, j]*D[i, j]
 
     # -- Affichage des solutions --
-    return X.x, H.x, m.objVal, valeur
+    return X.x, H.x, L.x, m.objVal, valeur
