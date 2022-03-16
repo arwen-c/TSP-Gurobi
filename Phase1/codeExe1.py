@@ -11,51 +11,51 @@ from opti1 import ajoutDomicile, optimisation1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-Path = 'Phase1/InstancesV1/InstancePolandV1.xlsx'
+path = 'Phase1/InstancesV1/InstancePolandV1.xlsx'
 
 
 ### CORPS DU CODE ###
 
 
 # Extraction des données
-EmployeesDico, TasksDico = extractionData(Path)
+employeesDico, tasksDico = extractionData(path)
 
 # Définition de variables
-NbreTaches = len(TasksDico)
-NbreEmploye = len(EmployeesDico)
+nbreTaches = len(tasksDico)
+nbreEmploye = len(employeesDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
-TasksDico = ajoutDomicile(TasksDico, EmployeesDico)
+tasksDico = ajoutDomicile(tasksDico, employeesDico)
 
 # Calcul de la matrice des distances Distance
-TabDistance = matriceDistance(TasksDico)
+tabDistance = matriceDistance(tasksDico)
 
 # Création de Capacité, Durée, Début et Fin
 
 # matrice de booléens. Vaut 1 en position [n,i] si l'employé n est capable d'effectuer la tache i, 0 sinon
-Capacite = matriceCompetences(EmployeesDico, TasksDico)
+capacite = matriceCompetences(employeesDico, tasksDico)
 # liste des durées des tâches
-Duree = vecteurDurees(TasksDico)
+duree = vecteurDurees(tasksDico)
 # liste des début d'ouverture des tâches
-Debut = vecteurOuvertures(TasksDico)
+debut = vecteurOuvertures(tasksDico)
 # liste des fins d'ouverture des tâches
-Fin = vecteurFermetures(TasksDico)
+fin = vecteurFermetures(tasksDico)
 
-Debut = time.time()
+debut = time.time()
 
 
 # Optimisation gurobi
-Solution = optimisation1(Capacite, NbreEmploye,
-                         NbreTaches, TabDistance, Duree, Debut, Fin)
+solution = optimisation1(capacite, nbreEmploye,
+                         nbreTaches, tabDistance, duree, debut, fin)
 
-Fin = time.time()
+fin = time.time()
 
 
-performances1(Fin-Debut, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
-              sys.getsizeof(TabDistance), hpy().heap().size, Path)
+performances1(fin-debut, sys.getsizeof(capacite) + sys.getsizeof(duree)+sys.getsizeof(debut)+sys.getsizeof(fin) +
+              sys.getsizeof(tabDistance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
-creationFichier(Path, 1, Solution[0], Solution[1], EmployeesDico)
+creationFichier(path, 1, solution[0], solution[1], employeesDico)
 
 # pb corrigé : erreur "permission denied" : ne pas avoir le fichier d'ouvert en parallèle !
