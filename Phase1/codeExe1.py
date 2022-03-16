@@ -2,6 +2,8 @@ from cmath import cos
 from math import dist
 from numpy import real
 import time
+import sys
+from guppy import hpy
 
 
 from usefulFunctions1 import *
@@ -9,7 +11,7 @@ from opti1 import ajoutDomicile, optimisation1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase1/InstancesV1/InstanceBordeauxV1.xlsx'
+path = 'Phase1/InstancesV1/InstanceItalyV1.xlsx'
 
 
 ### CORPS DU CODE ###
@@ -48,7 +50,12 @@ solution = optimisation1(Capacite, nbreEmploye,
                          nbreTaches, tabDistance, Duree, Debut, Fin)
 
 fin = time.time()
-print(fin - debut)
+
+
+performances1(fin-debut, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
+              sys.getsizeof(tabDistance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
 creationFichier(path, 1, solution[0], solution[1], EmployeesDico)
+
+# pb corrigé : erreur "permission denied" : ne pas avoir le fichier d'ouvert en parallèle !
