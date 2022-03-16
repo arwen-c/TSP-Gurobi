@@ -175,7 +175,7 @@ def nomFichierResolution(nomFichier, nMethode):
     n_methode est le numéro de la méthode.
     Renvoie le nom du fichier txt."""
     L = nomFichier.split('.')
-    return 'Solution' + L[0][8:] + 'ByV' + str(nMethode) + '.txt'
+    return 'Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
 
 
 def lignesSolution(X, h, TasksDico, EmployeesDico):

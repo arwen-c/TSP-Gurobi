@@ -81,14 +81,20 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
                 X[n, i, j] for i in range(t)))
 
-    # Les employés font bien leur pauses (indisponibilités):
+        # Les employés font bien leur pauses (indisponibilités):
     for n in range(nbre_employe):
         NomEmploye = EmployeesDico[n]['EmployeeName']
+        print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
         for i_unavail in range(nbreIndispoEmploye):
             # Il faut que ce soit le bon employé qui fasse la pause
             if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 1)  # arrivé à la pause
+                m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
+                                for i in range(nbre_taches)) == 1)  # départ de la pause
+                # None
+                print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *
+                                                                                                                nbre_employe+i_unavail]['TaskId']))
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 0)  # arrivé à la pause
@@ -141,8 +147,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
                 # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
                 if i < nbre_taches and j < nbre_taches:  # on est entre deux tâches réelles
-                    m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
-                                <= H[j] + 24*60*(1-X[n, i, j]))
+                    # m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
+                    #             <= H[j] + 24*60*(1-X[n, i, j]))
+                    None
                 else:
                     m.addConstr(
                         H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
@@ -161,6 +168,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     m.setObjective(sum(-X[n, i, j]*Duree[i] for n in range(nbre_employe)
                        for i in range(nbre_taches) for j in range(t)), GRB.MINIMIZE)
 
+    m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
 

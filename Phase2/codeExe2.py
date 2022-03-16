@@ -56,4 +56,4 @@ finTemps = time.time()
 print(finTemps - debutTemps)
 
 # Création du fichier solution au format txt
-creationFichier(path, 1, solution[0], solution[1], EmployeesDico)
+creationFichier(path, 2, solution[0], solution[1], TasksDico, EmployeesDico)
