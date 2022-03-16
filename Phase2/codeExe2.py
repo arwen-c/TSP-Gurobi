@@ -47,7 +47,7 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-borne = 2700
+borne = 1000
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
                          tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
 # affichage multi objectif
