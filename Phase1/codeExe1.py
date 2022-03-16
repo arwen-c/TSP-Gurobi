@@ -11,25 +11,25 @@ from opti1 import ajoutDomicile, optimisation1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase1/InstancesV1/InstanceItalyV1.xlsx'
+Path = 'Phase1/InstancesV1/InstancePolandV1.xlsx'
 
 
 ### CORPS DU CODE ###
 
 
 # Extraction des données
-EmployeesDico, TasksDico = extractionData(path)
+EmployeesDico, TasksDico = extractionData(Path)
 
 # Définition de variables
-nbreTaches = len(TasksDico)
-nbreEmploye = len(EmployeesDico)
+NbreTaches = len(TasksDico)
+NbreEmploye = len(EmployeesDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
 TasksDico = ajoutDomicile(TasksDico, EmployeesDico)
 
 # Calcul de la matrice des distances Distance
-tabDistance = matriceDistance(TasksDico)
+TabDistance = matriceDistance(TasksDico)
 
 # Création de Capacité, Durée, Début et Fin
 
@@ -42,20 +42,20 @@ Debut = vecteurOuvertures(TasksDico)
 # liste des fins d'ouverture des tâches
 Fin = vecteurFermetures(TasksDico)
 
-debut = time.time()
+Debut = time.time()
 
 
 # Optimisation gurobi
-solution = optimisation1(Capacite, nbreEmploye,
-                         nbreTaches, tabDistance, Duree, Debut, Fin)
+Solution = optimisation1(Capacite, NbreEmploye,
+                         NbreTaches, TabDistance, Duree, Debut, Fin)
 
-fin = time.time()
+Fin = time.time()
 
 
-performances1(fin-debut, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
-              sys.getsizeof(tabDistance), hpy().heap().size, path)
+performances1(Fin-Debut, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
+              sys.getsizeof(TabDistance), hpy().heap().size, Path)
 
 # Création du fichier solution au format txt
-creationFichier(path, 1, solution[0], solution[1], EmployeesDico)
+creationFichier(Path, 1, Solution[0], Solution[1], EmployeesDico)
 
 # pb corrigé : erreur "permission denied" : ne pas avoir le fichier d'ouvert en parallèle !
