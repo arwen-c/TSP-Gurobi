@@ -31,7 +31,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico):
     return(TasksEnhanced)
 
 
-def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne, fonctionObjectif):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -161,29 +161,44 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
 
     # -- Ajout de la fonction objectif.
-    # Produit terme à terme
-    # f1
-    # m.setObjective(sum(X[n, i, j]*D[i,j]/0.833 for n in range(nbre_employe)
-    #                    for i in range(t) for j in range(t)), GRB.MINIMIZE)
-    # f2
-    # Il faudra mettre le ntR dans le fichier "codeExe2"
-    # ntR = len(TasksDico)
-    m.addConstr(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
-                    for i in range(t) for j in range(t)) <= borne)
-    m.setObjective(sum(-X[n, i, j]*Duree[i] for n in range(nbre_employe)
-                       for i in range(nbre_taches) for j in range(t)), GRB.MINIMIZE)
+    ntR = len(TasksEnhanced)
 
+<<<<<<< HEAD
    # m.params.outputflag = 0
+=======
+    # Optimisation sur f1
+
+    if fonctionObjectif == 1:
+        m.addConstr(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+                         for i in range(ntR) for j in range(t)) <= borne)
+        m.setObjective(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+                           for i in range(t) for j in range(t)), GRB.MINIMIZE)
+    # Optimisation sur f2
+    elif fonctionObjectif == 2:
+        m.addConstr(sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+                        for i in range(t) for j in range(t)) <= borne)
+        m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+                            for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
+  #  m.params.outputflag = 0
+>>>>>>> 63fab0cd946993de6d6419ed703c5417ed4ab4b8
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
 
     # Calcul de la valeur de l'autre fonction objectif
-    valeur = 0
-    nbre, x, y = X.x.shape
-    for n in range(nbre):
-        for i in range(x):
-            for j in range(y):
-                valeur += X.x[n, i, j]*D[i, j]
 
-    # -- Affichage des solutions --
-    return X.x, H.x, L.x, m.objVal, valeur
+    valeur = 0
+    if fonctionObjectif == 1:
+        nbre, x, y = X.x.shape
+        for n in range(nbre):
+            for i in range(x):
+                for j in range(y):
+                    valeur += X.x[n, i, j]*Duree[i]
+        return X.x, H.x, L.x, m.objVal, valeur
+
+    elif fonctionObjectif == 2:
+        nbre, x, y = X.x.shape
+        for n in range(nbre):
+            for i in range(x):
+                for j in range(y):
+                    valeur += X.x[n, i, j]*D[i, j]
+        return X.x, H.x, L.x, m.objVal, valeur
