@@ -207,6 +207,7 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico, Duree):
     listeDesLignes.append('employeeName;lunchBreakStartTime;')
     for numeroEmploye in range(n):
         tachePrePauseTrouve = False
+        i = 0
         while i < nombreTaches and not(tachePrePauseTrouve):
             j = 0
             while j < nombreTaches and not(tachePrePauseTrouve):
