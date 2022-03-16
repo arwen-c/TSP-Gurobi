@@ -82,21 +82,21 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 X[n, i, j] for i in range(t)))
 
         # Les employés font bien leur pauses (indisponibilités):
-    # for n in range(nbre_employe):
-    #     NomEmploye = EmployeesDico[n]['EmployeeName']
-    #     #print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
-    #     for i_unavail in range(nbreIndispoEmploye):
-    #         # Il faut que ce soit le bon employé qui fasse la pause
-    #         if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
-    #             m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-    #                             for i in range(nbre_taches)) == 1)  # arrivé à la pause
-    #             m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
-    #                             for i in range(nbre_taches)) == 1)  # départ de la pause
-    #             # None
-    #             #print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *nbre_employe+i_unavail]['TaskId']))
-    #         else:  # Un autre ne peux pas piquer la pause d'un autre
-    #             m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-    #                             for i in range(nbre_taches)) == 0)  # arrivé à la pause
+    for n in range(nbre_employe):
+        NomEmploye = EmployeesDico[n]['EmployeeName']
+        #print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
+        for i_unavail in range(nbreIndispoEmploye):
+            # Il faut que ce soit le bon employé qui fasse la pause
+            if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
+                m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
+                                for i in range(nbre_taches)) == 1)  # arrivé à la pause
+                m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
+                                for i in range(nbre_taches)) == 1)  # départ de la pause
+                # None
+                #print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *nbre_employe+i_unavail]['TaskId']))
+            else:  # Un autre ne peux pas piquer la pause d'un autre
+                m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
+                                for i in range(nbre_taches)) == 0)  # arrivé à la pause
 
     # Effets de bord
     for n in range(nbre_employe):
@@ -111,11 +111,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
         for i in range(nbre_taches):
             for j in range(nbre_taches):
                 m.addConstr(L[n, i, j] <= X[n, i, j])
-<<<<<<< HEAD
-    # Une personne n'a droit qu'à une seule pause
-=======
     # Une personne fait une et une seule pause dej
->>>>>>> main
         m.addConstr(sum(L[n, i, j] for i in range(nbre_taches)
                         for j in range(nbre_taches)) == 1)
 

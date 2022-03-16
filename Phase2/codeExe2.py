@@ -8,7 +8,7 @@ from opti2 import ajoutTachesFictives, optimisation2
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstanceAustraliaV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceBordeauxV2.xlsx'
 
 
 # Corps du code
@@ -27,12 +27,8 @@ nbreIndispoEmploye = len(EmployeesUnavailDico)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
 TasksDicoNotModified=copy.deepcopy(TasksDico)
 TasksDico = ajoutTachesFictives(
-<<<<<<< HEAD
-    TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico)
-=======
     TasksDico, EmployeesDico, EmployeesUnavailDico)
 
->>>>>>> main
 # Calcul de la matrice des distances Distance
 tab_distance = matriceDistance(TasksDico)
 
@@ -64,8 +60,4 @@ finTemps = time.time()
 # print("L :{}".format(solution[2]))
 
 # Création du fichier solution au format txt
-<<<<<<< HEAD
-creationFichier(path, 1, solution[0], solution[1], TasksDico, EmployeesDico)
-=======
 creationFichier(path, 2, solution[0], solution[1], solution[2], TasksDicoNotModified, EmployeesDico)
->>>>>>> main
