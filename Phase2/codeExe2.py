@@ -1,5 +1,6 @@
 # Import de modules
 import time
+import copy
 
 # Import des fonctions permettant la résolution
 from usefulFunctions2 import *
@@ -24,6 +25,7 @@ nbreIndispoEmploye = len(EmployeesUnavailDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
+TasksDicoNotModified=copy.deepcopy(TasksDico)
 TasksDico = ajoutTachesFictives(
     TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico)
 
@@ -58,5 +60,4 @@ finTemps = time.time()
 # print("L :{}".format(solution[2]))
 
 # Création du fichier solution au format txt
-# creationFichier(path, 2, solution[0], solution[1],
-#                 solution[2], TasksDico, EmployeesDico, Duree)
+creationFichier(path, 2, solution[0], solution[1], solution[2], TasksDicoNotModified, EmployeesDico)
