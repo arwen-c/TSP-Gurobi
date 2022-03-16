@@ -1,6 +1,3 @@
-from cmath import cos
-from math import dist
-from numpy import real
 import time
 import sys
 from guppy import hpy
@@ -11,7 +8,7 @@ from opti1 import ajoutDomicile, optimisation1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase1/InstancesV1/InstancePolandV1.xlsx'
+path = 'Phase1/InstancesV1/InstanceFinlandV1.xlsx'
 
 
 ### CORPS DU CODE ###
@@ -42,17 +39,17 @@ debut = vecteurOuvertures(tasksDico)
 # liste des fins d'ouverture des tâches
 fin = vecteurFermetures(tasksDico)
 
-debut = time.time()
+debutTemps = time.time()
 
 
 # Optimisation gurobi
 solution = optimisation1(capacite, nbreEmploye,
                          nbreTaches, tabDistance, duree, debut, fin)
 
-fin = time.time()
+finTemps = time.time()
 
 
-performances1(fin-debut, sys.getsizeof(capacite) + sys.getsizeof(duree)+sys.getsizeof(debut)+sys.getsizeof(fin) +
+performances1(finTemps-debutTemps, sys.getsizeof(capacite) + sys.getsizeof(duree)+sys.getsizeof(debut)+sys.getsizeof(fin) +
               sys.getsizeof(tabDistance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
