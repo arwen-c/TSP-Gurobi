@@ -4,7 +4,7 @@ from gurobipy import *
 from usefulFunctions2 import recuperationHeure
 
 
-def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico):
+def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico):
 
     # (rechercher ajout_domicile dans tous les docs pour modifier par ajout_taches_fictives)
     ### AJOUTS DOMICILES ###
@@ -129,20 +129,20 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 # la tache j sera bien faite dans un intervalle de temps où elle est ouverte
                 nbreCreneauxJ = len(Fin[j])
 
-                for k in range(nbreCreneauxJ):
-                    # -?M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k, 1]) <= H[j]-Debut[j][k])
-                    m.addConstr(H[j]-Debut[j][k] <= M*delta[j, k, 1])
-                    # -M(1-delta) <= x1-x <= M.delta      x<x1 SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k, 2])
-                                <= -H[j]+Fin[j][k]-Duree[j])
-                    m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j, k, 2])
-                    # il faut que les deux contraintes ci-dessus soient vérifiées
-                    m.addConstr(delta[j, k, 0] ==
-                                delta[j, k, 1]*delta[j, k, 2])
-                # On ne va pas faire plusieurs fois la même tâche
-                m.addConstr(sum(delta[j, k, 0]
-                                for k in range(nbreCreneauxJ)) == 1)
+                # for k in range(nbreCreneauxJ):
+                #     # -?M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
+                #     m.addConstr(-M*(1-delta[j, k, 1]) <= H[j]-Debut[j][k])
+                #     m.addConstr(H[j]-Debut[j][k] <= M*delta[j, k, 1])
+                #     # -M(1-delta) <= x1-x <= M.delta      x<x1 SSI delta>1
+                #     m.addConstr(-M*(1-delta[j, k, 2])
+                #                 <= -H[j]+Fin[j][k]-Duree[j])
+                #     m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j, k, 2])
+                #     # il faut que les deux contraintes ci-dessus soient vérifiées
+                #     m.addConstr(delta[j, k, 0] ==
+                #                 delta[j, k, 1]*delta[j, k, 2])
+                # # On ne va pas faire plusieurs fois la même tâche
+                # m.addConstr(sum(delta[j, k, 0]
+                #                 for k in range(nbreCreneauxJ)) == 1)
 
                 # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
 

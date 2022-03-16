@@ -27,7 +27,7 @@ nbreIndispoEmploye = len(EmployeesUnavailDico)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
 TasksDicoNotModified=copy.deepcopy(TasksDico)
 TasksDico = ajoutTachesFictives(
-    TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico)
+    TasksDico, EmployeesDico, EmployeesUnavailDico)
 
 # Calcul de la matrice des distances Distance
 tab_distance = matriceDistance(TasksDico)
@@ -47,7 +47,7 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-borne = 700
+borne = 2700
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
                          tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
 # affichage multi objectif
