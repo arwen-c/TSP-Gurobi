@@ -67,6 +67,8 @@ def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
         item['Level'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
     if taskLevel <= employeeLevel and taskSkill == employeeSkill:
         return 1
+    elif taskSkill == None:
+        return 1
     else:
         return 0
 
