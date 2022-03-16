@@ -1,5 +1,7 @@
 # Import de modules
 import time
+import sys
+from guppy import hpy
 import copy
 
 # Import des fonctions permettant la résolution
@@ -25,7 +27,7 @@ nbreIndispoEmploye = len(EmployeesUnavailDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
-TasksDicoNotModified=copy.deepcopy(TasksDico)
+TasksDicoNotModified = copy.deepcopy(TasksDico)
 TasksDico = ajoutTachesFictives(
     TasksDico, EmployeesDico, EmployeesUnavailDico)
 
@@ -55,9 +57,9 @@ print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction 
     solution[3], solution[4]))
 
 finTemps = time.time()
-# print(finTemps - debutTemps)
-
-# print("L :{}".format(solution[2]))
+performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
+              sys.getsizeof(tab_distance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
-creationFichier(path, 2, solution[0], solution[1], solution[2], TasksDicoNotModified, EmployeesDico)
+creationFichier(path, 2, solution[0], solution[1],
+                solution[2], TasksDicoNotModified, EmployeesDico)

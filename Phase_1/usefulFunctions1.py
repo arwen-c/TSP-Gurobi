@@ -2,6 +2,8 @@
 import numpy as np
 import pandas as pd
 import math
+import openpyxl
+from guppy import hpy
 
 
 # Fonction récupération des données issues des excel
@@ -22,26 +24,15 @@ def extractionData(path):
     return EmployeesDico, TasksDico
 
 
-<<<<<<< HEAD:Phase_1/firstdoc.py
-# calcule la distance entre deux points dont on connait les coordonnées GPS
-
-
-# Gestion de la localisation -- modif de la fonction distance
-=======
 # Fonctions utiles pour créer les matrices de données utiles
 
->>>>>>> main:Phase_1/usefulFunctions1.py
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
-<<<<<<< HEAD:Phase_1/firstdoc.py
-    while not (foundid1 and foundid2) and index<len(TasksDico):
-=======
-    while not (foundId1 and foundId2):
->>>>>>> main:Phase_1/usefulFunctions1.py
+    while not (foundid1 and foundid2) and index < len(TasksDico):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
             long1 = TasksDico[index]['Longitude']
@@ -51,18 +42,12 @@ def distance(id1, id2, TasksDico):
             long2 = TasksDico[index]['Longitude']
             lat2 = TasksDico[index]['Latitude']
         index += 1
-<<<<<<< HEAD:Phase_1/firstdoc.py
     if long1 is None or long2 is None:
         distance = 0
-    else :
+    else:
         delta_long = long2-long1  # calcule de la différence de longitude
         delta_latt = lat2-lat1
         distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
-=======
-    deltaLong = long2-long1  # calcule de la différence de longitude
-    deltaLatt = lat2-lat1
-    distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
->>>>>>> main:Phase_1/usefulFunctions1.py
     return distance
 
 # def distance(id1, id2, TasksDico):
@@ -138,10 +123,11 @@ def vecteurOuvertures(TasksDico):
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
-            if res[0]!=12:
+            if res[0] != 12:
                 h += 12  # modifications pour l'aprem
-        else :
-            if res[0]==12 : h=0
+        else:
+            if res[0] == 12:
+                h = 0
         O.append(h*60+m)
     return O
 
@@ -156,10 +142,11 @@ def vecteurFermetures(TasksDico):
         h = int(res[0])  # l'heure
         m = int(res[1][:1])  # les minutes
         if res[1][2:] == 'pm':
-            if res[0]!=12:
+            if res[0] != 12:
                 h += 12  # modifications pour l'aprem
-        else :
-            if res[0]==12 : h=0
+        else:
+            if res[0] == 12:
+                h = 0
         F.append(h*60+m)
     return F
 
@@ -223,3 +210,29 @@ def creation_fichier(nom_fichier, n_methode, X, h, EmployeesDico):
     file.write("\n".join(solution_fichier_txt(X, h, EmployeesDico)))
     file.close()
     return None
+
+
+def performances1(tpsExec, tailleEntree, tailleMemoire):
+    # Ecriture des critères de performance dans un excel
+    my_path = ".\performance1.xlsx"
+    my_wb = openpyxl.load_workbook(my_path)
+    my_sheet = my_wb.active
+    # on cherche à partir de quelle ligne écrire (écriture à la suite)
+    i = 0
+    cell = my_sheet.cell(row=i, column=1)
+    while cell.value != None:
+        i += 1
+    # on ajoute les valeurs de performance obtenue du code
+    cell.value = tpsExec  # temps d'execution en première colonne
+    cell = my_sheet.cell(row=i, column=2)
+    cell.value = tailleEntree  # taille des instances d'entrée en deuxième colonne
+    cell = my_sheet.cell(row=i, column=3)
+    # taille de la mémoire occupée par le programme en troisième colonne
+    cell.value = tailleMemoire
+    # on calcule àpartir de ces valeurs de nouveaux indicateurs
+    cell = my_sheet.cell(row=i, column=4)
+    cell.value = tpsExec/tailleEntree
+    cell = my_sheet.cell(row=i, column=5)
+    cell.value = tailleMemoire/tailleEntree
+    # on enregistre les données au sein de l'excel
+    my_wb.save(".\performance1.xlsx")
