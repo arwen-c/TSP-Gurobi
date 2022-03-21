@@ -40,10 +40,14 @@ def plotSolutions2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye, tab_
     fonctionObjectif = 1
     valeurObjectifs, valeurBornes = epsilonContrainte(
         fonctionObjectif, Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksEnhanced)
+    print("Pour la fonction objectif {}, valeurObjectifs : {} et valeurBornes : {}".format(
+        fonctionObjectif, valeurObjectifs, valeurBornes))
     plt.plot(valeurObjectifs, valeurBornes, "-o")
     fonctionObjectif = 2
     valeurObjectifs, valeurBornes = epsilonContrainte(
         fonctionObjectif, Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksEnhanced)
+    print("Pour la fonction objectif {}, valeurObjectifs : {} et valeurBornes : {}".format(
+        fonctionObjectif, valeurObjectifs, valeurBornes))
     plt.plot(valeurObjectifs, valeurBornes, "-o")
     plt.title("Optimisation bi objectif")
     plt.show()
