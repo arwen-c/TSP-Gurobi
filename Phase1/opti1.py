@@ -94,7 +94,7 @@ def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin
 
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
-    m.setObjective(sum(X[n, i, j]*distance[i, j]/0.833 for n in range(nbreEmploye)
+    m.setObjective(sum(X[n, i, j]*distance[i, j] for n in range(nbreEmploye)
                        for i in range(t) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle
