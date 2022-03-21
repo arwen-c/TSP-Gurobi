@@ -94,11 +94,19 @@ def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin
 
     # -- Ajout de la fonction objectif.
     # Produit terme à terme
-    m.setObjective(sum(X[n, i, j]*distance[i, j]/0.833 for n in range(nbreEmploye)
+    m.setObjective(sum(X[n, i, j]*distance[i, j] for n in range(nbreEmploye)
                        for i in range(t) for j in range(t)), GRB.MINIMIZE)
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
+    # calcul de la durée totale des tâches effectuées
+
+    valeurDureeTotale = 0
+    nbre, x, y = X.x.shape
+    for n in range(nbre):
+        for i in range(x):
+            for j in range(y):
+                valeurDureeTotale += X.x[n, i, j]*duree[i]
 
     # -- Affichage des solutions --
-    return X.x, H.x, m.objVal
+    return X.x, H.x, m.objVal, valeurDureeTotale
