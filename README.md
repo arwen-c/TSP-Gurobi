@@ -27,3 +27,6 @@ Sur ce fichier se trouvent les différentes étapes d'optimisation avec le solve
 
 usefulFunctions2
 Comporte toutes les fonctions auxiliaires, notamment d'extraction et de traitement des données.
+
+graphique2
+Permet de tracer un graphique pyplot de la solution obtenue.

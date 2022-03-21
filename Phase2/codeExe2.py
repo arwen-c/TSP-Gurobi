@@ -7,11 +7,17 @@ import copy
 # Import des fonctions permettant la résolution
 from usefulFunctions2 import *
 from opti2 import ajoutTachesFictives, optimisation2
+from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
+<<<<<<< HEAD
 path = 'Phase2/InstancesV2/InstancePolandV2.xlsx'
 print(path)
+=======
+path = 'Phase2/InstancesV2/InstanceBordeauxV2.xlsx'
+
+>>>>>>> df5a561080de0810f7e59a7c1bfe00ed7051f59a
 
 # Corps du code
 
@@ -49,14 +55,28 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-borne = 1000
+
+# choisir 1 ou 2, en fonction de la fonction que l'on souhaite optimiser
+fonctionObjectif = 1
+# choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
+borne = 10000  # attention à mettre une valeur cohérente
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
-                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
+                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, fonctionObjectif)
 # affichage multi objectif
 print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
     solution[3], solution[4]))
 
+
+# Pour tracer les graphiques des algorithmes epsilon Contraintes
+# fonctionObjectif = 1
+# plotSolutions1(fonctionObjectif, *epsilonContrainte(2, Capacite, nbre_employe,
+#                                      nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico))
+
+# plotSolutions2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
+#                tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico)
+
 finTemps = time.time()
+# print(finTemps - debutTemps)
 performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
               sys.getsizeof(tab_distance), hpy().heap().size, path)
 
