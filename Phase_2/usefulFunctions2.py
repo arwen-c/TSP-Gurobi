@@ -39,7 +39,13 @@ def distanceGPS(latA, longA, latB, longB):
     # Rayon de la terre en mètres (sphère IAG-GRS80)
     RT = 6378137
     # angle en radians entre les 2 points
-    S = acos(sin(latA)*sin(latB) + cos(latA)*cos(latB)*cos(abs(longB-longA)))
+    x = sin(latA)*sin(latB) + cos(latA)*cos(latB)*cos(abs(longB-longA))        
+    print(x)
+    if abs(x-1) <= 0.000000000001:
+        x = 1
+    elif abs(x+1) <= 0.000000000001:
+        x = -1
+    S = acos(x)
     # distance entre les 2 points, comptée sur un arc de grand cercle
     return S*RT
 
@@ -61,7 +67,7 @@ def distance(id1, id2, TasksDico):
         index += 1
 
     #distance d'arc entre deux points
-    distance = distanceGPS(lat1,lat2,long1,long2)/1000
+    distance = distanceGPS(lat1,long1,lat2,long2)/1000
     return distance
 
 
@@ -99,7 +105,7 @@ def matriceDistance(TasksDico):
         matriceDesDistances.append(ligne)
     return matriceDesDistances
 
-print(matriceDistance(extractionData("InstancesV2/InstanceBordeauxV2.xlsx")[2]))
+print(matriceDistance(extractionData("Phase_2/InstancesV2/InstanceBordeauxV2.xlsx")[2]))
 
 
 def matriceCompetences(EmployeesDico, TasksDico):
