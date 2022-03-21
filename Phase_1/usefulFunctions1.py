@@ -26,48 +26,47 @@ def extractionData(path):
 
 # Fonctions utiles pour créer les matrices de données utiles
 
+def deg2rad(dd):
+    """Convertit un angle "degrés décimaux" en "radians"
+    """
+    return dd/180*math.pi
+
+def distanceGPS(latA, longA, latB, longB):
+    """Retourne la distance en mètres entre les 2 points A et B connus grâce à
+       leurs coordonnées GPS (en radians).
+    """
+    # Rayon de la terre en mètres (sphère IAG-GRS80)
+    RT = 6378137
+    # angle en radians entre les 2 points
+    x = math.sin(latA)*math.sin(latB) + math.cos(latA)*math.cos(latB)*math.cos(abs(longB-longA))        
+    if abs(x-1) <= 0.000000000001:
+        x = 1
+    elif abs(x+1) <= 0.000000000001:
+        x = -1
+    S = math.acos(x)
+    # distance entre les 2 points, comptée sur un arc de grand cercle
+    return S*RT
+
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
-    while not (foundid1 and foundid2) and index < len(TasksDico):
+    while not (foundId1 and foundId2):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
-            long1 = TasksDico[index]['Longitude']
-            lat1 = TasksDico[index]['Latitude']
+            long1 = deg2rad(TasksDico[index]['Longitude'])
+            lat1 = deg2rad(TasksDico[index]['Latitude'])
         if TasksDico[index]['TaskId'] == id2:
             foundId2 = True
-            long2 = TasksDico[index]['Longitude']
-            lat2 = TasksDico[index]['Latitude']
+            long2 = deg2rad(TasksDico[index]['Longitude'])
+            lat2 = deg2rad(TasksDico[index]['Latitude'])
         index += 1
-    if long1 is None or long2 is None:
-        distance = 0
-    else:
-        delta_long = long2-long1  # calcule de la différence de longitude
-        delta_latt = lat2-lat1
-        distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
-    return distance
 
-# def distance(id1, id2, TasksDico):
-#     '''entrée : les taskid correspondantes, le dictionnaire de données, sortie : distance en km'''
-#     foundid1, foundid2 = False, False
-#     index = 0
-#     while not (foundid1 and foundid2):
-#         if TasksDico[index]['TaskId'] == id1:
-#             foundid1 = True
-#             long1 = TasksDico[index]['Longitude']
-#             lat1 = TasksDico[index]['Latitude']
-#         if TasksDico[index]['TaskId'] == id2:
-#             foundid2 = True
-#             long2 = TasksDico[index]['Longitude']
-#             lat2 = TasksDico[index]['Latitude']
-#         index += 1
-#     delta_long = long2-long1  # calcule de la différence de longitude
-#     delta_latt = lat2-lat1
-#     distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
-#     return distance
+    #distance d'arc entre deux points
+    distance = distanceGPS(lat1,long1,lat2,long2)/1000
+    return distance
 
 
 def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
