@@ -55,7 +55,7 @@ performances1(finTemps-debutTemps, sys.getsizeof(capacite) + sys.getsizeof(duree
 # Création du fichier solution au format txt
 creationFichier(path, 1, solution[0], solution[1], employeesDico)
 
-print("\nLa distance totale parcourue par l'ensemble des employés est de : {:.2f} km \nLa durée totale des tâches réalisées par l'ensemble des employés : {:.0f} h".format(
-    solution[2], solution[3]/60))
+print("\nPour la ville de {}, on obtient : \nLa distance totale parcourue par l'ensemble des employés est de : {:.2f} km \nLa durée totale des tâches réalisées par l'ensemble des employés : {:.0f} h".format(
+    path[27:len(path)-5], solution[2], solution[3]/60))
 
 # pb corrigé : erreur "permission denied" : ne pas avoir le fichier d'ouvert en parallèle !
