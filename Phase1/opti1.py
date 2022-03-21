@@ -99,6 +99,14 @@ def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
+    # calcul de la durée totale des tâches effectuées
+
+    valeurDureeTotale = 0
+    nbre, x, y = X.x.shape
+    for n in range(nbre):
+        for i in range(x):
+            for j in range(y):
+                valeurDureeTotale += X.x[n, i, j]*duree[i]
 
     # -- Affichage des solutions --
-    return X.x, H.x, m.objVal
+    return X.x, H.x, m.objVal, valeurDureeTotale
