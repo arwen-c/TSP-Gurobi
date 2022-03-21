@@ -10,7 +10,7 @@ from opti_1 import ajout_domicile, optimisation_1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase_1/InstancesV1/InstanceBordeauxV1.xlsx'
+path = '.\Phase1\InstancesV1\InstanceBordeauxV1.xlsx'
 
 
 # Corps du code
@@ -45,12 +45,21 @@ Fin = vecteurFermetures(TasksDico)
 
 debut = time.time()
 
+# Optimisation gurobi
+solution = optimisation_1(Capacite, nbre_employe,
+                          nbre_taches, tab_distance, Duree, Debut, Fin)
+
 
 # Optimisation gurobi
 solution = optimisation_1(Capacite, nbre_employe,
                           nbre_taches, tab_distance, Duree, Debut, Fin)
 
 fin = time.time()
+
+performances1(fin - debut, Capacite.nbytes + Duree.nbytes+Debut.nbytes+Fin.nbytes +
+              tab_distance.nbytes, hpy.heap()[0][0])  # retourne la taille mémoire occupée par le programme
+
+
 print(fin - debut)
 
 # Création du fichier solution au format txt

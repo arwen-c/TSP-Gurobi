@@ -194,4 +194,6 @@ def afficher(nom_ville):
     return None
 
 
+afficher('Bordeaux')
+
 afficher('Australia')
