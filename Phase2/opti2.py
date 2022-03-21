@@ -82,6 +82,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 X[n, i, j] for i in range(t)))
 
     # Les employés font bien leur pauses (indisponibilités):
+    '''
     for n in range(nbre_employe):
         NomEmploye = EmployeesDico[n]['EmployeeName']
         print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
@@ -98,7 +99,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 0)  # arrivé à la pause
-
+'''
     # Effets de bord
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
