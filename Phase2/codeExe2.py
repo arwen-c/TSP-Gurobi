@@ -50,15 +50,11 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-<<<<<<< HEAD
-borne = 600
-=======
 
 # choisir 1 ou 2, en fonction de la fonction que l'on souhaite optimiser
 fonctionObjectif = 1
 # choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
 borne = 10000  # attention à mettre une valeur cohérente
->>>>>>> 63fab0cd946993de6d6419ed703c5417ed4ab4b8
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
                          tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, fonctionObjectif)
 # affichage multi objectif
