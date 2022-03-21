@@ -8,7 +8,7 @@ from opti1 import ajoutDomicile, optimisation1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase1/InstancesV1/InstanceFinlandV1.xlsx'
+path = 'Phase1/InstancesV1/InstancePolandV1.xlsx'
 
 
 ### CORPS DU CODE ###
