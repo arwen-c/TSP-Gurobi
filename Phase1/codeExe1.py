@@ -8,7 +8,7 @@ from opti1 import ajoutDomicile, optimisation1
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase1/InstancesV1/InstanceFinlandV1.xlsx'
+path = 'Phase1/InstancesV1/InstanceBordeauxV1.xlsx'
 
 
 ### CORPS DU CODE ###
@@ -54,5 +54,7 @@ performances1(finTemps-debutTemps, sys.getsizeof(capacite) + sys.getsizeof(duree
 
 # Création du fichier solution au format txt
 creationFichier(path, 1, solution[0], solution[1], employeesDico)
+
+print("La distance parcourue totale est de : {} km".format(solution[2]*0.833))
 
 # pb corrigé : erreur "permission denied" : ne pas avoir le fichier d'ouvert en parallèle !
