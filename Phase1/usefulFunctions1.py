@@ -120,13 +120,8 @@ def vecteurOuvertures(TasksDico):
     nombre_taches = len(TasksDico)
     O = []
     for i in range(nombre_taches):
-        heure = TasksDico[i]['OpeningTime']
-        res = heure.split(':')
-        h = int(res[0])  # l'heure
-        m = int(res[1][:1])  # les minutes
-        if res[1][2:] == 'pm':
-            h += 12  # modifications pour l'aprem
-        O.append(h*60+m)
+        heureEnMinutes = recuperationHeure(TasksDico[i]['OpeningTime'])
+        O.append(heureEnMinutes)
     return O
 
 
@@ -136,13 +131,8 @@ def vecteurFermetures(TasksDico):
     nombre_taches = len(TasksDico)
     F = []
     for i in range(nombre_taches):
-        heure = TasksDico[i]['ClosingTime']
-        res = heure.split(':')
-        h = int(res[0])  # l'heure
-        m = int(res[1][:1])  # les minutes
-        if res[1][2:] == 'pm':
-            h += 12  # modifications pour l'aprem
-        F.append(h*60+m)
+        heureEnMinutes = recuperationHeure(TasksDico[i]['ClosingTime'])
+        F.append(heureEnMinutes)
     return F
 
 
