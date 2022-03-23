@@ -11,7 +11,7 @@ from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstanceSpainV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceBordeauxV2.xlsx'
 
 
 # Corps du code
@@ -55,17 +55,17 @@ debutTemps = time.time()
 fonctionObjectif = 2
 # choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
 borne = 10000  # attention à mettre une valeur cohérente
-solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
-                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, fonctionObjectif)
-# affichage multi objectif
-print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
-    solution[3], solution[4]))
+# solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
+#                          tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, fonctionObjectif)
+# # affichage multi objectif
+# print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
+#     solution[3], solution[4]))
 
 
 # Pour tracer les graphiques des algorithmes epsilon Contraintes
-# fonctionObjectif = 1
-# plotSolutions1(fonctionObjectif, *epsilonContrainte(2, Capacite, nbre_employe,
-#                                                     nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico))
+fonctionObjectif = 1
+plotSolutions1(fonctionObjectif, *epsilonContrainte(fonctionObjectif, Capacite, nbre_employe,
+                                                    nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico))
 
 # plotSolutions2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
 #                tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico)
@@ -76,5 +76,5 @@ finTemps = time.time()
 #               sys.getsizeof(tab_distance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
-creationFichier(path, 2, solution[0], solution[1],
-                solution[2], TasksDicoNotModified, EmployeesDico)
+# creationFichier(path, 2, solution[0], solution[1],
+#                 solution[2], TasksDicoNotModified, EmployeesDico)

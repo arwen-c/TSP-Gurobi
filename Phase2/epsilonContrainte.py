@@ -7,7 +7,7 @@ from gurobipy import *
 
 def epsilonContrainte(fonctionObjectif, Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksEnhanced):
     # fonctionObjectif vaut 1 si on optimise la fonction objectif numéro 1, avec la deuxième fonction bornée, et vaut 2 si c'est l'inverse
-    epsilon = 10
+    epsilon = 1
     borne = 1000000
     valeurObjectifs = []
     valeurBornes = []
@@ -17,7 +17,7 @@ def epsilonContrainte(fonctionObjectif, Capacite, nbre_employe, nbre_taches, nbr
         try:
             solution = optimisation2(Capacite, nbre_employe,
                                      nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne, fonctionObjectif)
-            borne = solution[3]-epsilon
+            borne = solution[4]-epsilon
             print("La borne vaut : {}".format(borne))
             valeurObjectifs.append(solution[3])
             valeurBornes.append(solution[4])
