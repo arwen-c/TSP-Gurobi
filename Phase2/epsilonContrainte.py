@@ -19,8 +19,12 @@ def epsilonContrainte(fonctionObjectif, Capacite, nbre_employe, nbre_taches, nbr
                                      nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne, fonctionObjectif)
             borne = solution[4]-epsilon
             print("La borne vaut : {}".format(borne))
-            valeurObjectifs.append(solution[3])
-            valeurBornes.append(solution[4])
+            if fonctionObjectif == 1:
+                valeurObjectifs.append(str(solution[3])+'km')
+                valeurBornes.append(str(solution[4])+'min')
+            if fonctionObjectif == 2:
+                valeurObjectifs.append(str(-solution[3])+'min')
+                valeurBornes.append(str(solution[4])+'km')
             break
         except gurobipy.GurobiError:  # si on ne trouve plus de solution avec la borne imposée sur l'une des fonctions objectifs
             possible = False
