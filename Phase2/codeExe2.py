@@ -11,13 +11,8 @@ from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-<<<<<<< HEAD
 path = 'Phase2/InstancesV2/InstancePolandV2.xlsx'
 print(path)
-=======
-path = 'Phase2/InstancesV2/InstanceBordeauxV2.xlsx'
-
->>>>>>> df5a561080de0810f7e59a7c1bfe00ed7051f59a
 
 # Corps du code
 
