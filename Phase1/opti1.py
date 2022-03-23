@@ -72,9 +72,6 @@ def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin
                 m.addConstr(X[n, i, j] <= capacite[n, i])
                 m.addConstr(X[n, i, j] <= capacite[n, j])
 
-                # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
-                m.addConstr(X[n, i, i] == 0)
-
                 # - Effets temporels -
                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
                 m.addConstr(H[j]+duree[j] <= fin[j])
