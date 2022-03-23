@@ -71,9 +71,6 @@ def optimisation1(C, nbreEmploye, nbreTaches, D, Duree, Debut, Fin):
                 m.addConstr(X[n, i, j] <= C[n, i])
                 m.addConstr(X[n, i, j] <= C[n, j])
 
-                # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
-                m.addConstr(X[n, i, i] == 0)
-
                 # - Effets temporels -
                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
                 m.addConstr(H[j]+Duree[j] <= Fin[j])
