@@ -64,7 +64,7 @@ def distance(id1, id2, TasksDico):
         index += 1
 
     #distance d'arc entre deux points
-    distance = distanceGPS(lat1,long1,lat2,long2)/1000
+    distance = round(distanceGPS(lat1,long1,lat2,long2)/1000,1)
     return distance
 
 
@@ -102,6 +102,9 @@ def matriceDistance(tasksDico):
         matriceDesDistances.append(ligne)
     return matriceDesDistances
 
+d = matriceDistance(extractionData("Phase1/InstancesV1/InstancePolandV1.xlsx")[1])
+# print(d)
+print(d[6][14])
 
 def matriceCompetences(employeesDico, tasksDico):
     """TasksDico et EmployeesDico sont les dictionnaires contenant les informations respectives sur les tâches et les employés.
