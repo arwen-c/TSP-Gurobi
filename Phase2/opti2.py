@@ -1,7 +1,7 @@
 # Importations de module
 import numpy as np
 from gurobipy import *
-from Phase2.usefulFunctions2 import dispostache
+from usefulFunctions2 import dispostache
 from usefulFunctions2 import recuperationHeure
 
 
@@ -54,8 +54,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                   nbreIndispoEmploye, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
                          nbre_taches+2*nbre_employe+nbreIndispoEmploye),  vtype=GRB.BINARY)
-    L = m.addMVar(shape=(nbre_employe, nbre_taches,
-                         nbre_taches), vtype=GRB.BINARY)
+    L = m.addMVar(shape=(nbre_employe, t,t), vtype=GRB.BINARY)
     delta = m.addMVar(shape=(nbre_taches+2*nbre_employe +
                              nbreIndispoEmploye, nbreIndisMax), vtype=GRB.BINARY)
 
@@ -100,9 +99,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
     # Contraintes de flot initiale et finale
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
-                        for j in [k in range(nbre_taches)]+[k in range (nbre_taches+2*n,t)]) == 1)  # départ du dépôt
+                        for j in [k for k in range(nbre_taches)]+[k for k in range (nbre_taches+2*n,t)]) == 1)  # départ du dépôt
         m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
-                        for i in [k in range(nbre_taches)]+[k in range (nbre_taches+2*n,t)]) == 1)  # arrivée au dépôt
+                        for i in [k for k in range(nbre_taches)]+[k for k in range (nbre_taches+2*n,t)]) == 1)  # arrivée au dépôt
 
     # Ajout des contraintes sur L
     # Une pause dej n'est possible qu'entre deux taches réalisées

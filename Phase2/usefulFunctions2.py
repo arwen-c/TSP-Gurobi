@@ -286,7 +286,7 @@ def dispostache(tasknb, TasksDico, TasksUnavailDico):
     dispos=[[ouverture]]
     k=0
     for t in TasksUnavailDico:
-        if t['TaskId']-1==tasknb:
+        if t['TaskId']=='T'+str(tasknb+1):
             k+=1
             dispos[k-1].append(recuperationHeure(t['Start']))
             dispos.append([recuperationHeure(t['End'])])
