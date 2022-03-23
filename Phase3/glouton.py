@@ -114,7 +114,8 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
                 localisationCourante = tache
     return X, H, L, distanceParcourue, tempsTravail
 
- '''
+
+'''
 Boucle proposée par SamDa
 
 while t < finJourneeEmploye:  # on construit la journée d'un employé au fur et à mesure
