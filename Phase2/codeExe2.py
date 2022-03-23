@@ -11,7 +11,7 @@ from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstancePolandV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceAutunV2.xlsx'
 print(path)
 
 # Corps du code
@@ -52,7 +52,7 @@ debutTemps = time.time()
 # Optimisation gurobi
 
 # choisir 1 ou 2, en fonction de la fonction que l'on souhaite optimiser
-fonctionObjectif = 1
+fonctionObjectif = 2
 # choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
 borne = 10000  # attention à mettre une valeur cohérente
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
