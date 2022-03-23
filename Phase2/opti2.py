@@ -57,7 +57,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     L = m.addMVar(shape=(nbre_employe, nbre_taches,
                          nbre_taches), vtype=GRB.BINARY)
     delta = m.addMVar(shape=(nbre_taches+2*nbre_employe +
-                             nbreIndispoEmploye, nbreIndisMax, 3), vtype=GRB.BINARY)
+                             nbreIndispoEmploye, nbreIndisMax), vtype=GRB.BINARY)
 
     # -- Modification des types des variables d'entrées pour s'assurer qu'elles conviennent --
     C = np.array(C)
@@ -70,6 +70,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # for i in range(t):
     #     m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
     #                     for j in range(t)) == 1)
+
     # nouvelle contrainte
     for i in range(t):
         m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
@@ -81,23 +82,21 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
                 X[n, i, j] for i in range(t)))
 
-    # Les employés font bien leur pauses (indisponibilités):
-    # for n in range(nbre_employe):
-    #     NomEmploye = EmployeesDico[n]['EmployeeName']
-    #     print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
-    #     for i_unavail in range(nbreIndispoEmploye):
-    #         # Il faut que ce soit le bon employé qui fasse la pause
-    #         if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
-    #             m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-    #                             for i in range(nbre_taches)) == 1)  # arrivé à la pause
-    #             m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
-    #                             for i in range(nbre_taches)) == 1)  # départ de la pause
-    #             # None
-    #             print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *
-    #                                                                                                             nbre_employe+i_unavail]['TaskId']))
-    #         else:  # Un autre ne peux pas piquer la pause d'un autre
-    #             m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-    #                             for i in range(nbre_taches)) == 0)  # arrivé à la pause
+        # Les employés font bien leurs pauses (indisponibilités):
+    for n in range(nbre_employe):
+        NomEmploye = EmployeesDico[n]['EmployeeName']
+        #print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
+        for i_unavail in range(nbreIndispoEmploye):
+            # Il faut que ce soit le bon employé qui fasse la pause
+            if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
+                m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
+                                for i in range(nbre_taches)) == 1)  # arrivé à la pause
+                m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
+                                for i in range(nbre_taches)) == 1)  # départ de la pause
+                #print("TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] : {}".format(TasksEnhanced[nbre_taches+2 *nbre_employe+i_unavail]['TaskId']))
+            else:  # Un autre ne peux pas piquer la pause d'un autre
+                m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
+                                for i in range(nbre_taches)) == 0)  # arrivé à la pause
 
     # Effets de bord
     for n in range(nbre_employe):
@@ -132,17 +131,15 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
                 for k in range(nbreCreneauxJ):
                     # -?M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k, 1]) <= H[j]-Debut[j][k])
-                    m.addConstr(H[j]-Debut[j][k] <= M*delta[j, k, 1])
+                    m.addConstr(-M*(1-delta[j, k]) <= H[j]-Debut[j][k])
+                    m.addConstr(H[j]-Debut[j][k] <= M*delta[j, k])
                     # -M(1-delta) <= x1-x <= M.delta      x<x1 SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k, 2])
+                    m.addConstr(-M*(1-delta[j, k])
                                 <= -H[j]+Fin[j][k]-Duree[j])
-                    m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j, k, 2])
-                    # il faut que les deux contraintes ci-dessus soient vérifiées
-                    m.addConstr(delta[j, k, 0] ==
-                                delta[j, k, 1]*delta[j, k, 2])
+                    m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j, k])
+
                 # On ne va pas faire plusieurs fois la même tâche
-                m.addConstr(sum(delta[j, k, 0]
+                m.addConstr(sum(delta[j, k]
                                 for k in range(nbreCreneauxJ)) == 1)
 
                 # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
