@@ -77,6 +77,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                         for j in range(t)) <= 1)
 
     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
+    # Pour les indisponibilité, cette contrainte est exprimée juste en dessous
     for n in range(nbre_employe):
         for j in range(nbre_taches):
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
@@ -126,33 +127,18 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                 nbreCreneauxJ = len(disposJ)
 
                 for k in range(nbreCreneauxJ):
-                    # -?M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k]) <= H[j]-disposJ[0])
-                    m.addConstr(H[j]-disposJ[0] <= M*delta[j, k])
-                    # -M(1-delta) <= x1-x <= M.delta      x<x1 SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k])
-                                <= -H[j]+disposJ[1]-Duree[j])
-                    m.addConstr(-H[j]+disposJ[1]-Duree[j] <= M*delta[j, k])
-
-                # On ne va pas faire plusieurs fois la même tâche
-                m.addConstr(sum(delta[j, k]
-                                for k in range(nbreCreneauxJ)) == 1)
+                    m.addConstr(delta[j, k]*disposJ[k][0] <= H[j])
+                    m.addConstr(H[j] <= disposJ[k][1]-Duree[j]+(1-delta[j][k])*M)
+            # Contrainte à mettre hors de la boucle sur k, mais dans une boucle sur i, et sur j
+                m.addConstr(X[n, i, j] <= sum(delta[j][k]
+                                for k in range(nbreCreneauxJ)))
 
                 # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
-
+                m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
+                m.addConstr(13*60-(1-L[n, i, j])*60*13 <= H[j])
                 # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
-                if i < nbre_taches and j < nbre_taches:  # on est entre deux tâches réelles
-                    m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
-                                <= H[j] + 24*60*(1-X[n, i, j]))
-                    m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
-                    m.addConstr(13*60-(1-L[n, i, j])*60*13 <= H[j])
-                    None
-
-                else:
-                    m.addConstr(
-                        H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
-                # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
-
+                m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60 <= H[j] + 24*60*(1-X[n, i, j]))
+ 
     # -- Ajout de la fonction objectif.
     ntR = len(TasksEnhanced)
 
