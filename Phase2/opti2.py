@@ -163,9 +163,6 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # -- Ajout de la fonction objectif.
     ntR = len(TasksEnhanced)
 
-<<<<<<< HEAD
-   # m.params.outputflag = 0
-=======
     # Optimisation sur f1
 
     if fonctionObjectif == 1:
@@ -180,7 +177,6 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
         m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
                             for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
   #  m.params.outputflag = 0
->>>>>>> 63fab0cd946993de6d6419ed703c5417ed4ab4b8
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
 
