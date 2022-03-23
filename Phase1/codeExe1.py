@@ -1,7 +1,6 @@
-from cmath import cos
-from math import dist
-from numpy import real
 import time
+import sys
+from guppy import hpy
 
 
 from usefulFunctions1 import *
@@ -16,39 +15,47 @@ path = 'Phase1/InstancesV1/InstanceBordeauxV1.xlsx'
 
 
 # Extraction des données
-EmployeesDico, TasksDico = extractionData(path)
+employeesDico, tasksDico = extractionData(path)
 
 # Définition de variables
-nbreTaches = len(TasksDico)
-nbreEmploye = len(EmployeesDico)
+nbreTaches = len(tasksDico)
+nbreEmploye = len(employeesDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
-TasksDico = ajoutDomicile(TasksDico, EmployeesDico)
+tasksDico = ajoutDomicile(tasksDico, employeesDico)
 
 # Calcul de la matrice des distances Distance
-tabDistance = matriceDistance(TasksDico)
+tabDistance = matriceDistance(tasksDico)
 
 # Création de Capacité, Durée, Début et Fin
 
 # matrice de booléens. Vaut 1 en position [n,i] si l'employé n est capable d'effectuer la tache i, 0 sinon
-Capacite = matriceCompetences(EmployeesDico, TasksDico)
+capacite = matriceCompetences(employeesDico, tasksDico)
 # liste des durées des tâches
-Duree = vecteurDurees(TasksDico)
+duree = vecteurDurees(tasksDico)
 # liste des début d'ouverture des tâches
-Debut = vecteurOuvertures(TasksDico)
+debut = vecteurOuvertures(tasksDico)
 # liste des fins d'ouverture des tâches
-Fin = vecteurFermetures(TasksDico)
+fin = vecteurFermetures(tasksDico)
 
-debut = time.time()
+debutTemps = time.time()
 
 
 # Optimisation gurobi
-solution = optimisation1(Capacite, nbreEmploye,
-                         nbreTaches, tabDistance, Duree, Debut, Fin)
+solution = optimisation1(capacite, nbreEmploye,
+                         nbreTaches, tabDistance, duree, debut, fin)
 
-fin = time.time()
-print(fin - debut)
+finTemps = time.time()
+
+
+performances1(finTemps-debutTemps, sys.getsizeof(capacite) + sys.getsizeof(duree)+sys.getsizeof(debut)+sys.getsizeof(fin) +
+              sys.getsizeof(tabDistance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
-creationFichier(path, 1, solution[0], solution[1], EmployeesDico)
+creationFichier(path, 1, solution[0], solution[1], employeesDico)
+
+print("\nPour la ville de {}, on obtient : \nLa distance totale parcourue par l'ensemble des employés est de : {:.2f} km \nLa durée totale des tâches réalisées par l'ensemble des employés : {:.0f} h".format(
+    path[27:len(path)-5], solution[2], solution[3]/60))
+
+# pb corrigé : erreur "permission denied" : ne pas avoir le fichier d'ouvert en parallèle !

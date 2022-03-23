@@ -89,26 +89,26 @@ def lecture(filename):
 
 
 def extraireCoordonnees(path):
-    EmployeesDico, TasksDico = extractionData(path)
-    return vecteurLongitudes(TasksDico), vecteurLatitudes(TasksDico), vecteurLongitudes(EmployeesDico), vecteurLatitudes(EmployeesDico)
+    employeesDico, tasksDico = extractionData(path)
+    return vecteurLongitudes(tasksDico), vecteurLatitudes(tasksDico), vecteurLongitudes(employeesDico), vecteurLatitudes(employeesDico)
 
 # Vecteur des longitudes
 
 
-def vecteurLongitudes(TasksDico):
+def vecteurLongitudes(tasksDico):
     """Renvoie le vecteur des longitudes de chaque tâche."""
     vecteurLong = []
-    for row in TasksDico:
+    for row in tasksDico:
         vecteurLong.append(row['Longitude'])
     return vecteurLong
 
 # Vecteur des latitudes
 
 
-def vecteurLatitudes(TasksDico):
+def vecteurLatitudes(tasksDico):
     """Renvoie le vecteur des latitudes de chaque tâche."""
     vecteurLat = []
-    for row in TasksDico:
+    for row in tasksDico:
         vecteurLat.append(row['Latitude'])
     return vecteurLat
 
@@ -197,4 +197,4 @@ def afficher(nomVille):
     return None
 
 
-afficher("Bordeaux")
+afficher("Poland")
