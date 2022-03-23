@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import math
+import openpyxl
 
 
 # Fonction récupération des données issues des excel
@@ -175,7 +176,7 @@ def nomFichierResolution(nomFichier, nMethode):
     n_methode est le numéro de la méthode.
     Renvoie le nom du fichier txt."""
     L = nomFichier.split('.')
-    return 'Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
+    return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
 
 
 def lignesSolution(X, h, L, TasksDico, EmployeesDico):
@@ -207,15 +208,15 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     listeDesLignes.append(' ')  # saut de ligne
     listeDesLignes.append('employeeName;lunchBreakStartTime;')
     for numeroEmploye in range(n):
+        i = 0
         tachePrePauseTrouve = False
         i = 0
         while i < nombreTaches and not(tachePrePauseTrouve):
             j = 0
             while (j < nombreTaches and not(tachePrePauseTrouve)):
-                print(i, j, nombreTaches, 'jesuisla')
                 if L[numeroEmploye, i, j] == 1:
-                    listeDesLignes.append(str(
-                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(h[i] + Duree[i])) + ';')
+                    listeDesLignes.append(str(EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(
+                        round(max([h[i] + Duree[i], 720]))) + ';')
                     tachePrePauseTrouve = True
                 j += 1
             i += 1
@@ -232,3 +233,32 @@ def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico):
         X, h, L, TasksDico, EmployeesDico)))
     fichier.close()
     return None
+
+
+def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
+    # Ecriture des critères de performance dans un excel
+    my_path = "./performance1.xlsx"
+    my_wb = openpyxl.load_workbook(my_path)
+    my_sheet = my_wb.active
+    # on cherche à partir de quelle ligne écrire (écriture à la suite)
+    i = 4
+    cell = my_sheet.cell(row=i, column=1)
+    while cell.value != None:
+        i += 1
+        cell = my_sheet.cell(row=i, column=1)
+    # on ajoute les valeurs de performance obtenue du code
+    cell.value = tpsExec  # temps d'execution en première colonne
+    cell = my_sheet.cell(row=i, column=2)
+    cell.value = tailleEntree  # taille des instances d'entrée en deuxième colonne
+    cell = my_sheet.cell(row=i, column=3)
+    # taille de la mémoire occupée par le programme en troisième colonne
+    cell.value = tailleMemoire
+    # on calcule àpartir de ces valeurs de nouveaux indicateurs
+    cell = my_sheet.cell(row=i, column=4)
+    cell.value = tpsExec/tailleEntree
+    cell = my_sheet.cell(row=i, column=5)
+    cell.value = tailleMemoire/tailleEntree
+    cell = my_sheet.cell(row=i, column=6)
+    cell.value = instance
+    # on enregistre les données au sein de l'excel
+    my_wb.save("./performance2.xlsx")
