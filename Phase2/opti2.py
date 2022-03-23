@@ -32,7 +32,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico):
     return(TasksEnhanced)
 
 
-def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne, fonctionObjectif, dispos):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, EmployeesDico, TasksEnhanced, borne, fonctionObjectif, dispos):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -47,9 +47,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     M = 1440  # majorant des temps
 
     # -- Taille du tableau modifié = nombre de tâches réelles + nombre de tâches fictives --
-    t = len(Debut)
-
-    nbreIndisMax = max(len(Fin[j]) for j in range(t))
+    t = len(Duree)
+    nbreIndisMax = max(len(dispos[j]) for j in range(t))
 
     H = m.addMVar(shape=nbre_taches+2*nbre_employe +
                   nbreIndispoEmploye, lb=0, ub=M)

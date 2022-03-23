@@ -152,11 +152,7 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
     employes_unique = []
     # Liste des employés qui ne comporte qu'une fois chacun
     for employe in employes:
-<<<<<<< HEAD
-        if employe not in employes_unique and employe!='':
-=======
         if employe not in employes_unique and employe != '':
->>>>>>> main
             employes_unique += [employe]
 
     for i in range(len(listesPlot)):
@@ -199,8 +195,5 @@ def afficher(nom_ville):
 
 
 afficher('Bordeaux')
-<<<<<<< HEAD
-=======
 
 afficher('Australia')
->>>>>>> df5a561080de0810f7e59a7c1bfe00ed7051f59a
