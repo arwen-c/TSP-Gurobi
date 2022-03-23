@@ -279,3 +279,18 @@ def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
     cell.value = instance
     # on enregistre les données au sein de l'excel
     my_wb.save("./performance2.xlsx")
+
+def dispostache(tasknb, TasksDico, TasksUnavailDico):
+    ouverture=recuperationHeure(TasksDico[tasknb]['OpeningTime'])
+    fermeture=recuperationHeure(TasksDico[tasknb]['ClosingTime'])
+    dispos=[[ouverture]]
+    k=0
+    for t in TasksUnavailDico:
+        if t['TaskId']-1==tasknb:
+            k+=1
+            dispos[k-1].append(recuperationHeure(t['Start']))
+            dispos.append([recuperationHeure(t['End'])])
+    dispos[-1].append(fermeture)
+    return dispos
+
+

@@ -1,6 +1,7 @@
 # Importations de module
 import numpy as np
 from gurobipy import *
+from Phase2.usefulFunctions2 import dispostache
 from usefulFunctions2 import recuperationHeure
 
 
@@ -31,7 +32,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico):
     return(TasksEnhanced)
 
 
-def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne, fonctionObjectif):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne, fonctionObjectif, dispos):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -82,12 +83,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
                 X[n, i, j] for i in range(t)))
 
-<<<<<<< HEAD
-    # Les employés font bien leur pauses (indisponibilités):
-    '''
-=======
     # Les employés font bien leurs pauses (indisponibilités):
->>>>>>> develop
     for n in range(nbre_employe):
         NomEmploye = EmployeesDico[n]['EmployeeName']
         for i_unavail in range(nbreIndispoEmploye):
@@ -100,13 +96,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 0)  # arrivé à la pause
-<<<<<<< HEAD
-'''
-    # Effets de bord
-=======
 
     # Contraintes de flot initiale et finale
->>>>>>> develop
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
                         for j in [k in range(nbre_taches)]+[k in range (nbre_taches+2*n,t)]) == 1)  # départ du dépôt
@@ -132,16 +123,17 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans un intervalle de temps où elle est ouverte
-                nbreCreneauxJ = len(Fin[j])
+                disposJ=dispos[j]
+                nbreCreneauxJ = len(disposJ)
 
                 for k in range(nbreCreneauxJ):
                     # -?M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k]) <= H[j]-Debut[j][k])
-                    m.addConstr(H[j]-Debut[j][k] <= M*delta[j, k])
+                    m.addConstr(-M*(1-delta[j, k]) <= H[j]-disposJ[0])
+                    m.addConstr(H[j]-disposJ[0] <= M*delta[j, k])
                     # -M(1-delta) <= x1-x <= M.delta      x<x1 SSI delta>1
                     m.addConstr(-M*(1-delta[j, k])
-                                <= -H[j]+Fin[j][k]-Duree[j])
-                    m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j, k])
+                                <= -H[j]+disposJ[1]-Duree[j])
+                    m.addConstr(-H[j]+disposJ[1]-Duree[j] <= M*delta[j, k])
 
                 # On ne va pas faire plusieurs fois la même tâche
                 m.addConstr(sum(delta[j, k]
