@@ -1,14 +1,17 @@
 # Import de modules
 import time
+import sys
+from guppy import hpy
 import copy
 
 # Import des fonctions permettant la résolution
 from usefulFunctions2 import *
 from opti2 import ajoutTachesFictives, optimisation2
+from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstanceAustraliaV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceBordeauxV2.xlsx'
 
 
 # Corps du code
@@ -25,9 +28,9 @@ nbreIndispoEmploye = len(EmployeesUnavailDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : TasksDico comporte désormais les taches factices ####
-TasksDicoNotModified=copy.deepcopy(TasksDico)
+TasksDicoNotModified = copy.deepcopy(TasksDico)
 TasksDico = ajoutTachesFictives(
-    TasksDico, EmployeesDico, EmployeesUnavailDico, TasksUnavailDico)
+    TasksDico, EmployeesDico, EmployeesUnavailDico)
 
 # Calcul de la matrice des distances Distance
 tab_distance = matriceDistance(TasksDico)
@@ -47,15 +50,31 @@ debutTemps = time.time()
 
 
 # Optimisation gurobi
-borne = 700
+
+# choisir 1 ou 2, en fonction de la fonction que l'on souhaite optimiser
+fonctionObjectif = 1
+# choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
+borne = 10000  # attention à mettre une valeur cohérente
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
-                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne)
+                         tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico, borne, fonctionObjectif)
 # affichage multi objectif
 print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
     solution[3], solution[4]))
 
+
+# Pour tracer les graphiques des algorithmes epsilon Contraintes
+# fonctionObjectif = 1
+# plotSolutions1(fonctionObjectif, *epsilonContrainte(2, Capacite, nbre_employe,
+#                                      nbre_taches, nbreIndispoEmploye, tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico))
+
+# plotSolutions2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
+#                tab_distance, Duree, Debut, Fin, EmployeesDico, TasksDico)
+
 finTemps = time.time()
-print(finTemps - debutTemps)
+# print(finTemps - debutTemps)
+performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
+              sys.getsizeof(tab_distance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
-creationFichier(path, 2, solution[0], solution[1], solution[2], TasksDicoNotModified, EmployeesDico)
+creationFichier(path, 2, solution[0], solution[1],
+                solution[2], TasksDicoNotModified, EmployeesDico)
