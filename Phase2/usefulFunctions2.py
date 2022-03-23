@@ -67,7 +67,7 @@ def distance(id1, id2, TasksDico):
         index += 1
 
     #distance d'arc entre deux points
-    distance = distanceGPS(lat1,long1,lat2,long2)/1000
+    distance = round(distanceGPS(lat1,long1,lat2,long2)/1000,1)
     return distance
 
 
