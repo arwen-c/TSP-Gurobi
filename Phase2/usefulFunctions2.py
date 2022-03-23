@@ -233,7 +233,7 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
             while (j < nombreTaches and not(tachePrePauseTrouve)):
                 if L[numeroEmploye, i, j] == 1:
                     listeDesLignes.append(str(
-                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(h[i] + Duree[i])) + ';')
+                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(max([h[i] + Duree[i], 720]))) + ';')
                     tachePrePauseTrouve = True
                 j += 1
             i += 1
