@@ -82,7 +82,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
                 X[n, i, j] for i in range(t)))
 
-        # Les employés font bien leurs pauses (indisponibilités):
+    # Les employés font bien leur pauses (indisponibilités):
+    '''
     for n in range(nbre_employe):
         NomEmploye = EmployeesDico[n]['EmployeeName']
         #print("nbreIndispoEmploye :{}".format(nbreIndispoEmploye))
@@ -97,7 +98,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
                                 for i in range(nbre_taches)) == 0)  # arrivé à la pause
-
+'''
     # Effets de bord
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
@@ -121,9 +122,6 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 # l'employé doit être capable d'effectuer les 2 tâches
                 m.addConstr(X[n, i, j] <= C[n, i])
                 m.addConstr(X[n, i, j] <= C[n, j])
-
-                # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
-                #m.addConstr(X[n, i, i] == 0)
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans un intervalle de temps où elle est ouverte

@@ -197,4 +197,4 @@ def afficher(nomVille):
     return None
 
 
-afficher("Bordeaux")
+afficher("Poland")

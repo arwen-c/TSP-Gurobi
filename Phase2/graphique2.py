@@ -195,5 +195,8 @@ def afficher(nom_ville):
 
 
 afficher('Bordeaux')
+<<<<<<< HEAD
+=======
 
 afficher('Australia')
+>>>>>>> df5a561080de0810f7e59a7c1bfe00ed7051f59a

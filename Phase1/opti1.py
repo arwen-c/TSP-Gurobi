@@ -72,9 +72,6 @@ def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin
                 m.addConstr(X[n, i, j] <= capacite[n, i])
                 m.addConstr(X[n, i, j] <= capacite[n, j])
 
-                # l'employé ne peut pas faire le trajet d'une tache vers elle-même : la diagonale doit être nulle
-                m.addConstr(X[n, i, i] == 0)
-
                 # - Effets temporels -
                 # la tache j sera bien faite dans l'intervalle de temps ou elle est ouverte
                 m.addConstr(H[j]+duree[j] <= fin[j])
@@ -99,6 +96,14 @@ def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin
 
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
+    # calcul de la durée totale des tâches effectuées
+
+    valeurDureeTotale = 0
+    nbre, x, y = X.x.shape
+    for n in range(nbre):
+        for i in range(x):
+            for j in range(y):
+                valeurDureeTotale += X.x[n, i, j]*duree[i]
 
     # -- Affichage des solutions --
-    return X.x, H.x, m.objVal
+    return X.x, H.x, m.objVal, valeurDureeTotale

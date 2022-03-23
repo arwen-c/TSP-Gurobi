@@ -251,9 +251,10 @@ def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico):
     fichier.close()
     return None
 
+
 def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
     # Ecriture des critères de performance dans un excel
-    my_path = "./performance1.xlsx"
+    my_path = "./performance2.xlsx"
     my_wb = openpyxl.load_workbook(my_path)
     my_sheet = my_wb.active
     # on cherche à partir de quelle ligne écrire (écriture à la suite)
