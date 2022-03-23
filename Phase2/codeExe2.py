@@ -46,7 +46,8 @@ Debut = vecteurOuvertures(TasksDico, TasksUnavailDico)
 # liste des fins d'ouverture des tâches
 Fin = vecteurFermetures(TasksDico, TasksUnavailDico)
 # liste des disponibilités des tâches
-dispos= [dispostache(tasknb, TasksDico, TasksUnavailDico) for tasknb in range (len(TasksDico))]
+dispos = [dispostache(tasknb, TasksDico, TasksUnavailDico)
+          for tasknb in range(len(TasksDico))]
 
 debutTemps = time.time()
 
