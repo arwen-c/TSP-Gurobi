@@ -71,11 +71,10 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
     indispoDico = dictionnaire de dictionnaire contenant en clef le nom de la personne, et en argument un dictionnaire des caractéristiques"""
     # on peut modifier le programme pour se passer de employeesDico
     nombreEmploye = len(employeesDico)
-    nombreTachesTotal = len(employeesDico+indispoDico)
     # vaut 1 si la tâche i est fait par l'employé n
-    X = np.zeros(nombreEmploye, nombreTachesTotal, nombreTachesTotal)
+    X = np.zeros(nombreEmploye, nbreTaches, nbreTaches)
     L = np.zeros(nombreEmploye)  # heures de début des pauses dèj
-    H = np.zeros(nombreTachesTotal)  # heure de début de chaque tâche
+    H = np.zeros(nbreTaches)  # heure de début de chaque tâche
     tempsTravail = 0
     distanceParcourue = 0
     for n in range(nombreEmploye):
@@ -87,7 +86,7 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
         newTachePossible = True
         # contrainte compétence, on obtient une liste de tâches auxquelles on enlève les tâches qui ont déjà été faites et celles que l'employé n'est pas capable de faire
         # créé une liste des numéros des tâches restantes
-        tachesFaisables = fonctionRestriction(capacite, X)
+        tachesFaisables = fonctionRestriction(capacite[n, :], X)
         while newTachePossible:  # on construit la journée d'un employé au fur et à mesure
             # on regarde toutes les tâches possibles, et on les classes dans l'ordre des plus optimales en terme de temps + distance à la position actuelle
             tacheOpti = triOpti(
@@ -114,7 +113,8 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
                 localisationCourante = tache
     return X, H, L, distanceParcourue, tempsTravail
 
- '''
+
+'''
 Boucle proposée par SamDa
 
 while t < finJourneeEmploye:  # on construit la journée d'un employé au fur et à mesure
