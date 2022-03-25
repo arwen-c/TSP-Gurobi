@@ -34,8 +34,8 @@ def triOpti(tachesFaisables, localisationCourante, distance, duree):
         cout[i] = 2/3*duree+(12/0.833-(0.575+0.12)) * \
             distance(tachesFaisables[i], localisationCourante)
     tachesFaisables = np.array(tachesFaisables)
-    inds = cout.argsort()
-    return tachesFaisables[inds]
+    cout.argsort()
+    return tachesFaisables[cout]
 
 
 def tachesRealisable(tacheOpti, duree, distance, localisationCourante, debut, fin, finJournéeEmploye, indispoDico):
