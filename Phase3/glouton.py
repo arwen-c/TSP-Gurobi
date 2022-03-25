@@ -1,6 +1,8 @@
 from matplotlib.cbook import safe_masked_invalid
 import numpy as np
 from sympy import E
+from Phase2.usefulFunctions2 import recuperationHeure
+from usefulFunctions3 import *
 
 # qu'est ce que dicoTachesEtendues ?
 
@@ -60,7 +62,7 @@ def optiGloutonSansRepas(capacite, distance, duree, debut, fin, nbreTaches, empl
 # Sinon on compare avec les taches suivantes jusqu'a trouver une tâche ouverte
 
 
-def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico, indispoDico):
+def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico, indispoDico, tachesDico):
     """Variables dont on hérite des programmes précédents :
     capacite = matrice des capacité de l'ouvrier n à faire la tache i ;
     distance = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -90,13 +92,14 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
         while newTachePossible:  # on construit la journée d'un employé au fur et à mesure
             # on regarde toutes les tâches possibles, et on les classes dans l'ordre des plus optimales en terme de temps + distance à la position actuelle
             tacheOpti = triOpti(
-                tachesFaisables, localisationCourante, distance)
+                tachesFaisables, localisationCourante, distance, tachesDico)
             # on vérifie qu'au moins une des tâches peut se faire sans empiéter sur une periode d'indisponibilité, sur la pause repas, dans la periode d'ouverture de la tache et de disponibilité de l'employé
             tache, raison = tachesRealisable(
-                tacheOpti, duree, debut, fin, employe['EndTime'], indispoDico, t, pauseFaite)  # rôle à bien définir
+                tacheOpti, duree, debut, fin, employe['EndTime'], indispoDico[employe['EmployeeName']], t, pauseFaite, localisationCourante, distance, tachesDico)  # rôle à bien définir
             if tache == None:
                 if raison == 'indisponibilité':
-                    t = indispoDico[employe['EmployeeName']]['End']
+                    t = recuperationHeure(
+                        indispoDico[employe['EmployeeName']]['End'])
                 if raison == 'fin de journée':
                     newTachePossible = False
                 if raison == 'déjeuner':
