@@ -2,15 +2,9 @@ taskId;performed;employeeName;startTime;
 T1;0;;;
 T2;1;Valentin;512;
 T3;1;Valentin;998;
-<<<<<<< HEAD
-T4;1;Valentin;795;
-T5;1;Valentin;584;
-T6;1;Valentin;666;
-=======
 T4;1;Valentin;824;
 T5;1;Valentin;673;
 T6;1;Valentin;755;
->>>>>>> main
  
 employeeName;lunchBreakStartTime;
 Valentin;726;
