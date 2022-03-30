@@ -1,7 +1,7 @@
 # Import de modules
 import time
 # import sys
-# import copy
+import copy
 
 # Import des fonctions permettant la résolution
 from usefulFunctions3 import *
@@ -26,8 +26,8 @@ nbreIndispoEmploye = len(indispoEmployesDico)
 
 # Ajout de tâches de départ et d'arrivée (tâches factices)
 #### ATTENTION : tachesDico comporte désormais les taches factices ####
-# tachesDicoNonModifie = copy.deepcopy(tachesDico)
-# tachesDico = ajoutTachesFictives(tachesDico, employesDico, indispoEmployesDico)
+tachesDicoNonModifie = copy.deepcopy(tachesDico)
+tachesDico = ajoutTachesFictives(tachesDico, employesDico, indispoEmployesDico)
 
 # Calcul de la matrice des distances Distance
 matDistance = matriceDistance(tachesDico)
@@ -70,5 +70,5 @@ finTemps = time.time()
 # performances2(finTemps-debutTemps, sys.getsizeof(capacite) + sys.getsizeof(duree)+sys.getsizeof(debut)+sys.getsizeof(fin) + sys.getsizeof(matDistance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
-creationFichier(path, 2, solution[0], solution[1],
-                solution[2], tachesDico, employesDico)
+creationFichier(path, 3, solution[0], solution[1],
+                solution[2], tachesDicoNonModifie, employesDico)

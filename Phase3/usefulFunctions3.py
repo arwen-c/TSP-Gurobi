@@ -14,8 +14,8 @@ def fonctionRestriction(capaciteEmploye, X):
     listeTaches = []
     # si on garde 3 dim : nbreEmploye, nbreTache, _ = X.shape
     nbreEmploye, nbreTache = X.shape
-    for k in range(nbreTache):
-        if capaciteEmploye[k] == 1:
+    for k in range(1, nbreTache + 1):
+        if capaciteEmploye[k - 1] == 1:  # car le tableau des compétences commencent à 0
             tacheNonFaite = True
             n = 0
             while tacheNonFaite and n < nbreEmploye:
@@ -26,7 +26,7 @@ def fonctionRestriction(capaciteEmploye, X):
                 #         tacheNonFaite = False
                 #     i += 1
                 # n += 1
-                if X[n, k] == 1:
+                if X[n, k - 1] == 1:  # même chose que pour compétence
                     tacheNonFaite = False
                 n += 1
             if tacheNonFaite:
@@ -48,30 +48,25 @@ def triOpti(tachesFaisables, localisationCourante, matDistance, duree):
     Choix d'optimiser en fonction de l'argent gagné = cout horaire du dépanage*duree-cout transport*distance
     '''
     # création d'une liste contenant les valeurs de cout associées à la tache
-    nbreTachesFaisables = len(tachesFaisables)
-    valeurInitiale = -1000000
-    # initialisation à une valeur très faible
-    cout = np.ones(nbreTachesFaisables)*valeurInitiale
-    tachesFaisablesTriees = np.zeros(nbreTachesFaisables)
-    for i in range(nbreTachesFaisables):
-        # (12/0.833-(0.575+0.12)) * 2/3*
-        cout[i] = duree[tachesFaisables[i]] - \
-            matDistance[tachesFaisables[i]][localisationCourante]/0.833
-        coutCourant = cout[i]
-        k = 1
-        # nbreTachesFaisables - k pour être plus rapide
-        while coutCourant <= cout[nbreTachesFaisables - k] and k < nbreTachesFaisables:
-            k += 1
-        if cout[nbreTachesFaisables - k] == valeurInitiale:
-            # on remplace la valeur initiale par l'identifiant de la tâche
-            tachesFaisablesTriees[nbreTachesFaisables - k] = tachesFaisables[i]
-        else:
-            # on décale les valeurs dans la liste pour pouvoir insérer la nouvelle tâche
-            for j in range(nbreTachesFaisables - k):
-                tachesFaisablesTriees[j] = tachesFaisablesTriees[j+1]
-            # on peut écraser la valeur car on a tout décalé
-            tachesFaisablesTriees[nbreTachesFaisables - k] = tachesFaisables[i]
-    return tachesFaisablesTriees
+    L = len(tachesFaisables)
+    cout = L*[0]
+    for i in range(L):
+        cout[i] = (2/3)*duree[i] + (12/0.833-(0.575+0.12)) * \
+            matDistance[tachesFaisables[i]][localisationCourante]
+    tachesFaisables = list(tachesFaisables.copy())
+    coutTrie = np.sort(cout.copy())
+    tacheTrie = L*[0]
+    for i in range(L):
+        j = 0
+        trouve = False
+        while not(trouve) and j < len(tachesFaisables):
+            if cout[j] == coutTrie[i]:
+                tacheTrie[i] = tachesFaisables.pop(j)
+                cout.pop(j)
+                trouve = True
+            j += 1
+    # souci d'une tache qui n'est plus dans tacheTrie si deux taches ont le même cout. On peut faire un point pop, mais perte en lisibilité de programme non ?
+    return tacheTrie
 
 
 def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoDicoEmployeN, t, pauseFaite, localisationCourante, matDistance, tachesDico):
@@ -108,7 +103,7 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
                         creneauConvenable = True
                 c += 1
             pasIndispo = False
-            if creneauConvenable:
+            if creneauConvenable and indispoDicoEmployeN != {}:
                 deltaLong = tachesDico[localisationCourante]['Longitude'] - \
                     indispoDicoEmployeN['Longitude']
                 deltaLat = tachesDico[localisationCourante]['Latitude'] - \
@@ -122,12 +117,15 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
             if creneauConvenable and pasIndispo:
                 if t < 720:
                     if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] < 780:
-                        tache = tachesOpti[k]
+                        tache = int(tachesOpti[k])
+                        tacheOptiFaisableTrouvee = True
                 elif t > 840:
-                    tache = tachesOpti[k]
+                    tache = int(tachesOpti[k])
+                    tacheOptiFaisableTrouvee = True
                 else:
                     if pauseFaite:
-                        tache = tachesOpti[k]
+                        tache = int(tachesOpti[k])
+                        tacheOptiFaisableTrouvee = True
                     else:
                         raison = 'déjeuner'
         else:
@@ -310,21 +308,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico):
         # ajout d'une tâche au départ du domicile
         TasksEnhanced.append({'TaskId': 'Depart' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
                               'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
-    for row in EmployeesDico:
-        # ajout de l'arrivée au domicile
-        TasksEnhanced.append({'TaskId': 'Arrivee'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
-                              'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
-
-    ### AJOUTS INDISPONIBILITES EMPLOYES ###
-    for row in EmployeesUnavailDico:
-
-        debut = recuperationHeure(row["Start"])
-        fin = recuperationHeure(row["End"])
-
-        TasksEnhanced.append({'TaskId': 'Unavail' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
-                              'TaskDuration': fin-debut, 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
-
-    return(TasksEnhanced)
+    return TasksEnhanced
 
 
 # Fonctions création du fichier solution
@@ -334,21 +318,22 @@ def nomFichierResolution(nomFichier, nMethode):
     n_methode est le numéro de la méthode.
     Renvoie le nom du fichier txt."""
     L = nomFichier.split('.')
-    return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
+    return 'Phase3/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
 
 
 def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
-    Duree = vecteurDurees(TasksDico)
+    # Duree = vecteurDurees(TasksDico)
     premiereLigne = 'taskId;performed;employeeName;startTime;'
     listeDesLignes = [premiereLigne]
-    n, _, _ = X.shape
+    n, _ = X.shape
     employeeName = ''
     nombreTaches = len(TasksDico)
     for i in range(nombreTaches):
         tacheiAjoutee = False
+        numeroEmploye = 0
         while numeroEmploye < n and not(tacheiAjoutee):
             if X[numeroEmploye, i] == 1:
                 employeeName = EmployeesDico[numeroEmploye]['EmployeeName']
@@ -361,7 +346,8 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     listeDesLignes.append(' ')  # saut de ligne
     listeDesLignes.append('employeeName;lunchBreakStartTime;')
     for numeroEmploye in range(n):
-        listeDesLignes.append(str(employeeName) + ';' + str(L[n]) + ';')
+        listeDesLignes.append(str(
+            EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(L[numeroEmploye]) + ';')
     return listeDesLignes
 
 
