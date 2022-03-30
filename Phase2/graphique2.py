@@ -105,19 +105,22 @@ def creation_listes(nom_ville):
             employes_unique += [employe]
 
     listesPlot = []
+    listesTable = []
     # cette liste contient : [employe[longitudes[l1l2l3],latitudes[m1m2m3]]]
-    for i in range(len(employes_unique)):
+    for i in range(len(employes_unique)): # pour chaque employé unique
         # on extrait les longitudes et latitudes des tâches effectuées par l'employé i
         longitudes_i = []
         lattitudes_i = []
         start_times_i = []
-        for j in range(len(employes)):
+        tasksIdEmployee = []
+        for j in range(len(employes)): # pour chaque ligne du fichier ??
             id_tache = int(taches[j][1:])-1
             # les taches sont dans l'ordre normal... pas dans l'ordre de sortie de lecture c'est le meme. Donc on doit relier la ligne j au numéro de la tâche
             if employes[j] == employes_unique[i]:
                 longitudes_i.append(longitudes_taches[id_tache])
                 lattitudes_i.append(latitudes_taches[id_tache])
                 start_times_i.append(start_times[j])
+                tasksIdEmployee.append(id_tache)
 
         # On trie les longitudes/lattitudes des tâches des employés par ordre croissant de début de leurs tâches
 
@@ -125,6 +128,7 @@ def creation_listes(nom_ville):
             lattitudes_i, start_times_i)
         longitudes_i = order_list(
             longitudes_i, start_times_i)
+        tasksIdEmployee = order_list(tasksIdEmployee, start_times_i)
 
         # Ajout des domiciles des employés
         found_name = False
@@ -141,11 +145,12 @@ def creation_listes(nom_ville):
         lattitudes_i += [latitude_domicile_i]
 
         listesPlot.append([longitudes_i, lattitudes_i])
-    return listesPlot
+        listesTable.append([tasksIdEmployee, start_times_i])
+    return listesPlot, listesTable
 
 
 def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
-    listesPlot = creation_listes(nom_ville)
+    listesPlot = creation_listes(nom_ville)[0]
 
     my_colors = ["r", "g", "b", "c", "m", "y",
                  "k", "r", "g", "b", "c", "m", "y", "k"]
@@ -182,7 +187,7 @@ def afficher(nom_ville):
 
     #my_colors = ["r", "g", "b", "c", "m", "y", "k", "r", "g", "b", "c", "m", "y", "k"]
 
-    # listesPlot=creation_listes(nom_ville)
+    # listesPlot=creation_listes(nom_ville)[0]
     # m = folium.Map(location=[lattitudes[0],longitudes[0]],zoom_start=15)
     # for i in range (len(listesPlot)):
     #     loc = []
@@ -195,5 +200,9 @@ def afficher(nom_ville):
     return None
     
 if __name__ == '__main__':
-    afficher('Contamines')
+    # afficher('Contamines')
+    print(creation_listes('Bordeaux')[1])
+    plt.table(cellText = creation_listes('Bordeaux')[1], loc= 'bottom')
+    plt.subplots_adjust(left=0.2, bottom=0.2)
+    plt.show()
     
