@@ -168,6 +168,16 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                         for i in range(t) for j in range(t)) <= borne)
         m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
                             for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
+    elif fonctionObjectif == 3:
+        alpha = 0.1
+        f1 = sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+                 for i in range(t) for j in range(t))
+        f2 = -sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+                  for i in range(ntR) for j in range(t))
+        m.setObjective(f2+alpha*f1, GRB.MINIMIZE)
+        # m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+        #                     for i in range(ntR) for j in range(t))+alpha*sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)for i in range(t) for j in range(t)), GRB.MINIMIZE )
+
   #  m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
@@ -190,3 +200,14 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                 for j in range(y):
                     valeur += X.x[n, i, j]*D[i, j]
         return X.x, H.x, L.x, m.objVal, valeur
+
+    elif fonctionObjectif == 3:
+        valeurF1 = 0
+        valeurF2 = 0
+        nbre, x, y = X.x.shape
+        for n in range(nbre):
+            for i in range(x):
+                for j in range(y):
+                    valeurF1 += X.x[n, i, j]*D[i, j]
+                    valeurF2 += X.x[n, i, j]*Duree[i]
+        return X.x, H.x, L.x, valeurF2, valeurF1
