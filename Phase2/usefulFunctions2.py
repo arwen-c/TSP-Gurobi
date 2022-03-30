@@ -233,7 +233,7 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
             while (j < nombreTaches and not(tachePrePauseTrouve)):
                 if L[numeroEmploye, i, j] == 1:
                     listeDesLignes.append(str(
-                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(h[i] + Duree[i])) + ';')
+                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(max([h[i] + Duree[i], 720]))) + ';')
                     tachePrePauseTrouve = True
                 j += 1
             i += 1
@@ -279,3 +279,19 @@ def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
     cell.value = instance
     # on enregistre les données au sein de l'excel
     my_wb.save("./performance2.xlsx")
+
+def dispostache(tasknb, TasksDico, TasksUnavailDico):
+    '''retourne une liste des créneaux dispo de la tâche tasknb'''
+    ouverture=recuperationHeure(TasksDico[tasknb]['OpeningTime'])
+    fermeture=recuperationHeure(TasksDico[tasknb]['ClosingTime'])
+    dispos=[[ouverture]]
+    k=0
+    for t in TasksUnavailDico:
+        if t['TaskId']=='T'+str(tasknb+1):
+            k+=1
+            dispos[k-1].append(recuperationHeure(t['Start']))
+            dispos.append([recuperationHeure(t['End'])])
+    dispos[-1].append(fermeture)
+    return dispos
+
+

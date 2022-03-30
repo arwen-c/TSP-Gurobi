@@ -1,6 +1,7 @@
 # Importations de module
 import numpy as np
 from gurobipy import *
+from usefulFunctions2 import dispostache
 from usefulFunctions2 import recuperationHeure
 
 
@@ -31,7 +32,7 @@ def ajoutTachesFictives(TasksDico, EmployeesDico, EmployeesUnavailDico):
     return(TasksEnhanced)
 
 
-def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Debut, Fin, EmployeesDico, TasksEnhanced, borne, fonctionObjectif):
+def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, EmployeesDico, TasksEnhanced, borne, fonctionObjectif, dispos):
     """Variables dont on hérite des programmes précédents :
     C = matrice des capacité de l'ouvrier n à faire la tache i ;
     D = matrice contenant la distance entre les tâches i et j en position (i,j) ;
@@ -46,9 +47,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     M = 1440  # majorant des temps
 
     # -- Taille du tableau modifié = nombre de tâches réelles + nombre de tâches fictives --
-    t = len(Debut)
-
-    nbreIndisMax = max(len(Fin[j]) for j in range(t))
+    t = len(Duree)
+    nbreIndisMax = max(len(dispos[j]) for j in range(t))
 
     H = m.addMVar(shape=nbre_taches+2*nbre_employe +
                   nbreIndispoEmploye, lb=0, ub=M)
@@ -77,6 +77,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                         for j in range(t)) <= 1)
 
     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
+    # Pour les indisponibilité, cette contrainte est exprimée juste en dessous
     for n in range(nbre_employe):
         for j in range(nbre_taches):
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
@@ -99,9 +100,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # Contraintes de flot initiale et finale
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
-                        for j in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*n, t)]) == 1)  # départ du dépôt
+                        for j in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*nbre_employe, t)]) == 1)  # départ du dépôt
         m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
-                        for i in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*n, t)]) == 1)  # arrivée au dépôt
+                        for i in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*nbre_employe, t)]) == 1)  # arrivée au dépôt
 
     # Ajout des contraintes sur L
     # Une pause dej n'est possible qu'entre deux taches réalisées
@@ -122,38 +123,24 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans un intervalle de temps où elle est ouverte
-                nbreCreneauxJ = len(Fin[j])
+                nbreCreneauxI = len(dispos[i])
 
-                for k in range(nbreCreneauxJ):
-                    # -?M(1-delta) <= x-x0 <= M.delta       x0<x SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k]) <= H[j]-Debut[j][k])
-                    m.addConstr(H[j]-Debut[j][k] <= M*delta[j, k])
-                    # -M(1-delta) <= x1-x <= M.delta      x<x1 SSI delta>1
-                    m.addConstr(-M*(1-delta[j, k])
-                                <= -H[j]+Fin[j][k]-Duree[j])
-                    m.addConstr(-H[j]+Fin[j][k]-Duree[j] <= M*delta[j, k])
+                for k in range(nbreCreneauxI):
+                    m.addConstr(delta[i, k]*dispos[i][k][0] <= H[i])
+                    m.addConstr(H[i] <= dispos[i][k][1]-Duree[i]+(1-delta[i][k])*M)
 
-                # On ne va pas faire plusieurs fois la même tâche
-                m.addConstr(sum(delta[j, k]
-                                for k in range(nbreCreneauxJ)) == 1)
+            # Contrainte à mettre hors de la boucle sur k, mais dans une boucle sur i, et sur j
+                m.addConstr(X[n, i, j] <= sum(delta[i][k]
+                                for k in range(nbreCreneauxI)))
 
                 # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
-
+                m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
+                m.addConstr(13*60-(1-L[n, i, j])*60*13 <= H[j])
                 # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
-                if i < nbre_taches and j < nbre_taches:  # on est entre deux tâches réelles
-                    m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60
-                                <= H[j] + 24*60*(1-X[n, i, j]))
-                    m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
-                    m.addConstr(13*60-(1-L[n, i, j])*60*13 <= H[j])
-                    None
-
-                else:
-                    m.addConstr(
-                        H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) <= H[j] + 24*60*(1-X[n, i, j]))
-                # 0.833 = vitesse des ouvriers en km.min-1 (équivaut à 50km.h-1)
-
+                m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60 <= H[j] + 24*60*(1-X[n, i, j]))
+ 
     # -- Ajout de la fonction objectif.
-    ntR = len(TasksEnhanced)
+    ntR = nbre_taches
 
     # Optimisation sur f1
 

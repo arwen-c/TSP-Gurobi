@@ -1,4 +1,3 @@
-from json.tool import main
 import matplotlib.pyplot as plt
 from usefulFunctions2 import extractionData
 import xlwt
@@ -108,13 +107,13 @@ def creation_listes(nom_ville):
     listesPlot = []
     listesTable = []
     # cette liste contient : [employe[longitudes[l1l2l3],latitudes[m1m2m3]]]
-    for i in range(len(employes_unique)): # pour chaque employé unique
+    for i in range(len(employes_unique)):  # pour chaque employé unique
         # on extrait les longitudes et latitudes des tâches effectuées par l'employé i
         longitudes_i = []
         lattitudes_i = []
         start_times_i = []
         tasksIdEmployee = []
-        for j in range(len(employes)): # pour chaque ligne du fichier ??
+        for j in range(len(employes)):  # pour chaque ligne du fichier ??
             id_tache = int(taches[j][1:])-1
             # les taches sont dans l'ordre normal... pas dans l'ordre de sortie de lecture c'est le meme. Donc on doit relier la ligne j au numéro de la tâche
             if employes[j] == employes_unique[i]:
@@ -176,24 +175,28 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
     plt.show()
     return None
 
-def afficherTableauTaches(ville) : # attention, pour l'instant si l'excel tableau des taches existe deja, il ne peut pas le modifier, une erreur apparait donc. Solution : supprimer cet excel et relancer le programme
+
+def afficherTableauTaches(ville):  # attention, pour l'instant si l'excel tableau des taches existe deja, il ne peut pas le modifier, une erreur apparait donc. Solution : supprimer cet excel et relancer le programme
     table = creation_listes(ville)[1]
     workbook = xlwt.Workbook()
     sheet = workbook.add_sheet('feuille1')
-    sheet.write(0,0, 'Employé')
-    sheet.write(0,1,'Tâche')
-    sheet.write(0,2,'Heure de début de la tâche')
-    rowNumber=1
+    sheet.write(0, 0, 'Employé')
+    sheet.write(0, 1, 'Tâche')
+    sheet.write(0, 2, 'Heure de début de la tâche')
+    rowNumber = 1
     for employe in range(len(table)):
         tasks = table[employe][0]
         startTimes = table[employe][1]
-        sheet.write(rowNumber, 0, 'EmployeeName') # A CHANGER
+        sheet.write(rowNumber, 0, 'EmployeeName')  # A CHANGER
         for i in range(len(tasks)):
-            sheet.write(rowNumber, 1,'T'+str(tasks[i]))
-            timeBegin = str(int(startTimes[i])//60)+'h'+str(int(startTimes[i])%60)+'min'  # conversion du temps : minutes => heures +  minutes
+            sheet.write(rowNumber, 1, 'T'+str(tasks[i]))
+            # conversion du temps : minutes => heures +  minutes
+            timeBegin = str(int(startTimes[i])//60) + \
+                'h'+str(int(startTimes[i]) % 60)+'min'
             sheet.write(rowNumber, 2, timeBegin)
-            rowNumber+=1
+            rowNumber += 1
     workbook.save('Phase2/Solutions/TableauTaches'+ville+'V2ByV2.xls')
+
 
 def afficher(nom_ville):
     path1 = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
@@ -220,9 +223,7 @@ def afficher(nom_ville):
 
     # m.save("testfolium.html")
     return None
-    
+
+
 if __name__ == '__main__':
     afficher('Bordeaux')
-    
-
-    
