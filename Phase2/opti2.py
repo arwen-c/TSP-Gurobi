@@ -121,14 +121,17 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                 m.addConstr(X[n, i, j] <= C[n, i])
                 m.addConstr(X[n, i, j] <= C[n, j])
 
-                # - Effets temporels -
-                # la tache j sera bien faite dans un intervalle de temps où elle est ouverte
-                nbreCreneauxI = len(dispos[i])
+        # - Effets temporels -
+        # la tache i sera bien faite dans un intervalle de temps où elle est ouverte : vrai pour les débuts de trajet
+        nbreCreneauxI = len(dispos[i])
 
-                for k in range(nbreCreneauxI):
-                    m.addConstr(delta[i, k]*dispos[i][k][0] <= H[i])
-                    m.addConstr(H[i] <= dispos[i][k][1]-Duree[i]+(1-delta[i][k])*M)
+        for k in range(nbreCreneauxI):
+            m.addConstr(delta[i, k]*dispos[i][k][0] <= H[i])
+            m.addConstr(H[i] <= dispos[i][k][1]-Duree[i]+(1-delta[i][k])*M)
 
+    for i in range(t):
+        for j in range(t):
+            for n in range(nbre_employe):
             # Contrainte à mettre hors de la boucle sur k, mais dans une boucle sur i, et sur j
                 m.addConstr(X[n, i, j] <= sum(delta[i][k]
                                 for k in range(nbreCreneauxI)))

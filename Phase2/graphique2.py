@@ -88,6 +88,14 @@ def order_list(list_to_order, list_used_for_order):
 
     return list_to_order_2
 
+def insertionindispos(nom_ville):
+    path = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
+    _,EmployeesUnavail,_,_=extractionData(path)
+    liste=[]
+    for Unavail in EmployeesUnavail:
+        point = [Unavail['EmployeeName'],Unavail['Latitude'],Unavail['Longitude'],Unavail['Start']]
+        liste.append(point)
+    return liste
 
 def creation_listes(nom_ville):
     path = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
@@ -163,6 +171,10 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
                 plt.annotate(str(taches[j]),
                              (longitudes[j], lattitudes[j]))
 
+    listeindispos=insertionindispos(nom_ville)
+    for point in listeindispos:
+        plt.plot(point[2],point[1],"-o",color="k", label=point[0])
+
     plt.title(str(nom_ville))
     plt.legend()
     plt.show()
@@ -192,6 +204,3 @@ def afficher(nom_ville):
 
     # m.save("testfolium.html")
     return None
-
-
-afficher('Contamines')
