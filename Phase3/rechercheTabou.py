@@ -2,6 +2,7 @@ from glouton import *
 
 # question : comment caractériser une solution ? Par la matrice des X ? Ca rend la comparaison entre plusieurs solutions assez laborieuse pour de grandes instances
 # quel critère d'arrêt ? pour une première version, utilisation d'un nombre d'itération maximum. Par la suite, on peut améliorer le programme en utilisant un nombre max d'itération depuis la dernière mise à jour d'un minimum (dernier ajout à la liste tabou)
+# d'autres améliorations, notamment sur la tailleMemoire sont proposées dans le poly de métaheuristique
 
 
 def rechercheTabou(capacite, matDistance, duree, debut, fin, nbreTaches, employeesDico, indispoDico, tachesDico, tailleMemoire):
