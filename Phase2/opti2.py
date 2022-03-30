@@ -54,8 +54,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
                   nbreIndispoEmploye, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
                          nbre_taches+2*nbre_employe+nbreIndispoEmploye),  vtype=GRB.BINARY)
-    L = m.addMVar(shape=(nbre_employe, nbre_taches,
-                         nbre_taches), vtype=GRB.BINARY)
+    L = m.addMVar(shape=(nbre_employe, t,
+                         t), vtype=GRB.BINARY)
     delta = m.addMVar(shape=(nbre_taches+2*nbre_employe +
                              nbreIndispoEmploye, nbreIndisMax), vtype=GRB.BINARY)
 
@@ -106,12 +106,12 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, De
     # Ajout des contraintes sur L
     # Une pause dej n'est possible qu'entre deux taches réalisées
     for n in range(nbre_employe):
-        for i in range(nbre_taches):
-            for j in range(nbre_taches):
+        for i in range(t):
+            for j in range(t):
                 m.addConstr(L[n, i, j] <= X[n, i, j])
     # Une personne fait une et une seule pause dej
-        m.addConstr(sum(L[n, i, j] for i in range(nbre_taches)
-                        for j in range(nbre_taches)) == 1)
+        m.addConstr(sum(L[n, i, j] for i in range(t)
+                        for j in range(t)) == 1)
 
     for i in range(t):  # Tâches réelles + Tâches fictives
         for j in range(t):
