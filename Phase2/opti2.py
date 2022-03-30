@@ -54,12 +54,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                   nbreIndispoEmploye, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
                          nbre_taches+2*nbre_employe+nbreIndispoEmploye),  vtype=GRB.BINARY)
-<<<<<<< HEAD
-    L = m.addMVar(shape=(nbre_employe, t,t), vtype=GRB.BINARY)
-=======
     L = m.addMVar(shape=(nbre_employe, t,
                          t), vtype=GRB.BINARY)
->>>>>>> main
     delta = m.addMVar(shape=(nbre_taches+2*nbre_employe +
                              nbreIndispoEmploye, nbreIndisMax), vtype=GRB.BINARY)
 
@@ -104,15 +100,9 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
     # Contraintes de flot initiale et finale
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
-<<<<<<< HEAD
-                        for j in [k for k in range(nbre_taches)]+[k for k in range (nbre_taches+2*n,t)]) == 1)  # départ du dépôt
-        m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
-                        for i in [k for k in range(nbre_taches)]+[k for k in range (nbre_taches+2*n,t)]) == 1)  # arrivée au dépôt
-=======
-                        for j in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*n, t)]) == 1)  # départ du dépôt
+                        for j in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*n, t)]) == 1)  # départ du dépôt, on elimine les domicile-domicile
         m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
                         for i in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*n, t)]) == 1)  # arrivée au dépôt
->>>>>>> main
 
     # Ajout des contraintes sur L
     # Une pause dej n'est possible qu'entre deux taches réalisées
