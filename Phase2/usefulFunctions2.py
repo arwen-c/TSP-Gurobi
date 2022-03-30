@@ -1,13 +1,11 @@
-from cmath import cos
-from math import dist
+# Import de modules
 import numpy as np
 import pandas as pd
 import math
+import openpyxl
 
-# from Phase_1.code_exe_1 import TasksDico
 
 # Fonction récupération des données issues des excel
-
 
 def extractionData(path):
     """Permet l'extraction des données depuis un fichier excel.
@@ -30,6 +28,27 @@ def extractionData(path):
 
 # Fonctions utiles pour créer les matrices de données utiles
 
+def deg2rad(dd):
+    """Convertit un angle "degrés décimaux" en "radians"
+    """
+    return dd/180*math.pi
+
+def distanceGPS(latA, longA, latB, longB):
+    """Retourne la distance en mètres entre les 2 points A et B connus grâce à
+       leurs coordonnées GPS (en radians).
+    """
+    # Rayon de la terre en mètres (sphère IAG-GRS80)
+    RT = 6378137
+    # angle en radians entre les 2 points
+    x = math.sin(latA)*math.sin(latB) + math.cos(latA)*math.cos(latB)*math.cos(abs(longB-longA))        
+    if abs(x-1) <= 0.000000000001:
+        x = 1
+    elif abs(x+1) <= 0.000000000001:
+        x = -1
+    S = math.acos(x)
+    # distance entre les 2 points, comptée sur un arc de grand cercle
+    return S*RT
+    
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
@@ -39,16 +58,16 @@ def distance(id1, id2, TasksDico):
     while not (foundId1 and foundId2):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
-            long1 = TasksDico[index]['Longitude']
-            lat1 = TasksDico[index]['Latitude']
+            long1 = deg2rad(TasksDico[index]['Longitude'])
+            lat1 = deg2rad(TasksDico[index]['Latitude'])
         if TasksDico[index]['TaskId'] == id2:
             foundId2 = True
-            long2 = TasksDico[index]['Longitude']
-            lat2 = TasksDico[index]['Latitude']
+            long2 = deg2rad(TasksDico[index]['Longitude'])
+            lat2 = deg2rad(TasksDico[index]['Latitude'])
         index += 1
-    deltaLong = long2-long1  # calcule de la différence de longitude
-    deltaLatt = lat2-lat1
-    distance = (1.852*60*math.sqrt(deltaLong**2+deltaLatt**2))
+
+    #distance d'arc entre deux points
+    distance = round(distanceGPS(lat1,long1,lat2,long2)/1000,1)
     return distance
 
 
@@ -66,6 +85,8 @@ def competenceOK(EmployeeName, TaskId, TasksDico, EmployeesDico):
     employeeLevel = next(
         item['Level'] for item in EmployeesDico if item['EmployeeName'] == EmployeeName)
     if taskLevel <= employeeLevel and taskSkill == employeeSkill:
+        return 1
+    elif taskSkill == None:
         return 1
     else:
         return 0
@@ -109,7 +130,11 @@ def recuperationHeure(heure):
     h = int(res[0])  # l'heure
     m = int(res[1][:2])  # les minutes
     if res[1][2:] == 'pm':
-        h += 12  # modifications pour l'aprem
+        if res[0] != 12:
+            h += 12  # modifications pour l'aprem
+    else:
+        if res[0] == 12:
+            h = 0
     return h*60+m
 
 
@@ -169,13 +194,14 @@ def nomFichierResolution(nomFichier, nMethode):
     n_methode est le numéro de la méthode.
     Renvoie le nom du fichier txt."""
     L = nomFichier.split('.')
-    return 'Solution' + L[0][8:] + 'ByV' + str(nMethode) + '.txt'
+    return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
 
 
-def lignesSolution(X, h, TasksDico, EmployeesDico):
+def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
+    Duree = vecteurDurees(TasksDico)
     premiereLigne = 'taskId;performed;employeeName;startTime;'
     listeDesLignes = [premiereLigne]
     n, _, y = X.shape
@@ -183,29 +209,73 @@ def lignesSolution(X, h, TasksDico, EmployeesDico):
     nombreTaches = len(TasksDico)
     for i in range(nombreTaches):
         j = 0
-        tache_i_ajoutee = False
-        while j < y and not(tache_i_ajoutee):
-            numero_employe = 0
-            while numero_employe < n and not(tache_i_ajoutee):
-                if X[numero_employe, i, j] == 1:
-                    employeeName = EmployeesDico[numero_employe]['EmployeeName']
+        tacheiAjoutee = False
+        while j < y and not(tacheiAjoutee):
+            numeroEmploye = 0
+            while numeroEmploye < n and not(tacheiAjoutee):
+                if X[numeroEmploye, i, j] == 1:
+                    employeeName = EmployeesDico[numeroEmploye]['EmployeeName']
                     listeDesLignes.append(
                         'T' + str(i+1) + ';' + '1' + ';' + str(employeeName) + ';' + str(round(h[i])) + ';')
-                    tache_i_ajoutee = True
-                numero_employe = numero_employe + 1
+                    tacheiAjoutee = True
+                numeroEmploye = numeroEmploye + 1
             j = j + 1
-        if not(tache_i_ajoutee):
+        if not(tacheiAjoutee):
             listeDesLignes.append(
                 'T' + str(i+1) + ';' + '0' + ';' + ';' + ';')
+    listeDesLignes.append(' ')  # saut de ligne
+    listeDesLignes.append('employeeName;lunchBreakStartTime;')
+    for numeroEmploye in range(n):
+        i=0
+        tachePrePauseTrouve = False
+        while (i < nombreTaches and not(tachePrePauseTrouve)):
+            j = 0
+            while (j < nombreTaches and not(tachePrePauseTrouve)):
+                if L[numeroEmploye, i, j] == 1:
+                    listeDesLignes.append(str(
+                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(h[i] + Duree[i])) + ';')
+                    tachePrePauseTrouve = True
+                j += 1
+            i += 1
     return listeDesLignes
 
 
-def creationFichier(nomFichier, nMethode, X, h, TasksDico, EmployeesDico):
+def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico):
     """nomFichier est le nom du fichier utilisée pour créer les variables globales.
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
-    file = open(nomFichierResolution(nomFichier, nMethode), "w")
-    file.write("\n".join(lignesSolution(X, h, TasksDico, EmployeesDico)))
-    file.close()
+    fichier = open(nomFichierResolution(nomFichier, nMethode), "w")
+    fichier.write("\n".join(lignesSolution(
+        X, h, L, TasksDico, EmployeesDico)))
+    fichier.close()
     return None
+
+
+def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
+    # Ecriture des critères de performance dans un excel
+    my_path = "./performance2.xlsx"
+    my_wb = openpyxl.load_workbook(my_path)
+    my_sheet = my_wb.active
+    # on cherche à partir de quelle ligne écrire (écriture à la suite)
+    i = 4
+    cell = my_sheet.cell(row=i, column=1)
+    while cell.value != None:
+        i += 1
+        cell = my_sheet.cell(row=i, column=1)
+    # on ajoute les valeurs de performance obtenue du code
+    cell.value = tpsExec  # temps d'execution en première colonne
+    cell = my_sheet.cell(row=i, column=2)
+    cell.value = tailleEntree  # taille des instances d'entrée en deuxième colonne
+    cell = my_sheet.cell(row=i, column=3)
+    # taille de la mémoire occupée par le programme en troisième colonne
+    cell.value = tailleMemoire
+    # on calcule àpartir de ces valeurs de nouveaux indicateurs
+    cell = my_sheet.cell(row=i, column=4)
+    cell.value = tpsExec/tailleEntree
+    cell = my_sheet.cell(row=i, column=5)
+    cell.value = tailleMemoire/tailleEntree
+    cell = my_sheet.cell(row=i, column=6)
+    cell.value = instance
+    # on enregistre les données au sein de l'excel
+    my_wb.save("./performance2.xlsx")
