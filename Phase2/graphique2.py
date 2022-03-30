@@ -128,6 +128,7 @@ def creation_listes(nom_ville):
         longitudes_i = []
         lattitudes_i = []
         start_times_i = []
+        tasksIdEmployee = []
         for j in range(len(employes)):
             #deux cas à distinguer : tache ou indispo ?
                 if employes[j] == employes_unique[i]:
@@ -136,11 +137,13 @@ def creation_listes(nom_ville):
                         longitudes_i.append(longitudes_taches[id_tache])
                         lattitudes_i.append(latitudes_taches[id_tache])
                         start_times_i.append(start_times[j])
+                        tasksIdEmployee.append(id_tache+1)
                     elif taches[j][0]=='I':
                         listeLieuxIndispo=extraire_coordonnees_unavail(nom_ville)
                         longitudes_i.append(listeLieuxIndispo[0][1])
                         lattitudes_i.append(listeLieuxIndispo[0][2])
                         start_times_i.append(start_times[j])
+                        tasksIdEmployee.append(0)
 
         # On trie les longitudes/lattitudes des tâches des employés par ordre croissant de début de leurs tâches
 
@@ -150,7 +153,7 @@ def creation_listes(nom_ville):
             longitudes_i, start_times_i)
         tasksIdEmployee = order_list(tasksIdEmployee, start_times_i)
         startTimesOrdered = order_list(start_times_i, start_times_i)
-
+        
         # Ajout des domiciles des employés
         found_name = False
         j = 0
@@ -183,8 +186,8 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
         if employe not in employes_unique and employe != '':
             employes_unique += [employe]
 
-    for i in range(len(listesPlot)):
-        plt.plot(listesPlot[i][0], listesPlot[i][1],
+    for i in range(len(listesPlot[0])):
+        plt.plot(listesPlot[0][i][0], listesPlot[0][i][1],
                  "-o", color=my_colors[i], label=str(employes_unique[i]))
         for j in range(len(employes)):
             if employes[j] == employes_unique[i]:
