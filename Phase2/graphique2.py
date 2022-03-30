@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from usefulFunctions2 import extractionData
+import xlwt
 #import folium
 
 
@@ -85,7 +86,7 @@ def order_list(list_to_order, list_used_for_order):
     order = [i for i in range(len(list_used_for_order_2))]
     i = 0
     while i < len(list_used_for_order_2) - 1:
-        if list_used_for_order_2[i] > list_used_for_order_2[i+1]:
+        if int(list_used_for_order_2[i]) > int(list_used_for_order_2[i+1]):
             list_used_for_order_2[i], list_used_for_order_2[i +
                                                             1] = list_used_for_order_2[i+1], list_used_for_order_2[i]
             order[i], order[i+1] = order[i+1], order[i]
@@ -120,8 +121,9 @@ def creation_listes(nom_ville):
             employes_unique += [employe]
 
     listesPlot = []
+    listesTable = []
     # cette liste contient : [employe[longitudes[l1l2l3],latitudes[m1m2m3]]]
-    for i in range(len(employes_unique)):
+    for i in range(len(employes_unique)):  # pour chaque employé unique
         # on extrait les longitudes et latitudes des tâches effectuées par l'employé i
         longitudes_i = []
         lattitudes_i = []
@@ -146,6 +148,8 @@ def creation_listes(nom_ville):
             lattitudes_i, start_times_i)
         longitudes_i = order_list(
             longitudes_i, start_times_i)
+        tasksIdEmployee = order_list(tasksIdEmployee, start_times_i)
+        startTimesOrdered = order_list(start_times_i, start_times_i)
 
         # Ajout des domiciles des employés
         found_name = False
@@ -162,7 +166,8 @@ def creation_listes(nom_ville):
         lattitudes_i += [latitude_domicile_i]
 
         listesPlot.append([longitudes_i, lattitudes_i])
-    return listesPlot
+        listesTable.append([tasksIdEmployee, startTimesOrdered])
+    return listesPlot, listesTable
 
 
 def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
@@ -193,6 +198,28 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
     return None
 
 
+def afficherTableauTaches(ville):  # attention, pour l'instant si l'excel tableau des taches existe deja, il ne peut pas le modifier, une erreur apparait donc. Solution : supprimer cet excel et relancer le programme
+    table = creation_listes(ville)[1]
+    workbook = xlwt.Workbook()
+    sheet = workbook.add_sheet('feuille1')
+    sheet.write(0, 0, 'Employé')
+    sheet.write(0, 1, 'Tâche')
+    sheet.write(0, 2, 'Heure de début de la tâche')
+    rowNumber = 1
+    for employe in range(len(table)):
+        tasks = table[employe][0]
+        startTimes = table[employe][1]
+        sheet.write(rowNumber, 0, 'EmployeeName')  # A CHANGER
+        for i in range(len(tasks)):
+            sheet.write(rowNumber, 1, 'T'+str(tasks[i]))
+            # conversion du temps : minutes => heures +  minutes
+            timeBegin = str(int(startTimes[i])//60) + \
+                'h'+str(int(startTimes[i]) % 60)+'min'
+            sheet.write(rowNumber, 2, timeBegin)
+            rowNumber += 1
+    workbook.save('Phase2/Solutions/TableauTaches'+ville+'V2ByV2.xls')
+
+
 def afficher(nom_ville):
     path1 = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
     path2 = "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2plottable.txt"
@@ -201,11 +228,13 @@ def afficher(nom_ville):
         nom_ville)
     employes, taches, start_times = lecture(path2)
 
+    afficherTableauTaches(nom_ville)
+
     graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville)
 
     #my_colors = ["r", "g", "b", "c", "m", "y", "k", "r", "g", "b", "c", "m", "y", "k"]
 
-    # listesPlot=creation_listes(nom_ville)
+    # listesPlot=creation_listes(nom_ville)[0]
     # m = folium.Map(location=[lattitudes[0],longitudes[0]],zoom_start=15)
     # for i in range (len(listesPlot)):
     #     loc = []
@@ -217,3 +246,6 @@ def afficher(nom_ville):
     # m.save("testfolium.html")
     return None
 
+
+if __name__ == '__main__':
+    afficher('Bordeaux')
