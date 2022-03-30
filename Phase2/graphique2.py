@@ -194,6 +194,10 @@ def afficher(nom_ville):
     return None
 
 
+<<<<<<< HEAD
 afficher('Paris')
 
 #afficher('Australia')
+=======
+afficher('Contamines')
+>>>>>>> main

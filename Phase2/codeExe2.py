@@ -11,7 +11,11 @@ from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
+<<<<<<< HEAD
 path = 'Phase2/InstancesV2/InstanceParisV2.xlsx'
+=======
+path = 'Phase2/InstancesV2/InstanceContaminesV2.xlsx'
+>>>>>>> main
 print(path)
 
 # Corps du code
@@ -55,7 +59,11 @@ debutTemps = time.time()
 # Optimisation gurobi
 
 # choisir 1 ou 2, en fonction de la fonction que l'on souhaite optimiser
+<<<<<<< HEAD
 fonctionObjectif = 2
+=======
+fonctionObjectif = 3
+>>>>>>> main
 # choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
 borne = 10000  # attention à mettre une valeur cohérente
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
@@ -75,8 +83,8 @@ print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction 
 
 finTemps = time.time()
 # print(finTemps - debutTemps)
-performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
-              sys.getsizeof(tab_distance), hpy().heap().size, path)
+# performances2(finTemps-debutTemps, sys.getsizeof(Capacite) + sys.getsizeof(Duree)+sys.getsizeof(Debut)+sys.getsizeof(Fin) +
+#               sys.getsizeof(tab_distance), hpy().heap().size, path)
 
 # Création du fichier solution au format txt
 creationFichier(path, 2, solution[0], solution[1],

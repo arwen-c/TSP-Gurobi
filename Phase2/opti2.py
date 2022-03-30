@@ -54,7 +54,12 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                   nbreIndispoEmploye, lb=0, ub=M)
     X = m.addMVar(shape=(nbre_employe, nbre_taches+2*nbre_employe+nbreIndispoEmploye,
                          nbre_taches+2*nbre_employe+nbreIndispoEmploye),  vtype=GRB.BINARY)
+<<<<<<< HEAD
     L = m.addMVar(shape=(nbre_employe, t,t), vtype=GRB.BINARY)
+=======
+    L = m.addMVar(shape=(nbre_employe, t,
+                         t), vtype=GRB.BINARY)
+>>>>>>> main
     delta = m.addMVar(shape=(nbre_taches+2*nbre_employe +
                              nbreIndispoEmploye, nbreIndisMax), vtype=GRB.BINARY)
 
@@ -99,9 +104,15 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
     # Contraintes de flot initiale et finale
     for n in range(nbre_employe):
         m.addConstr(sum(X[n, nbre_taches+n, j]
+<<<<<<< HEAD
                         for j in [k for k in range(nbre_taches)]+[k for k in range (nbre_taches+2*n,t)]) == 1)  # départ du dépôt
         m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
                         for i in [k for k in range(nbre_taches)]+[k for k in range (nbre_taches+2*n,t)]) == 1)  # arrivée au dépôt
+=======
+                        for j in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*n, t)]) == 1)  # départ du dépôt
+        m.addConstr(sum(X[n, i, nbre_taches+nbre_employe+n]
+                        for i in [k for k in range(nbre_taches)]+[k for k in range(nbre_taches+2*n, t)]) == 1)  # arrivée au dépôt
+>>>>>>> main
 
     # Ajout des contraintes sur L
     # Une pause dej n'est possible qu'entre deux taches réalisées
@@ -159,6 +170,16 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                         for i in range(t) for j in range(t)) <= borne)
         m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
                             for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
+    elif fonctionObjectif == 3:
+        alpha = 0.1
+        f1 = sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
+                 for i in range(t) for j in range(t))
+        f2 = -sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+                  for i in range(ntR) for j in range(t))
+        m.setObjective(f2+alpha*f1, GRB.MINIMIZE)
+        # m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
+        #                     for i in range(ntR) for j in range(t))+alpha*sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)for i in range(t) for j in range(t)), GRB.MINIMIZE )
+
   #  m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
@@ -181,3 +202,14 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                 for j in range(y):
                     valeur += X.x[n, i, j]*D[i, j]
         return X.x, H.x, L.x, m.objVal, valeur
+
+    elif fonctionObjectif == 3:
+        valeurF1 = 0
+        valeurF2 = 0
+        nbre, x, y = X.x.shape
+        for n in range(nbre):
+            for i in range(x):
+                for j in range(y):
+                    valeurF1 += X.x[n, i, j]*D[i, j]
+                    valeurF2 += X.x[n, i, j]*Duree[i]
+        return X.x, H.x, L.x, valeurF2, valeurF1

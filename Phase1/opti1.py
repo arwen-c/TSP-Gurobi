@@ -47,6 +47,11 @@ def optimisation1(capacite, nbreEmploye, nbreTaches, distance, duree, debut, fin
     # -- Ajout des constraintes --
 
     # Chaque trajet a bien été fait une seule fois
+    # Ancienne contrainte
+    # for i in range(t):
+    #     m.addConstr(sum(X[n, i, j] for n in range(nbre_employe)
+    #                     for j in range(t)) == 1)
+    # nouvelle contrainte
     for i in range(t):
         m.addConstr(sum(X[n, i, j] for n in range(nbreEmploye)
                         for j in range(t)) == 1)
