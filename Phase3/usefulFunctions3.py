@@ -163,22 +163,19 @@ def distance(id1, id2, TasksDico):
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
-    while not (foundId1 and foundId2) and index < len(TasksDico):
+    while not (foundId1 and foundId2):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
-            long1 = TasksDico[index]['Longitude']
-            lat1 = TasksDico[index]['Latitude']
+            long1 = deg2rad(TasksDico[index]['Longitude'])
+            lat1 = deg2rad(TasksDico[index]['Latitude'])
         if TasksDico[index]['TaskId'] == id2:
             foundId2 = True
-            long2 = TasksDico[index]['Longitude']
-            lat2 = TasksDico[index]['Latitude']
+            long2 = deg2rad(TasksDico[index]['Longitude'])
+            lat2 = deg2rad(TasksDico[index]['Latitude'])
         index += 1
-    if long1 is None or long2 is None:
-        distance = 0
-    else:
-        delta_long = long2-long1  # calcule de la différence de longitude
-        delta_latt = lat2-lat1
-        distance = (1.852*60*math.sqrt(delta_long**2+delta_latt**2))
+
+    # distance d'arc entre deux points
+    distance = distanceGPS(lat1, long1, lat2, long2)/1000
     return distance
 
 
