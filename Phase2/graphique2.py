@@ -226,4 +226,4 @@ def afficher(nom_ville):
 
 
 if __name__ == '__main__':
-    afficher('Bordeaux')
+    afficher('Paris')
