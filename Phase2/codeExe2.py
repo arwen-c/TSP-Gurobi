@@ -85,4 +85,8 @@ finTemps = time.time()
 # Création du fichier solution au format txt
 creationFichier(path, 2, solution[0], solution[1],
                 solution[2], TasksDicoNotModified, EmployeesDico)
+<<<<<<< HEAD
+=======
+# Affichage :
+>>>>>>> main
 afficher(ville)
