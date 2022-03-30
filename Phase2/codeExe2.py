@@ -52,7 +52,6 @@ Fin = vecteurFermetures(TasksDico, TasksUnavailDico)
 # liste des disponibilités des tâches
 dispos = [dispostache(tasknb, TasksDico, TasksUnavailDico)
           for tasknb in range(len(TasksDico))]
-print(dispos)
 debutTemps = time.time()
 
 

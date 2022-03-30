@@ -249,7 +249,6 @@ def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico):
     fichier.write("\n".join(lignesSolution(
         X, h, L, TasksDico, EmployeesDico)))
     fichier.close()
-    print(h)
     return None
 
 
