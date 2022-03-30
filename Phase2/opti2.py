@@ -106,12 +106,12 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
     # Ajout des contraintes sur L
     # Une pause dej n'est possible qu'entre deux taches réalisées
     for n in range(nbre_employe):
-        for i in range(nbre_taches):
-            for j in range(nbre_taches):
+        for i in range(t):
+            for j in range(t):
                 m.addConstr(L[n, i, j] <= X[n, i, j])
     # Une personne fait une et une seule pause dej
-        m.addConstr(sum(L[n, i, j] for i in range(nbre_taches)
-                        for j in range(nbre_taches)) == 1)
+        m.addConstr(sum(L[n, i, j] for i in range(t)
+                        for j in range(t)) == 1)
 
     for i in range(t):  # Tâches réelles + Tâches fictives
         for j in range(t):
@@ -122,15 +122,20 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans un intervalle de temps où elle est ouverte
-                disposJ=dispos[j]
-                nbreCreneauxJ = len(disposJ)
+                #disposJ=dispos[j]
+                #nbreCreneauxJ = len(disposJ)
+                nbreCreneauxI = len(dispos[i])
 
-                for k in range(nbreCreneauxJ):
-                    m.addConstr(delta[j, k]*disposJ[k][0] <= H[j])
-                    m.addConstr(H[j] <= disposJ[k][1]-Duree[j]+(1-delta[j][k])*M)
+                # for k in range(nbreCreneauxJ):
+                #     m.addConstr(delta[j, k]*disposJ[k][0] <= H[j])
+                #     m.addConstr(H[j] <= disposJ[k][1]-Duree[j]+(1-delta[j][k])*M)
+                for k in range(nbreCreneauxI):
+                    m.addConstr(delta[i, k]*dispos[i][k][0] <= H[i])
+                    m.addConstr(H[i] <= dispos[i][k][1]-Duree[i]+(1-delta[i][k])*M)
+
             # Contrainte à mettre hors de la boucle sur k, mais dans une boucle sur i, et sur j
-                m.addConstr(X[n, i, j] <= sum(delta[j][k]
-                                for k in range(nbreCreneauxJ)))
+                m.addConstr(X[n, i, j] <= sum(delta[i][k]
+                                for k in range(nbreCreneauxI)))
 
                 # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
                 m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
@@ -139,7 +144,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
                 m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60 <= H[j] + 24*60*(1-X[n, i, j]))
  
     # -- Ajout de la fonction objectif.
-    ntR = len(TasksEnhanced)
+    ntR = nbre_taches
 
     # Optimisation sur f1
 

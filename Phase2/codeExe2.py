@@ -11,7 +11,7 @@ from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstanceContaminesV2.xlsx'
+path = 'Phase2/InstancesV2/InstanceParisV2.xlsx'
 print(path)
 
 # Corps du code
@@ -48,7 +48,7 @@ Fin = vecteurFermetures(TasksDico, TasksUnavailDico)
 # liste des disponibilités des tâches
 dispos = [dispostache(tasknb, TasksDico, TasksUnavailDico)
           for tasknb in range(len(TasksDico))]
-
+print(dispos)
 debutTemps = time.time()
 
 

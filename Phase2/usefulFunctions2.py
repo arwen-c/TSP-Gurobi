@@ -249,6 +249,7 @@ def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico):
     fichier.write("\n".join(lignesSolution(
         X, h, L, TasksDico, EmployeesDico)))
     fichier.close()
+    print(h)
     return None
 
 
@@ -281,6 +282,7 @@ def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
     my_wb.save("./performance2.xlsx")
 
 def dispostache(tasknb, TasksDico, TasksUnavailDico):
+    '''retourne une liste des créneaux dispo de la tâche tasknb'''
     ouverture=recuperationHeure(TasksDico[tasknb]['OpeningTime'])
     fermeture=recuperationHeure(TasksDico[tasknb]['ClosingTime'])
     dispos=[[ouverture]]
