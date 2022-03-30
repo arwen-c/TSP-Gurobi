@@ -1,4 +1,3 @@
-from json.tool import main
 import matplotlib.pyplot as plt
 from usefulFunctions2 import extractionData
 #import folium
@@ -193,19 +192,6 @@ def afficher(nom_ville):
 
     # m.save("testfolium.html")
     return None
-<<<<<<< HEAD
 
 
-<<<<<<< HEAD
-afficher('Paris')
-
-#afficher('Australia')
-=======
 afficher('Contamines')
->>>>>>> main
-=======
-    
-if __name__ == '__main__':
-    afficher('Contamines')
-    
->>>>>>> main
