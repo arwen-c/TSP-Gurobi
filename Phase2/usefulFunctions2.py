@@ -196,6 +196,12 @@ def nomFichierResolution(nomFichier, nMethode):
     L = nomFichier.split('.')
     return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
 
+def nomFichierResolutionPlottable(nomFichier, nMethode):
+    """nomFichier est un string qui correspond au nom du fichier excel.
+    n_methode est le numéro de la méthode.
+    Renvoie le nom du fichier txt."""
+    L = nomFichier.split('.')
+    return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + 'plottable.txt'
 
 def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     """X et h sont des tableaux numpy.
@@ -249,7 +255,6 @@ def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico):
     fichier.write("\n".join(lignesSolution(
         X, h, L, TasksDico, EmployeesDico)))
     fichier.close()
-    print(h)
     return None
 
 
@@ -295,4 +300,60 @@ def dispostache(tasknb, TasksDico, TasksUnavailDico):
     dispos[-1].append(fermeture)
     return dispos
 
+def lignesSolutionPlottable(X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDico):
+    """X et h sont des tableaux numpy.
+    X est de dimension 3 et h de dimension 1.
+    Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
+    Duree = vecteurDurees(TasksDico)
+    premiereLigne = 'taskId;performed;employeeName;startTime;'
+    listeDesLignes = [premiereLigne]
+    n, _, y = X.shape
+    employeeName = ''
+    nombreTaches = len(TasksDico)
+    for i in range(nombreTaches):
+        j = 0
+        tacheiAjoutee = False
+        while j < y and not(tacheiAjoutee):
+            numeroEmploye = 0
+            while numeroEmploye < n and not(tacheiAjoutee):
+                if X[numeroEmploye, i, j] == 1:
+                    employeeName = EmployeesDico[numeroEmploye]['EmployeeName']
+                    listeDesLignes.append(
+                        'T' + str(i+1) + ';' + '1' + ';' + str(employeeName) + ';' + str(round(h[i])) + ';')
+                    tacheiAjoutee = True
+                numeroEmploye = numeroEmploye + 1
+            j = j + 1
+        if not(tacheiAjoutee):
+            listeDesLignes.append(
+                'T' + str(i+1) + ';' + '0' + ';' + ';' + ';')
+    for Unavail in EmployeesUnavailDico:
+        ligne=('I' + '0' + ';' + '1' + ';' + Unavail['EmployeeName'] + ';' + str(recuperationHeure(Unavail['Start'])) + ';')
+        listeDesLignes.append(ligne)
 
+    listeDesLignes.append(' ')  # saut de ligne
+    listeDesLignes.append('employeeName;lunchBreakStartTime;')
+    for numeroEmploye in range(n):
+        i=0
+        tachePrePauseTrouve = False
+        while (i < nombreTaches and not(tachePrePauseTrouve)):
+            j = 0
+            while (j < nombreTaches and not(tachePrePauseTrouve)):
+                if L[numeroEmploye, i, j] == 1:
+                    listeDesLignes.append(str(
+                        EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(max([h[i] + Duree[i], 720]))) + ';')
+                    tachePrePauseTrouve = True
+                j += 1
+            i += 1
+    return listeDesLignes
+
+
+def creationFichierPlottable(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico, EmployeesUnavailDico):
+    """nomFichier est le nom du fichier utilisée pour créer les variables globales.
+    n_methode est le numéro de la méthode utilisée.
+    X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
+    Ne renvoie rien mais crée ou modifie le fichier .txt."""
+    fichier = open(nomFichierResolutionPlottable(nomFichier, nMethode), "w")
+    fichier.write("\n".join(lignesSolutionPlottable(
+        X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDico)))
+    fichier.close()
+    return None
