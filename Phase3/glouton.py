@@ -110,8 +110,10 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
             # on vérifie qu'au moins une des tâches peut se faire sans empiéter sur une periode d'indisponibilité, sur la pause repas, dans la periode d'ouverture de la tache et de disponibilité de l'employé
             raison, tache = tachesRealisables(
                 tachesOpti, duree, debut, fin, recuperationHeure(employe['WorkingEndTime']), indispoDicoEmployeN, t, pauseFaite, localisationCourante, distance, tachesDico)  # rôle à bien définir
+            print(t)
             print(raison)
             print(tache)
+            print(employe['EmployeeName'])
             if tache == None:
                 if raison == 'indisponibilité':
                     t = recuperationHeure(
@@ -127,13 +129,19 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
             else:
                 # ici on devrait changer en X[n, tachePrecedente, tache] si X a 3 dim
                 X[n, tache] = 1
-                H[tache] = max(debut[tache], t +
-                               distance[localisationCourante][tache]/0.833)
+                H[tache] = max(debut[tache][0], t +
+                               distance[localisationCourante][tache]/0.833)  # 0 a changé, prendre creneau nouvelle var à recup de tachesFaisables
                 t = H[tache] + duree[tache]
+                print(t)
                 tempsTravail += duree[tache]
-                distanceParcourue += distance[tache, localisationCourante]
+                distanceParcourue += distance[tache][localisationCourante]
                 localisationCourante = tache
         print(n)
+        print(t)
+        print(X)
+        print(H)
+        print(L)
+        break
     return [X, H, L, distanceParcourue, tempsTravail]
 
 # tant que encore tache

@@ -93,10 +93,12 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
     while not(tacheOptiFaisableTrouvee) and k < m:
         if finJourneeEmploye > t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] + matDistance[tachesOpti[k]][k]/0.833:
             nbreCreneauxDebutK = len(debut[k])
+            print(nbreCreneauxDebutK)
             creneauConvenable = False
             c = 0
             while not(creneauConvenable) and c < nbreCreneauxDebutK:
                 # + 10: # le +10 peermet de ne pas rater une tache optimale à quelques minutes près 10 en l'occurence ici
+                # mettre un max entre debut et temps pour y aller
                 if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 > debut[k][c]:
                     # + 10 en fait pb il faudrait savoir si on a bien rajouté ces 10 min boucle while  # on regarde la fin de créneau correspondante + il faut faire attention au décalage qu'on a pu créer précédemment avec le + 10
                     if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] < fin[k][c]:
@@ -104,14 +106,10 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
                 c += 1
             pasIndispo = False
             if creneauConvenable and indispoDicoEmployeN != {}:
-                deltaLong = tachesDico[localisationCourante]['Longitude'] - \
-                    indispoDicoEmployeN['Longitude']
-                deltaLat = tachesDico[localisationCourante]['Latitude'] - \
-                    indispoDicoEmployeN['Latitude']
-                distancePourIndispo = (
-                    1.852*60*math.sqrt(deltaLong**2 + deltaLat**2))
+                distancePourIndispo = distanceGPS(tachesDico[localisationCourante]['Latitude'], tachesDico[localisationCourante]
+                                                  ['Longitude'], indispoDicoEmployeN['Latitude'], indispoDicoEmployeN['Longitude'])
                 pasIndispo = recuperationHeure(
-                    indispoDicoEmployeN['Start']) < t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] + distancePourIndispo/0.833
+                    indispoDicoEmployeN['Start']) > t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] + distancePourIndispo/0.833
                 if not(pasIndispo):  # si on a bien une indisponibilité
                     raison = 'indisponibilité'
             if creneauConvenable and pasIndispo:
