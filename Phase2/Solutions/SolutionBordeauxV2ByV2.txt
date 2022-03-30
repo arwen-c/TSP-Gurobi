@@ -1,32 +1,15 @@
 taskId;performed;employeeName;startTime;
-<<<<<<< HEAD
-T1;1;Ambre;933;
-T2;1;Ambre;806;
-T3;1;Valentin;875;
-T4;1;Valentin;798;
-T5;1;Valentin;951;
-T6;1;Valentin;567;
-T7;1;Ambre;544;
-T8;1;Ambre;658;
-T9;1;Valentin;655;
-T10;1;Valentin;490;
- 
-employeeName;lunchBreakStartTime;
-Valentin;715;
-Ambre;718;
-=======
 T1;0;;;
 T2;0;;;
-T3;1;Valentin;492;
+T3;1;Valentin;832;
 T4;0;;;
 T5;0;;;
-T6;1;Valentin;780;
+T6;1;Valentin;490;
 T7;0;;;
-T8;1;Ambre;780;
+T8;1;Ambre;652;
 T9;0;;;
-T10;1;Ambre;500;
+T10;1;Ambre;831;
  
 employeeName;lunchBreakStartTime;
-Valentin;552;
-Ambre;560;
->>>>>>> main
+Valentin;550;
+Ambre;712;
