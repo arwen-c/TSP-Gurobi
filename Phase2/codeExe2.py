@@ -12,16 +12,10 @@ from graphique2 import afficher
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-<<<<<<< HEAD
-<<<<<<< HEAD
-path = 'Phase2/InstancesV2/InstanceParisV2.xlsx'
-=======
-path = 'Phase2/InstancesV2/InstanceContaminesV2.xlsx'
->>>>>>> main
-=======
+
 ville = 'Contamines'
 path = 'Phase2/InstancesV2/Instance'+ville+'V2.xlsx'
->>>>>>> main
+
 print(path)
 
 # Corps du code
@@ -65,11 +59,7 @@ debutTemps = time.time()
 # Optimisation gurobi
 
 # choisir 1 ou 2, en fonction de la fonction que l'on souhaite optimiser
-<<<<<<< HEAD
-fonctionObjectif = 2
-=======
 fonctionObjectif = 3
->>>>>>> main
 # choisir la valeur de la borne pour l'autre fonction objectif (qui sera traitée comme une contrainte dans le solveur)
 borne = 10000  # attention à mettre une valeur cohérente
 solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye,
@@ -95,5 +85,4 @@ finTemps = time.time()
 # Création du fichier solution au format txt
 creationFichier(path, 2, solution[0], solution[1],
                 solution[2], TasksDicoNotModified, EmployeesDico)
-# Affichage :
 afficher(ville)
