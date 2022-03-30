@@ -123,13 +123,8 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
 
                 # - Effets temporels -
                 # la tache j sera bien faite dans un intervalle de temps où elle est ouverte
-                #disposJ=dispos[j]
-                #nbreCreneauxJ = len(disposJ)
                 nbreCreneauxI = len(dispos[i])
 
-                # for k in range(nbreCreneauxJ):
-                #     m.addConstr(delta[j, k]*disposJ[k][0] <= H[j])
-                #     m.addConstr(H[j] <= disposJ[k][1]-Duree[j]+(1-delta[j][k])*M)
                 for k in range(nbreCreneauxI):
                     m.addConstr(delta[i, k]*dispos[i][k][0] <= H[i])
                     m.addConstr(H[i] <= dispos[i][k][1]-Duree[i]+(1-delta[i][k])*M)
