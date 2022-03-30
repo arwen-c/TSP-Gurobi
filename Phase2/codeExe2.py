@@ -8,10 +8,12 @@ import copy
 from usefulFunctions2 import *
 from opti2 import ajoutTachesFictives, optimisation2
 from epsilonContrainte import plotSolutions1, plotSolutions2, epsilonContrainte
+from graphique2 import afficher
 
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
-path = 'Phase2/InstancesV2/InstanceContaminesV2.xlsx'
+ville = 'Contamines'
+path = 'Phase2/InstancesV2/Instance'+ville+'V2.xlsx'
 print(path)
 
 # Corps du code
@@ -78,3 +80,5 @@ finTemps = time.time()
 # Création du fichier solution au format txt
 creationFichier(path, 2, solution[0], solution[1],
                 solution[2], TasksDicoNotModified, EmployeesDico)
+# Affichage :
+afficher(ville)
