@@ -136,12 +136,12 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
                 tempsTravail += duree[tache]
                 distanceParcourue += distance[tache][localisationCourante]
                 localisationCourante = tache
+                tachesFaisables = fonctionRestriction(vecCapaciteEmployeN, X)
         print(n)
         print(t)
         print(X)
         print(H)
         print(L)
-        break
     return [X, H, L, distanceParcourue, tempsTravail]
 
 # tant que encore tache

@@ -27,6 +27,29 @@ def extractionData(path):
 
 
 # Fonctions utiles pour créer les matrices de données utiles
+def deg2rad(dd):
+    """Convertit un angle "degrés décimaux" en "radians"
+    """
+    return dd/180*math.pi
+
+
+def distanceGPS(latA, longA, latB, longB):
+    """Retourne la distance en mètres entre les 2 points A et B connus grâce à
+       leurs coordonnées GPS (en radians).
+    """
+    # Rayon de la terre en mètres (sphère IAG-GRS80)
+    RT = 6378137
+    # angle en radians entre les 2 points
+    x = math.sin(latA)*math.sin(latB) + math.cos(latA) * \
+        math.cos(latB)*math.cos(abs(longB-longA))
+    if abs(x-1) <= 0.000000000001:
+        x = 1
+    elif abs(x+1) <= 0.000000000001:
+        x = -1
+    S = math.acos(x)
+    # distance entre les 2 points, comptée sur un arc de grand cercle
+    return S*RT
+
 
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.

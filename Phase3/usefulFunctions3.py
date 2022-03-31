@@ -14,8 +14,8 @@ def fonctionRestriction(capaciteEmploye, X):
     listeTaches = []
     # si on garde 3 dim : nbreEmploye, nbreTache, _ = X.shape
     nbreEmploye, nbreTache = X.shape
-    for k in range(1, nbreTache + 1):
-        if capaciteEmploye[k - 1] == 1:  # car le tableau des compétences commencent à 0
+    for k in range(nbreTache):
+        if capaciteEmploye[k] == 1:  # car le tableau des compétences commencent à 0
             tacheNonFaite = True
             numeroEmploye = 0
             while tacheNonFaite and numeroEmploye < nbreEmploye:
@@ -26,11 +26,11 @@ def fonctionRestriction(capaciteEmploye, X):
                 #         tacheNonFaite = False
                 #     i += 1
                 # n += 1
-                if X[numeroEmploye, k - 1] == 1:  # même chose que pour compétence
+                if X[numeroEmploye, k] == 1:  # même chose que pour compétence
                     tacheNonFaite = False
                 numeroEmploye += 1
             if tacheNonFaite:
-                listeTaches.append(k - 1)
+                listeTaches.append(k)
     # peut-être renvoyer une liste de dictionnaires pour travailler avec une instance plus petite dans la fonction glouton et donc gagner en complexité (mais peut-être inutile)
     return listeTaches
 
@@ -54,7 +54,7 @@ def triOpti(tachesFaisables, localisationCourante, matDistance, duree):
         cout[i] = (2/3)*duree[i] + (12/0.833-(0.575+0.12)) * \
             matDistance[tachesFaisables[i]][localisationCourante]
     tachesFaisables = list(tachesFaisables.copy())
-    coutTrie = np.sort(cout.copy())
+    coutTrie = np.sort(np.array(cout.copy()))
     tacheTrie = L*[0]
     for i in range(L):
         j = 0
@@ -92,18 +92,29 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
     k = 0
     while not(tacheOptiFaisableTrouvee) and k < m:
         if finJourneeEmploye > t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] + matDistance[tachesOpti[k]][k]/0.833:
+            # nombre de créneaux de disponibilité pour une tâche donnée
             nbreCreneauxDebutK = len(debut[k])
-            print(nbreCreneauxDebutK)
+            # on vérifie que des créneaux d'ouverture des tâches sont suffisamment grand
             creneauConvenable = False
             c = 0
+            t2 = 0
             while not(creneauConvenable) and c < nbreCreneauxDebutK:
-                # + 10: # le +10 peermet de ne pas rater une tache optimale à quelques minutes près 10 en l'occurence ici
-                # mettre un max entre debut et temps pour y aller
-                if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 > debut[k][c]:
-                    # + 10 en fait pb il faudrait savoir si on a bien rajouté ces 10 min boucle while  # on regarde la fin de créneau correspondante + il faut faire attention au décalage qu'on a pu créer précédemment avec le + 10
-                    if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] < fin[k][c]:
+                if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] < fin[k][c]:
+                    # soit le créneau est déjà ouvert, soit on peut attendre son ouverture ()
+                    if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 > debut[k][c]:
                         creneauConvenable = True
+                    elif fin[k][c]-duree[k] > 0:
+                        creneauConvenable = True
+                        t2 = debut[k][c]-t
                 c += 1
+
+                # # + 10: # le +10 peermet de ne pas rater une tache optimale à quelques minutes près 10 en l'occurence ici
+                # if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 > debut[k][c]:
+                #     # + 10 en fait pb il faudrait savoir si on a bien rajouté ces 10 min boucle while  # on regarde la fin de créneau correspondante + il faut faire attention au décalage qu'on a pu créer précédemment avec le + 10
+                #     if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] < fin[k][c]:
+                #         creneauConvenable = True
+
+            # on vérifie que notre employé est disponible à l'un de ces créneaux
             pasIndispo = False
             if creneauConvenable and indispoDicoEmployeN != {}:
                 print("tu es rentré dans le point 1")
@@ -116,22 +127,20 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
                 if not(pasIndispo):  # si on a bien une indisponibilité
                     raison = 'indisponibilité'
             if creneauConvenable and pasIndispo:
-                print("tu es rentré dans le point 2")
-                if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] < 780:
-                    tache = int(tachesOpti[k])
-                    tacheOptiFaisableTrouvee = True
-                elif t > 840:
+                if pauseFaite:
                     tache = int(tachesOpti[k])
                     tacheOptiFaisableTrouvee = True
                 else:
-                    if pauseFaite:
+                    if t + t2 + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] < 780:
                         tache = int(tachesOpti[k])
                         tacheOptiFaisableTrouvee = True
                     else:
                         raison = 'déjeuner'
-        else:
-            raison = 'fin de journée'
         k += 1
+
+    if raison == '':
+        raison = 'fin de journée'
+
     return raison, tache
 
 
@@ -165,7 +174,7 @@ def distanceGPS(latA, longA, latB, longB):
     """Retourne la distance en mètres entre les 2 points A et B connus grâce à
        leurs coordonnées GPS (en radians).
     """
-    # Rayon de la terre en mètres (sphère IAG-GRS80)
+    # Rayon de la terre en kilomètres (sphère IAG-GRS80)
     RT = 6378.137
     # angle en radians entre les 2 points
     x = math.sin(latA)*math.sin(latB) + math.cos(latA) * \
@@ -175,7 +184,7 @@ def distanceGPS(latA, longA, latB, longB):
     elif abs(x+1) <= 0.000000000001:
         x = -1
     S = math.acos(x)
-    # distance entre les 2 points, comptée sur un arc de grand cercle
+    # distance entre les 2 points, comptée sur un arc de grand cercle - en km
     return S*RT
 
 
@@ -185,6 +194,7 @@ def distance(id1, id2, TasksDico):
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
+
     while not (foundId1 and foundId2):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
