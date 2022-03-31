@@ -13,7 +13,7 @@ from graphique2 import afficher
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
 
-ville = 'Spain'
+ville = 'Bordeaux'
 path = 'Phase2/InstancesV2/Instance'+ville+'V2.xlsx'
 
 print(path)

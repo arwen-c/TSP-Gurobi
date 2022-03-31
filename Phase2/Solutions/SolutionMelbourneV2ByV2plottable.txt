@@ -30,6 +30,9 @@ T28;1;Ellen;876;
 T29;0;;;
 T30;1;Alexander;740;
 T31;1;Ellen;859;
+I0;1;Alexander;480;
+I0;1;Adam;840;
+I0;1;Carlotta;600;
  
 employeeName;lunchBreakStartTime;
 Ellen;780;

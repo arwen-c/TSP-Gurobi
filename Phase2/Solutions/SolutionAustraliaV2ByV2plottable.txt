@@ -15,6 +15,7 @@ T13;0;;;
 T14;1;John;1008;
 T15;0;;;
 T16;1;David;1024;
+I0;1;Sam;630;
  
 employeeName;lunchBreakStartTime;
 John;720;
