@@ -106,7 +106,7 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
             tachesOpti = triOpti(
                 tachesFaisables, localisationCourante, distance, duree)
             # on vérifie qu'au moins une des tâches peut se faire sans empiéter sur une periode d'indisponibilité, sur la pause repas, dans la periode d'ouverture de la tache et de disponibilité de l'employé
-            raison, tache = tachesRealisables(
+            raison, tache, creneau = tachesRealisables(
                 tachesOpti, duree, debut, fin, recuperationHeure(employe['WorkingEndTime']), indispoDicoEmployeN, t, pauseFaite, localisationCourante, distance, tachesDico, n, nbreTaches)  # rôle à bien définir
             print(raison)
             print(tache)
