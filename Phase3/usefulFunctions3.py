@@ -92,45 +92,57 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
     k = 0
     while not(tacheOptiFaisableTrouvee) and k < m:
         if finJourneeEmploye > t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] + matDistance[tachesOpti[k]][k]/0.833:
+            # nombre de créneaux de disponibilité pour une tâche donnée
             nbreCreneauxDebutK = len(debut[k])
+            # on vérifie que des créneaux d'ouverture des tâches sont suffisamment grand
             creneauConvenable = False
             c = 0
+            t2 = 0
             while not(creneauConvenable) and c < nbreCreneauxDebutK:
-                # + 10: # le +10 peermet de ne pas rater une tache optimale à quelques minutes près 10 en l'occurence ici
-                if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 > debut[k][c]:
-                    # + 10 en fait pb il faudrait savoir si on a bien rajouté ces 10 min boucle while  # on regarde la fin de créneau correspondante + il faut faire attention au décalage qu'on a pu créer précédemment avec le + 10
-                    if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] < fin[k][c]:
+                if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] < fin[k][c]:
+                    # soit le créneau est déjà ouvert, soit on peut attendre son ouverture ()
+                    if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 > debut[k][c]:
                         creneauConvenable = True
+                    elif fin[k][c]-duree[k] > 0:
+                        creneauConvenable = True
+                        t2 = debut[k][c]-t
                 c += 1
+
+                # # + 10: # le +10 peermet de ne pas rater une tache optimale à quelques minutes près 10 en l'occurence ici
+                # if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 > debut[k][c]:
+                #     # + 10 en fait pb il faudrait savoir si on a bien rajouté ces 10 min boucle while  # on regarde la fin de créneau correspondante + il faut faire attention au décalage qu'on a pu créer précédemment avec le + 10
+                #     if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] < fin[k][c]:
+                #         creneauConvenable = True
+
+            # on vérifie que notre employé est disponible à l'un de ces créneaux
             pasIndispo = False
             if creneauConvenable and indispoDicoEmployeN != {}:
-                deltaLong = tachesDico[localisationCourante]['Longitude'] - \
+                # parcours de toutes les indisponibilités pour vérifier s'il y en a une de bloquante##################TO DO
+                deltaLong = tachesDico[tachesOpti[k]]['Longitude'] - \
                     indispoDicoEmployeN['Longitude']
-                deltaLat = tachesDico[localisationCourante]['Latitude'] - \
+                deltaLat = tachesDico[tachesOpti[k]]['Latitude'] - \
                     indispoDicoEmployeN['Latitude']
                 distancePourIndispo = (
                     1.852*60*math.sqrt(deltaLong**2 + deltaLat**2))
                 pasIndispo = recuperationHeure(
-                    indispoDicoEmployeN['Start']) < t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] + distancePourIndispo/0.833
+                    indispoDicoEmployeN['Start']) < t + t2 + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] + distancePourIndispo/0.833
                 if not(pasIndispo):  # si on a bien une indisponibilité
                     raison = 'indisponibilité'
             if creneauConvenable and pasIndispo:
-                if t < 720:
-                    if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] < 780:
-                        tache = int(tachesOpti[k])
-                        tacheOptiFaisableTrouvee = True
-                elif t > 840:
+                if pauseFaite:
                     tache = int(tachesOpti[k])
                     tacheOptiFaisableTrouvee = True
                 else:
-                    if pauseFaite:
+                    if t + t2 + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] < 780:
                         tache = int(tachesOpti[k])
                         tacheOptiFaisableTrouvee = True
                     else:
                         raison = 'déjeuner'
-        else:
-            raison = 'fin de journée'
         k += 1
+
+    if raison == '':
+        raison = 'fin de journée'
+
     return raison, tache
 
 
@@ -184,6 +196,7 @@ def distance(id1, id2, TasksDico):
     Sortie : distance en km."""
     foundId1, foundId2 = False, False
     index = 0
+
     while not (foundId1 and foundId2):
         if TasksDico[index]['TaskId'] == id1:
             foundId1 = True
