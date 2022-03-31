@@ -117,15 +117,10 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
             # on vérifie que notre employé est disponible à l'un de ces créneaux
             pasIndispo = False
             if creneauConvenable and indispoDicoEmployeN != {}:
-                # parcours de toutes les indisponibilités pour vérifier s'il y en a une de bloquante##################TO DO
-                deltaLong = tachesDico[tachesOpti[k]]['Longitude'] - \
-                    indispoDicoEmployeN['Longitude']
-                deltaLat = tachesDico[tachesOpti[k]]['Latitude'] - \
-                    indispoDicoEmployeN['Latitude']
-                distancePourIndispo = (
-                    1.852*60*math.sqrt(deltaLong**2 + deltaLat**2))
+                distancePourIndispo = distanceGPS(tachesDico[localisationCourante]['Latitude'], tachesDico[localisationCourante]
+                                                  ['Longitude'], indispoDicoEmployeN['Latitude'], indispoDicoEmployeN['Longitude'])
                 pasIndispo = recuperationHeure(
-                    indispoDicoEmployeN['Start']) < t + t2 + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] + distancePourIndispo/0.833
+                    indispoDicoEmployeN['Start']) > t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] + distancePourIndispo/0.833
                 if not(pasIndispo):  # si on a bien une indisponibilité
                     raison = 'indisponibilité'
             if creneauConvenable and pasIndispo:
