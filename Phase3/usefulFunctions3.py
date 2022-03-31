@@ -17,8 +17,8 @@ def fonctionRestriction(capaciteEmploye, X):
     for k in range(1, nbreTache + 1):
         if capaciteEmploye[k - 1] == 1:  # car le tableau des compétences commencent à 0
             tacheNonFaite = True
-            n = 0
-            while tacheNonFaite and n < nbreEmploye:
+            numeroEmploye = 0
+            while tacheNonFaite and numeroEmploye < nbreEmploye:
                 # si X a 3 dim prendre le code ci-dessous
                 # i = 0
                 # while tacheNonFaite and i < nbreTache:
@@ -26,11 +26,11 @@ def fonctionRestriction(capaciteEmploye, X):
                 #         tacheNonFaite = False
                 #     i += 1
                 # n += 1
-                if X[n, k - 1] == 1:  # même chose que pour compétence
+                if X[numeroEmploye, k - 1] == 1:  # même chose que pour compétence
                     tacheNonFaite = False
-                n += 1
+                numeroEmploye += 1
             if tacheNonFaite:
-                listeTaches.append(k)
+                listeTaches.append(k - 1)
     # peut-être renvoyer une liste de dictionnaires pour travailler avec une instance plus petite dans la fonction glouton et donc gagner en complexité (mais peut-être inutile)
     return listeTaches
 
@@ -106,17 +106,20 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
                 c += 1
             pasIndispo = False
             if creneauConvenable and indispoDicoEmployeN != {}:
-                distancePourIndispo = distanceGPS(tachesDico[localisationCourante]['Latitude'], tachesDico[localisationCourante]
+                print("tu es rentré dans le point 1")
+                distancePourIndispo = distanceGPS(tachesDico[tachesOpti[k]]['Latitude'], tachesDico[tachesOpti[k]]
                                                   ['Longitude'], indispoDicoEmployeN['Latitude'], indispoDicoEmployeN['Longitude'])
                 pasIndispo = recuperationHeure(
                     indispoDicoEmployeN['Start']) > t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[k] + distancePourIndispo/0.833
+                print(t + matDistance[localisationCourante][tachesOpti[k]
+                                                            ]/0.833 + duree[k] + distancePourIndispo/0.833)
                 if not(pasIndispo):  # si on a bien une indisponibilité
                     raison = 'indisponibilité'
             if creneauConvenable and pasIndispo:
-                if t < 720:
-                    if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] < 780:
-                        tache = int(tachesOpti[k])
-                        tacheOptiFaisableTrouvee = True
+                print("tu es rentré dans le point 2")
+                if t + matDistance[localisationCourante][tachesOpti[k]]/0.833 + duree[tachesOpti[k]] < 780:
+                    tache = int(tachesOpti[k])
+                    tacheOptiFaisableTrouvee = True
                 elif t > 840:
                     tache = int(tachesOpti[k])
                     tacheOptiFaisableTrouvee = True
@@ -163,7 +166,7 @@ def distanceGPS(latA, longA, latB, longB):
        leurs coordonnées GPS (en radians).
     """
     # Rayon de la terre en mètres (sphère IAG-GRS80)
-    RT = 6378137
+    RT = 6378.137
     # angle en radians entre les 2 points
     x = math.sin(latA)*math.sin(latB) + math.cos(latA) * \
         math.cos(latB)*math.cos(abs(longB-longA))
