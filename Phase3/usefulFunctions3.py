@@ -1,53 +1,92 @@
+from cmath import inf
 from msilib.schema import Error
 import numpy as np
 from sympy import solve
 
 
-def estDansUnCrenaux(heure,crenaux):
-    n = len(crenaux)
+def estDansUnCreneau(heure,creneau):
+    n = len(creneau)
     for j in range(n):
-        print(crenaux[j])
-        print(heure)
-        if crenaux[j][0] <= heure <= crenaux[j][1] :
+        if creneau[j][0] <= heure <= creneau[j][1] :
             return True
-        elif j < n-1 and crenaux[j][1] <= heure <= crenaux[j+1][0]:
-            return crenaux[j+1][0] 
-    return "Error"
+    return False
 
-def MAJHeureDebut(i0,solution_k,crenauxDispo_k,Duree,D):
+def getCreneaux(heure,creneauxTache):
+    """Cette fonction renvoie l'heure de début et l'heure de fin du crénaux de disponibilité contenant l'heure donnée"""
+    n = len(creneauxTache)
+    for j in range(n):
+        if creneauxTache[j][0] <= heure <= creneauxTache[j][1] :
+            return creneauxTache[j][0], creneauxTache[j][1]
 
-    iCourant = i0
-    suivantCourant = solution_k[i0]["suivant"]
+def MAJTempsSuivants(i0,solution_k,creneauxDispo_k,Duree,D):
+    """Cette fonction permet de contracter les temps en aval d'une tache i0. Autrement dit elle tasse les heures en fin de journée à partir d'une tache i0 incluse"""
 
-    while suivantCourant != 0: # tant qu'on arrive pas à la maison
+    iCourant = 0
+    precedentCourant = solution_k[iCourant]["precedent"]
+    h = int(18*60 - D[precedentCourant,iCourant]/0.833)
 
+    while iCourant != i0 : # tant qu'on arrive pas à la maison
+
+        # On regarde si la tache d'après peut être faite avant l'heure prévu tout en restant dans le crénaux de dispo
+        hmin,hmax = getCreneaux(solution_k[precedentCourant]["heure"],creneauxDispo_k[precedentCourant])
+
+        if hmin + Duree[precedentCourant] <= h <= hmax :
+            solution_k[precedentCourant]["heure"] = int(h - Duree[precedentCourant])
+
+        elif h > hmax :
+            solution_k[precedentCourant]["heure"] = int(hmax - Duree[precedentCourant])
+
+        else:
+            print("Error") 
+
+        iCourant = precedentCourant
         precedentCourant = solution_k[iCourant]["precedent"]
-        suivantCourant = solution_k[iCourant]["suivant"]
-
-        h = solution_k[precedentCourant]["heure"] + Duree[precedentCourant] + D[precedentCourant,iCourant]/0.833
-        print(iCourant)
-        if estDansUnCrenaux(h,crenauxDispo_k[iCourant]) == "Error":
-            
-            return "Error"
-        elif estDansUnCrenaux(h,crenauxDispo_k[iCourant]) == True:
-            solution_k[iCourant]["heure"] = int(h)
-        elif h + Duree[iCourant] + D[iCourant,0]/0.833 <= 18*60 : # heure de fin des employés
-            solution_k[iCourant]["heure"] = estDansUnCrenaux(h,crenauxDispo_k[iCourant])
-        else : 
-            solution_k[iCourant] = solution_k[0]
-            return solution_k
-
-        iCourant = suivantCourant
+        h = int(solution_k[iCourant]["heure"] - D[precedentCourant,iCourant]/0.833)
 
     return solution_k
 
-# sol_test = {0:{"precedent" : None, "suivant" : 3, "heure": 8*60}, 1:{"precedent" : 3, "suivant" : 2}, 2:{"precedent" : 1, "suivant" : 0}, 3:{"precedent" : 0, "suivant" : 1}}
-# crenauxDispo_test = 60*np.array([np.array([[8,11],[13,18]]),np.array([[8,12],[12,17]]),np.array([[8,18]]),np.array([[8,10],[14,16],[17,18]])])
-# Duree = 30*np.ones((5,1))
-# D = np.array([[0, 2, 5, 1],
-#               [2, 0, 4, 3],
-#               [5, 4, 0, 6],
-#               [1, 3, 6, 0]])
-# i0 = 3
+        
 
-# print(MAJHeureDebut(i0,sol_test,crenauxDispo_test,Duree,D))
+def MAJTempsPrecedents(i0,solution_k,creneauxDispo_k,Duree,D):
+    """Cette fonction permet de contracter les temps en amont d'une tache i0. Autrement dit elle tasse les heures en début de journée à partir d'une tache i0 incluse"""
+
+    iCourant = 0
+    suivantCourant = solution_k[iCourant]["suivant"]
+
+
+    while iCourant != i0: # tant qu'on arrive pas à la maison
+
+        # On regarde si la tache d'après peut être faite avant l'heure prévu tout en restant dans le crénaux de dispo
+        h = int(solution_k[iCourant]["heure"] + Duree[iCourant] + D[iCourant,suivantCourant]/0.833)
+        hmin,hmax = getCreneaux(solution_k[suivantCourant]["heure"],creneauxDispo_k[suivantCourant])
+
+        if hmin <= h <= hmax :
+            solution_k[suivantCourant]["heure"] = h
+
+        elif h < hmin :
+            solution_k[suivantCourant]["heure"] = h
+
+        else:
+            print("Error") 
+
+        iCourant = suivantCourant
+        suivantCourant = solution_k[iCourant]["suivant"]
+
+    return solution_k
+
+
+
+# sol_test = {0:{"precedent" : 2, "suivant" : 3, "heure": 8*60}, 1:{"precedent" : 3, "suivant" : 2, "heure" : 11*60}, 2:{"precedent" : 1, "suivant" : 0, "heure" : 14*60}, 3:{"precedent" : 0, "suivant" : 1, "heure" : 10*60}}
+# creneauxDispo_k = [[[8*60,18*60]], [[60*8,60*18]], [[60*8,60*12],[60*12,60*17]], [[60*8,60*18]], [[60*8,60*10],[60*14,60*16],[60*17,60*18]]]
+# Duree = 30*np.ones((5,1))
+# D = np.array([[0, 2, 5, 1, 10],
+#               [2, 0, 4, 3, 6],
+#               [5, 4, 0, 6, 8],
+#               [1, 3, 6, 0, 11],
+#               [12, 3, 7, 8, 0]])
+# i0 = 1
+# tGlande = np.NaN*np.zeros((4,4))
+# print(MAJTempsSuivants(2,MAJTempsPrecedents(i0,sol_test,creneauxDispo_k)[0],creneauxDispo_k))
+
+
+# pour prendre en compte la pause dej en mettant une indispo employé à lieu non fixé none
