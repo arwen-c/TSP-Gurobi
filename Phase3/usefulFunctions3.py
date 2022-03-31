@@ -14,8 +14,8 @@ def fonctionRestriction(capaciteEmploye, X):
     listeTaches = []
     # si on garde 3 dim : nbreEmploye, nbreTache, _ = X.shape
     nbreEmploye, nbreTache = X.shape
-    for k in range(1, nbreTache + 1):
-        if capaciteEmploye[k - 1] == 1:  # car le tableau des compétences commencent à 0
+    for k in range(0, nbreTache):
+        if capaciteEmploye[k] == 1:  # car le tableau des compétences commencent à 0
             tacheNonFaite = True
             n = 0
             while tacheNonFaite and n < nbreEmploye:
@@ -26,7 +26,7 @@ def fonctionRestriction(capaciteEmploye, X):
                 #         tacheNonFaite = False
                 #     i += 1
                 # n += 1
-                if X[n, k - 1] == 1:  # même chose que pour compétence
+                if X[n, k] == 1:  # même chose que pour compétence
                     tacheNonFaite = False
                 n += 1
             if tacheNonFaite:
@@ -176,8 +176,8 @@ def distanceGPS(latA, longA, latB, longB):
     """Retourne la distance en mètres entre les 2 points A et B connus grâce à
        leurs coordonnées GPS (en radians).
     """
-    # Rayon de la terre en mètres (sphère IAG-GRS80)
-    RT = 6378137
+    # Rayon de la terre en kilomètres (sphère IAG-GRS80)
+    RT = 6378.137
     # angle en radians entre les 2 points
     x = math.sin(latA)*math.sin(latB) + math.cos(latA) * \
         math.cos(latB)*math.cos(abs(longB-longA))
@@ -186,7 +186,7 @@ def distanceGPS(latA, longA, latB, longB):
     elif abs(x+1) <= 0.000000000001:
         x = -1
     S = math.acos(x)
-    # distance entre les 2 points, comptée sur un arc de grand cercle
+    # distance entre les 2 points, comptée sur un arc de grand cercle - en km
     return S*RT
 
 

@@ -1,0 +1,8 @@
+def ajout_domicile(TasksDico, EmployeesDico):
+    for row in EmployeesDico:
+        # ajout d'une tâche au départ du domicile
+        TasksDico.append({'TaskId': 'Depart'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
+                          'TaskDuration': 0, 'Skill': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
+        # ajout de l'arrivée au domicile
+        TasksDico.append({'TaskId': 'Arrivee'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
+                          'TaskDuration': 0, 'Skill': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
