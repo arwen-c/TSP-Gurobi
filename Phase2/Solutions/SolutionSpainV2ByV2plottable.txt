@@ -26,6 +26,8 @@ T24;0;;;
 T25;1;Nicolas;510;
 T26;1;Nicolas;780;
 T27;1;Juan;1040;
+I0;1;Juan;600;
+I0;1;Maria;1020;
  
 employeeName;lunchBreakStartTime;
 Juan;776;
