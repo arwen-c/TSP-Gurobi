@@ -67,6 +67,14 @@ def extraire_coordonnees(nom_ville):
     EmployeesDico, _, TasksDico, _ = extractionData(path)
     return vecteur_longitudes(TasksDico), vecteur_latitudes(TasksDico),
 
+def extraire_coordonnees_unavail(nom_ville):
+    '''sortie : long et lat des indispos avec le nom de la personne'''
+    path = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
+    _, EmployeesUnavailDico, _, _ = extractionData(path)
+    liste=[]
+    for row in EmployeesUnavailDico:
+        liste.append([row['EmployeeName'],row['Longitude'],row['Latitude']])
+    return liste
 # tri de list_to_order par ordre décroissant sur la list_used_for_order
 
 
@@ -89,12 +97,20 @@ def order_list(list_to_order, list_used_for_order):
 
     return list_to_order_2
 
+def insertionindispos(nom_ville):
+    path = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
+    _,EmployeesUnavail,_,_=extractionData(path)
+    liste=[]
+    for Unavail in EmployeesUnavail:
+        point = [Unavail['EmployeeName'],Unavail['Latitude'],Unavail['Longitude'],Unavail['Start']]
+        liste.append(point)
+    return liste
 
 def creation_listes(nom_ville):
     path = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
     EmployeesDico, _, TasksDico, _ = extractionData(path)
 
-    filename = "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2.txt"
+    filename = "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2plottable.txt"
     employes, taches, start_times = lecture(filename)
 
     longitudes_taches, latitudes_taches = extraire_coordonnees(nom_ville)
@@ -113,14 +129,21 @@ def creation_listes(nom_ville):
         lattitudes_i = []
         start_times_i = []
         tasksIdEmployee = []
-        for j in range(len(employes)):  # pour chaque ligne du fichier ??
-            id_tache = int(taches[j][1:])-1
-            # les taches sont dans l'ordre normal... pas dans l'ordre de sortie de lecture c'est le meme. Donc on doit relier la ligne j au numéro de la tâche
-            if employes[j] == employes_unique[i]:
-                longitudes_i.append(longitudes_taches[id_tache])
-                lattitudes_i.append(latitudes_taches[id_tache])
-                start_times_i.append(start_times[j])
-                tasksIdEmployee.append(id_tache+1)
+        for j in range(len(employes)):
+            #deux cas à distinguer : tache ou indispo ?
+                if employes[j] == employes_unique[i]:
+                    if taches[j][0]=='T':
+                        id_tache = int(taches[j][1:])-1
+                        longitudes_i.append(longitudes_taches[id_tache])
+                        lattitudes_i.append(latitudes_taches[id_tache])
+                        start_times_i.append(start_times[j])
+                        tasksIdEmployee.append(id_tache+1)
+                    elif taches[j][0]=='I':
+                        listeLieuxIndispo=extraire_coordonnees_unavail(nom_ville)
+                        longitudes_i.append(listeLieuxIndispo[0][1])
+                        lattitudes_i.append(listeLieuxIndispo[0][2])
+                        start_times_i.append(start_times[j])
+                        tasksIdEmployee.append(0)
 
         # On trie les longitudes/lattitudes des tâches des employés par ordre croissant de début de leurs tâches
 
@@ -130,7 +153,7 @@ def creation_listes(nom_ville):
             longitudes_i, start_times_i)
         tasksIdEmployee = order_list(tasksIdEmployee, start_times_i)
         startTimesOrdered = order_list(start_times_i, start_times_i)
-
+        
         # Ajout des domiciles des employés
         found_name = False
         j = 0
@@ -151,7 +174,8 @@ def creation_listes(nom_ville):
 
 
 def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
-    listesPlot = creation_listes(nom_ville)[0]
+    listesPlot = creation_listes(nom_ville)
+    listeLieuxIndispo=extraire_coordonnees_unavail(nom_ville)
 
     my_colors = ["r", "g", "b", "c", "m", "y",
                  "k", "r", "g", "b", "c", "m", "y", "k"]
@@ -162,12 +186,13 @@ def graphiquePyplot(longitudes, lattitudes, employes, taches, nom_ville):
         if employe not in employes_unique and employe != '':
             employes_unique += [employe]
 
-    for i in range(len(listesPlot)):
-        plt.plot(listesPlot[i][0], listesPlot[i][1],
+    for i in range(len(listesPlot[0])):
+        plt.plot(listesPlot[0][i][0], listesPlot[0][i][1],
                  "-o", color=my_colors[i], label=str(employes_unique[i]))
         for j in range(len(employes)):
             if employes[j] == employes_unique[i]:
-                plt.annotate(str(taches[j]),
+                if taches[j][0]=='T':
+                    plt.annotate(str(taches[j]),
                              (longitudes[j], lattitudes[j]))
 
     plt.title(str(nom_ville))
@@ -200,7 +225,7 @@ def afficherTableauTaches(ville):  # attention, pour l'instant si l'excel tablea
 
 def afficher(nom_ville):
     path1 = "Phase2/InstancesV2/Instance"+str(nom_ville)+"V2.xlsx"
-    path2 = "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2.txt"
+    path2 = "Phase2/Solutions/Solution"+str(nom_ville)+"V2ByV2plottable.txt"
 
     longitudes, lattitudes = extraire_coordonnees(
         nom_ville)
