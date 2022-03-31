@@ -78,6 +78,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
 
     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
     # Pour les indisponibilité, cette contrainte est exprimée juste en dessous
+    print("t vaut : {} \n nbre_taches vaut : {}".format(t, nbre_taches))
     for n in range(nbre_employe):
         for j in range(nbre_taches):
             m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
@@ -90,12 +91,12 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
             # Il faut que ce soit le bon employé qui fasse la pause
             if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                                for i in range(nbre_taches)) == 1)  # arrivé à la pause
+                                for i in range(t)) == 1)  # arrivé à la pause
                 m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
-                                for i in range(nbre_taches)) == 1)  # départ de la pause
+                                for i in range(t)) == 1)  # départ de la pause
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                                for i in range(nbre_taches)) == 0)  # arrivé à la pause
+                                for i in range(t)) == 0)  # arrivé à la pause
 
     # Contraintes de flot initiale et finale
     for n in range(nbre_employe):
@@ -132,16 +133,17 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
     for i in range(t):
         for j in range(t):
             for n in range(nbre_employe):
-            # Contrainte à mettre hors de la boucle sur k, mais dans une boucle sur i, et sur j
+                # Contrainte à mettre hors de la boucle sur k, mais dans une boucle sur i, et sur j
                 m.addConstr(X[n, i, j] <= sum(delta[i][k]
-                                for k in range(nbreCreneauxI)))
+                                              for k in range(nbreCreneauxI)))
 
                 # Contraintes pour avoir les pauses déjeuner entre 12h et 14 h
                 m.addConstr(H[i]+Duree[i] <= 13*60 + (1-L[n, i, j])*60*11)
                 m.addConstr(13*60-(1-L[n, i, j])*60*13 <= H[j])
                 # la personne n a le temps de faire la tache j à la suite de la tache i et peut etre de faire sa pause déjeuner
-                m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) + L[n, i, j]*60 <= H[j] + 24*60*(1-X[n, i, j]))
- 
+                m.addConstr(H[i] + X[n, i, j] * (Duree[i]+D[i, j]/0.833) +
+                            L[n, i, j]*60 <= H[j] + 24*60*(1-X[n, i, j]))
+
     # -- Ajout de la fonction objectif.
     ntR = nbre_taches
 
@@ -159,7 +161,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
         m.setObjective(-sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
                             for i in range(ntR) for j in range(t)), GRB.MINIMIZE)
     elif fonctionObjectif == 3:
-        alpha = 0.1
+        alpha = 0.01
         f1 = sum(X[n, i, j]*D[i, j] for n in range(nbre_employe)
                  for i in range(t) for j in range(t))
         f2 = -sum(X[n, i, j]*Duree[i] for n in range(nbre_employe)
@@ -171,6 +173,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
   #  m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
+    m.write("model.lp")
 
     # Calcul de la valeur de l'autre fonction objectif
 
