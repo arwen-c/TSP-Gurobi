@@ -95,7 +95,7 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
         # si on ne change pas la taille de X (voir plus haut) pour rester cohérent avec le modèle précédent on doit ajouter une variable tachePrecedente
         indispoDicoEmployeN = {}
         k = 0
-        print(t)
+
         while k < len(indispoDico):
             if indispoDico[k]['EmployeeName'] == employe['EmployeeName']:
                 indispoDicoEmployeN = indispoDico[k]
@@ -109,8 +109,7 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
             print(tachesOpti)
             # on vérifie qu'au moins une des tâches peut se faire sans empiéter sur une periode d'indisponibilité, sur la pause repas, dans la periode d'ouverture de la tache et de disponibilité de l'employé
             raison, tache = tachesRealisables(
-                tachesOpti, duree, debut, fin, recuperationHeure(employe['WorkingEndTime']), indispoDicoEmployeN, t, pauseFaite, localisationCourante, distance, tachesDico)  # rôle à bien définir
-            print(t)
+                tachesOpti, duree, debut, fin, recuperationHeure(employe['WorkingEndTime']), indispoDicoEmployeN, t, pauseFaite, localisationCourante, distance, tachesDico, n, nbreTaches)  # rôle à bien définir
             print(raison)
             print(tache)
             print(employe['EmployeeName'])
@@ -118,8 +117,8 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
                 if raison == 'indisponibilité':
                     t = recuperationHeure(
                         indispoDico[n]['End'])
-                    print(t)
-                if raison == 'fin de journée':
+
+                if raison == 'fin de journée' or raison == 'taches infaisables':
                     newTachePossible = False
                 if raison == 'déjeuner':
                     L[n] = t
@@ -129,13 +128,9 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
             else:
                 # ici on devrait changer en X[n, tachePrecedente, tache] si X a 3 dim
                 X[n, tache] = 1
-                print(debut[tache][0])
-                print(t + distance[localisationCourante][tache]/0.833)
-
                 H[tache] = max(debut[tache][0], t +
                                distance[localisationCourante][tache]/0.833)  # 0 a changé, prendre creneau nouvelle var à recup de tachesFaisables
                 t = H[tache] + duree[tache]
-                print(H[tache])
                 print(t)
                 tempsTravail += duree[tache]
                 distanceParcourue += distance[tache][localisationCourante]
