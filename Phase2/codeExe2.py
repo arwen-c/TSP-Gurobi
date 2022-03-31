@@ -13,7 +13,7 @@ from graphique2 import afficher
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
 
-ville = 'Bordeaux'
+ville = 'Autun'
 path = 'Phase2/InstancesV2/Instance'+ville+'V2.xlsx'
 
 print(path)
@@ -66,7 +66,6 @@ solution = optimisation2(Capacite, nbre_employe, nbre_taches, nbreIndispoEmploye
 # affichage multi objectif
 print("Valeur fonction objectif : {} avec comme contrainte sur l'autre fonction objectif : {}".format(
     solution[3], solution[4]))
-
 
 # Pour tracer les graphiques des algorithmes epsilon Contraintes
 # fonctionObjectif = 1
