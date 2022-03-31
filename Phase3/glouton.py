@@ -95,7 +95,6 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
         # si on ne change pas la taille de X (voir plus haut) pour rester cohérent avec le modèle précédent on doit ajouter une variable tachePrecedente
         indispoDicoEmployeN = {}
         k = 0
-
         while k < len(indispoDico):
             if indispoDico[k]['EmployeeName'] == employe['EmployeeName']:
                 indispoDicoEmployeN = indispoDico[k]
@@ -106,7 +105,6 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
             # on regarde toutes les tâches possibles, et on les classes dans l'ordre des plus optimales en terme de temps + distance à la position actuelle
             tachesOpti = triOpti(
                 tachesFaisables, localisationCourante, distance, duree)
-            print(tachesOpti)
             # on vérifie qu'au moins une des tâches peut se faire sans empiéter sur une periode d'indisponibilité, sur la pause repas, dans la periode d'ouverture de la tache et de disponibilité de l'employé
             raison, tache = tachesRealisables(
                 tachesOpti, duree, debut, fin, recuperationHeure(employe['WorkingEndTime']), indispoDicoEmployeN, t, pauseFaite, localisationCourante, distance, tachesDico, n, nbreTaches)  # rôle à bien définir
@@ -117,21 +115,18 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
                 if raison == 'indisponibilité':
                     t = recuperationHeure(
                         indispoDico[n]['End'])
-
-                if raison == 'fin de journée' or raison == 'taches infaisables':
+                if raison == 'fin de journée':
                     newTachePossible = False
                 if raison == 'déjeuner':
-                    L[n] = t
-                    t += 60
+                    L[n] = max(t, 720)
+                    t += L[n] + 60
                     pauseFaite = True
             # si au moins une des tâches est faisable
             else:
-                # ici on devrait changer en X[n, tachePrecedente, tache] si X a 3 dim
                 X[n, tache] = 1
-                H[tache] = max(debut[tache][0], t +
-                               distance[localisationCourante][tache]/0.833)  # 0 a changé, prendre creneau nouvelle var à recup de tachesFaisables
+                H[tache] = max(debut[tache][creneau - 1], t +
+                               distance[localisationCourante][tache]/0.833)  # on utilise bien le créneau c-1, en effet on ajoute 1 au créneau convenable dans la boucle de la fonction tachesRealisables
                 t = H[tache] + duree[tache]
-                print(t)
                 tempsTravail += duree[tache]
                 distanceParcourue += distance[tache][localisationCourante]
                 localisationCourante = tache
@@ -143,12 +138,8 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
                         tachesFaisables.pop(i)
                         aTrouve = False
                     i += 1
-        print(n)
-        print(t)
-        print(X)
-        print(H)
-        print(L)
     return [X, H, L, distanceParcourue, tempsTravail]
+
 
 # tant que encore tache
 # faire pour tout employe dispo (boucle for)
@@ -156,31 +147,3 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
 # comparer les scores et prendre le meilleur
 
 # hyp pause dej à l'endroit de la dernière tâche possible => on réduit l'ensemble des solutions
-
-
-'''
-Boucle proposée par SamDa
-
-while t < finJourneeEmploye:  # on construit la journée d'un employé au fur et à mesure
-            # on regarde les tâches ouvertes au temps t ou qui vont s'ouvrir
-            listeTachesPossibles = fonctionTachesPossibles(
-                t, localisationCourante, matDistance, vecDuree, vecDebut, vecFin, employe, tachesFaisables) #ensemble des fonctions qui seront ouvertes le tempds d'y arriver (à voir, pourrait être plus intéressant d'attendre un peu l'ouverture - quand prendre en compte le temps ?)
-                # mettre la pause dèj dans les indisponibilités
-                # liste ordonnée, la première tâche est la plus proche et la plus longue en durée (trouver un critère qui permet d'optimiser les 2)
-# vérifier que l'employé n'est pas en pause, qu'il n'est pas en indisponibilité et qu'il peut faire sa pause dèj
-            nombreTachesPossibles = len(listeTachesPossibles)
-            if nombreTachesPossibles > 0:
-                prochaineTacheTrouvee = False
-                i = 0
-                while not(prochaineTacheTrouvee) and i < nombreTachesPossibles:
-                    prochaineTacheTrouvee, idTache = verificationContrainteIndisponibilites(
-                        dicoIndis, listeTachesPossibles[i])
-                if prochaineTacheTrouvee:
-                    t += vecDuree[idTache]
-                    X[n, idTachePrecedente, idTache] = #idTacheprecedente à trouver
-                elif not(pauseFaite) and t < 840:
-                    pauseFaite = True
-                    t += 45 #
-                elif
-
-'''
