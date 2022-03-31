@@ -33,6 +33,7 @@ def deg2rad(dd):
     """
     return dd/180*math.pi
 
+
 def distanceGPS(latA, longA, latB, longB):
     """Retourne la distance en mètres entre les 2 points A et B connus grâce à
        leurs coordonnées GPS (en radians).
@@ -40,7 +41,8 @@ def distanceGPS(latA, longA, latB, longB):
     # Rayon de la terre en mètres (sphère IAG-GRS80)
     RT = 6378137
     # angle en radians entre les 2 points
-    x = math.sin(latA)*math.sin(latB) + math.cos(latA)*math.cos(latB)*math.cos(abs(longB-longA))        
+    x = math.sin(latA)*math.sin(latB) + math.cos(latA) * \
+        math.cos(latB)*math.cos(abs(longB-longA))
     if abs(x-1) <= 0.000000000001:
         x = 1
     elif abs(x+1) <= 0.000000000001:
@@ -48,7 +50,8 @@ def distanceGPS(latA, longA, latB, longB):
     S = math.acos(x)
     # distance entre les 2 points, comptée sur un arc de grand cercle
     return S*RT
-    
+
+
 def distance(id1, id2, TasksDico):
     """Calcule la distance entre deux points dont on connait les coordonnées GPS.
     Entrée : les taskid correspondantes et le dictionnaire de données.
@@ -66,8 +69,8 @@ def distance(id1, id2, TasksDico):
             lat2 = deg2rad(TasksDico[index]['Latitude'])
         index += 1
 
-    #distance d'arc entre deux points
-    distance = round(distanceGPS(lat1,long1,lat2,long2)/1000,1)
+    # distance d'arc entre deux points
+    distance = round(distanceGPS(lat1, long1, lat2, long2)/1000, 1)
     return distance
 
 
@@ -130,11 +133,9 @@ def recuperationHeure(heure):
     h = int(res[0])  # l'heure
     m = int(res[1][:2])  # les minutes
     if res[1][2:] == 'pm':
-        if res[0] != 12:
+        if h != 12:
             h += 12  # modifications pour l'aprem
-    else:
-        if res[0] == 12:
-            h = 0
+
     return h*60+m
 
 
@@ -196,12 +197,14 @@ def nomFichierResolution(nomFichier, nMethode):
     L = nomFichier.split('.')
     return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + '.txt'
 
+
 def nomFichierResolutionPlottable(nomFichier, nMethode):
     """nomFichier est un string qui correspond au nom du fichier excel.
     n_methode est le numéro de la méthode.
     Renvoie le nom du fichier txt."""
     L = nomFichier.split('.')
     return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + 'plottable.txt'
+
 
 def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     """X et h sont des tableaux numpy.
@@ -232,7 +235,7 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     listeDesLignes.append(' ')  # saut de ligne
     listeDesLignes.append('employeeName;lunchBreakStartTime;')
     for numeroEmploye in range(n):
-        i=0
+        i = 0
         tachePrePauseTrouve = False
         while (i < y and not(tachePrePauseTrouve)):
             j = 0
@@ -286,21 +289,48 @@ def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
     # on enregistre les données au sein de l'excel
     my_wb.save("./performance2.xlsx")
 
+
+# def dispostache(tasknb, TasksDico, TasksUnavailDico):
+#     '''retourne une liste des créneaux dispo de la tâche tasknb'''
+#     ouverture = recuperationHeure(TasksDico[tasknb]['OpeningTime'])
+#     fermeture = recuperationHeure(TasksDico[tasknb]['ClosingTime'])
+#     print("ouverture pour la tâche n° {} : {}".format(tasknb+1, ouverture))
+#     print("fermeture pour la tâche n° {} : {}".format(tasknb+1, fermeture))
+#     dispos = [[ouverture]]
+#     k = 0
+#     for t in TasksUnavailDico:
+#         if t['TaskId'] == 'T'+str(tasknb+1):
+#             k += 1
+#             print("Heure début indispo : {}".format(
+#                 t['Start']))
+#             print("Heure début indispo : {}".format(
+#                 recuperationHeure(t['Start'])))
+#             print(
+#                 "Heure fin indispo après recuperationHeure: {}".format(t['End']))
+#             print("Heure fin indispo après recuperationHeure: {}".format(
+#                 recuperationHeure(t['End'])))
+#             dispos[k-1].append(recuperationHeure(t['Start']))
+#             dispos.append([recuperationHeure(t['End'])])
+#     dispos[-1].append(fermeture)
+#     print("dispos pour la tâche n° {} : {}".format(tasknb+1, dispos))  # test
+#     return dispos
+
 def dispostache(tasknb, TasksDico, TasksUnavailDico):
     '''retourne une liste des créneaux dispo de la tâche tasknb'''
-    ouverture=recuperationHeure(TasksDico[tasknb]['OpeningTime'])
-    fermeture=recuperationHeure(TasksDico[tasknb]['ClosingTime'])
-    dispos=[[ouverture]]
-    k=0
+    ouverture = recuperationHeure(TasksDico[tasknb]['OpeningTime'])
+    fermeture = recuperationHeure(TasksDico[tasknb]['ClosingTime'])
+    dispos = [[ouverture]]
+    k = 0
     for t in TasksUnavailDico:
-        if t['TaskId']=='T'+str(tasknb+1):
-            k+=1
+        if t['TaskId'] == 'T'+str(tasknb+1):
+            k += 1
             dispos[k-1].append(recuperationHeure(t['Start']))
             dispos.append([recuperationHeure(t['End'])])
     dispos[-1].append(fermeture)
     return dispos
 
-def lignesSolutionPlottable(X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDico):
+
+def lignesSolutionPlottable(X, h, L, TasksDico, EmployeesDico, EmployeesUnavailDico):
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
@@ -327,13 +357,14 @@ def lignesSolutionPlottable(X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDi
             listeDesLignes.append(
                 'T' + str(i+1) + ';' + '0' + ';' + ';' + ';')
     for Unavail in EmployeesUnavailDico:
-        ligne=('I' + '0' + ';' + '1' + ';' + Unavail['EmployeeName'] + ';' + str(recuperationHeure(Unavail['Start'])) + ';')
+        ligne = ('I' + '0' + ';' + '1' + ';' +
+                 Unavail['EmployeeName'] + ';' + str(recuperationHeure(Unavail['Start'])) + ';')
         listeDesLignes.append(ligne)
 
     listeDesLignes.append(' ')  # saut de ligne
     listeDesLignes.append('employeeName;lunchBreakStartTime;')
     for numeroEmploye in range(n):
-        i=0
+        i = 0
         tachePrePauseTrouve = False
         while (i < y and not(tachePrePauseTrouve)):
             j = 0
@@ -354,6 +385,6 @@ def creationFichierPlottable(nomFichier, nMethode, X, h, L, TasksDico, Employees
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
     fichier = open(nomFichierResolutionPlottable(nomFichier, nMethode), "w")
     fichier.write("\n".join(lignesSolutionPlottable(
-        X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDico)))
+        X, h, L, TasksDico, EmployeesDico, EmployeesUnavailDico)))
     fichier.close()
     return None
