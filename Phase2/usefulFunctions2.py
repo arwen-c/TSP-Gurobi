@@ -325,6 +325,9 @@ def dispostache(tasknb, TasksDico, TasksUnavailDico):
             dispos[k-1].append(recuperationHeure(t['Start']))
             dispos.append([recuperationHeure(t['End'])])
     dispos[-1].append(fermeture)
+    for creneau in range(len(dispos)-1,-1,-1): #on balaie les creneaux à l'envers pour ne pas subir le pop lors des itérations
+        if dispos[creneau][0]==dispos[creneau][1]:
+            dispos.pop(creneau)        
     return dispos
 
 def lignesSolutionPlottable(X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDico):
