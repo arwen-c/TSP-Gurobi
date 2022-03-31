@@ -85,6 +85,7 @@ finTemps = time.time()
 creationFichier(path, 2, solution[0], solution[1],
                 solution[2], TasksDicoNotModified, EmployeesDico)
 
-creationFichierPlottable(path,2,solution[0],solution[1],solution[2],TasksDicoNotModified,EmployeesDico,EmployeesUnavailDico)
+creationFichierPlottable(path, 2, solution[0], solution[1], solution[2],
+                         TasksDicoNotModified, EmployeesDico, EmployeesUnavailDico)
 # Affichage :
 afficher(ville)
