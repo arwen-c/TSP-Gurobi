@@ -13,7 +13,7 @@ from graphique2 import afficher
 # Entrée - A MODIFIER
 # chemin d'accès à l'excel de données
 
-ville = 'Autun'
+ville = 'Melbourne'
 path = 'Phase2/InstancesV2/Instance'+ville+'V2.xlsx'
 
 print(path)
@@ -82,7 +82,7 @@ finTemps = time.time()
 
 # Création du fichier solution au format txt
 creationFichier(path, 2, solution[0], solution[1],
-                solution[2], TasksDicoNotModified, EmployeesDico)
+                solution[2], TasksDicoNotModified, EmployeesDico,EmployeesUnavailDico)
 
 creationFichierPlottable(path,2,solution[0],solution[1],solution[2],TasksDicoNotModified,EmployeesDico,EmployeesUnavailDico)
 # Affichage :
