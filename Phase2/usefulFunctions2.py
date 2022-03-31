@@ -321,31 +321,6 @@ def performances2(tpsExec, tailleEntree, tailleMemoire, instance):
     my_wb.save("./performance2.xlsx")
 
 
-# def dispostache(tasknb, TasksDico, TasksUnavailDico):
-#     '''retourne une liste des créneaux dispo de la tâche tasknb'''
-#     ouverture = recuperationHeure(TasksDico[tasknb]['OpeningTime'])
-#     fermeture = recuperationHeure(TasksDico[tasknb]['ClosingTime'])
-#     print("ouverture pour la tâche n° {} : {}".format(tasknb+1, ouverture))
-#     print("fermeture pour la tâche n° {} : {}".format(tasknb+1, fermeture))
-#     dispos = [[ouverture]]
-#     k = 0
-#     for t in TasksUnavailDico:
-#         if t['TaskId'] == 'T'+str(tasknb+1):
-#             k += 1
-#             print("Heure début indispo : {}".format(
-#                 t['Start']))
-#             print("Heure début indispo : {}".format(
-#                 recuperationHeure(t['Start'])))
-#             print(
-#                 "Heure fin indispo après recuperationHeure: {}".format(t['End']))
-#             print("Heure fin indispo après recuperationHeure: {}".format(
-#                 recuperationHeure(t['End'])))
-#             dispos[k-1].append(recuperationHeure(t['Start']))
-#             dispos.append([recuperationHeure(t['End'])])
-#     dispos[-1].append(fermeture)
-#     print("dispos pour la tâche n° {} : {}".format(tasknb+1, dispos))  # test
-#     return dispos
-
 def dispostache(tasknb, TasksDico, TasksUnavailDico):
     '''retourne une liste des créneaux dispo de la tâche tasknb'''
     ouverture = recuperationHeure(TasksDico[tasknb]['OpeningTime'])
