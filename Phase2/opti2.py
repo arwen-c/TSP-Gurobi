@@ -173,7 +173,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
   #  m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
-    m.write("model.lp")
+    # m.write("model.lp")
 
     # Calcul de la valeur de l'autre fonction objectif
 
