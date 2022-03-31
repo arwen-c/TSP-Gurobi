@@ -79,10 +79,10 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
     # Toute tâche a un départ et une arrivée faite par la même personne, cette condition n'est pas appliquée au départ et à l'arrivée
     # Pour les indisponibilité, cette contrainte est exprimée juste en dessous
     print("t vaut : {} \n nbre_taches vaut : {}".format(t, nbre_taches))
-    # for n in range(nbre_employe):
-    #     for j in range(nbre_taches):
-    #         m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
-    #             X[n, i, j] for i in range(t)))
+    for n in range(nbre_employe):
+        for j in range(nbre_taches):
+            m.addConstr(sum(X[n, j, k] for k in range(t)) == sum(
+                X[n, i, j] for i in range(t)))
 
     # Les employés font bien leurs pauses (indisponibilités):
     for n in range(nbre_employe):
@@ -91,12 +91,12 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
             # Il faut que ce soit le bon employé qui fasse la pause
             if TasksEnhanced[nbre_taches+2*nbre_employe+i_unavail]['TaskId'] == "Unavail" + NomEmploye:
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                                for i in range(nbre_taches)) == 1)  # arrivé à la pause
+                                for i in range(t)) == 1)  # arrivé à la pause
                 m.addConstr(sum(X[n, nbre_taches+2*nbre_employe+i_unavail, i]
-                                for i in range(nbre_taches)) == 1)  # départ de la pause
+                                for i in range(t)) == 1)  # départ de la pause
             else:  # Un autre ne peux pas piquer la pause d'un autre
                 m.addConstr(sum(X[n, i, nbre_taches+2*nbre_employe+i_unavail]
-                                for i in range(nbre_taches)) == 0)  # arrivé à la pause
+                                for i in range(t)) == 0)  # arrivé à la pause
 
     # Contraintes de flot initiale et finale
     for n in range(nbre_employe):
@@ -171,6 +171,7 @@ def optimisation2(C, nbre_employe, nbre_taches, nbreIndispoEmploye, D, Duree, Em
   #  m.params.outputflag = 0
     m.update()  # Mise à jour du modèle
     m.optimize()  # Résolution
+    m.write("model.lp")
 
     # Calcul de la valeur de l'autre fonction objectif
 
