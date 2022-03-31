@@ -135,7 +135,7 @@ def tachesRealisables(tachesOpti, duree, debut, fin, finJourneeEmploye, indispoD
                         raison = 'déjeuner'
         k += 1
 
-    if raison == '':
+    if raison == '' and not tacheOptiFaisableTrouvee:
         raison = 'fin de journée'
 
     return raison, tache

@@ -129,19 +129,30 @@ def optiGlouton(capacite, distance, duree, debut, fin, nbreTaches, employeesDico
             else:
                 # ici on devrait changer en X[n, tachePrecedente, tache] si X a 3 dim
                 X[n, tache] = 1
+                print(debut[tache][0])
+                print(t + distance[localisationCourante][tache]/0.833)
+
                 H[tache] = max(debut[tache][0], t +
                                distance[localisationCourante][tache]/0.833)  # 0 a changé, prendre creneau nouvelle var à recup de tachesFaisables
                 t = H[tache] + duree[tache]
+                print(H[tache])
                 print(t)
                 tempsTravail += duree[tache]
                 distanceParcourue += distance[tache][localisationCourante]
                 localisationCourante = tache
+                # on enlève la tache que l'on vient de faire du tableau des possibilités
+                i = 0
+                aTrouve = True
+                while i < len(tachesFaisables) and aTrouve:
+                    if tachesFaisables[i] == tache:
+                        tachesFaisables.pop(i)
+                        aTrouve = False
+                    i += 1
         print(n)
         print(t)
         print(X)
         print(H)
         print(L)
-        break
     return [X, H, L, distanceParcourue, tempsTravail]
 
 # tant que encore tache
