@@ -186,6 +186,32 @@ def vecteurDurees(TasksDico):
         Vecteur.append(row['TaskDuration'])
     return Vecteur
 
+# Ajout des taches fictives correspondant à la phase 2
+def ajoutTachesFictives2(TasksDico, EmployeesDico, EmployeesUnavailDico):
+
+    # (rechercher ajout_domicile dans tous les docs pour modifier par ajout_taches_fictives)
+    ### AJOUTS DOMICILES ###
+    """Modification des données pour insérer des tâches factices de départ et de retour au dépot ou domicile."""
+    TasksEnhanced = TasksDico.copy()
+    for row in EmployeesDico:
+        # ajout d'une tâche au départ du domicile
+        TasksEnhanced.append({'TaskId': 'Depart' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
+                              'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
+    for row in EmployeesDico:
+        # ajout de l'arrivée au domicile
+        TasksEnhanced.append({'TaskId': 'Arrivee'+row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
+                              'TaskDuration': 0, 'Skill': row['Skill'], 'Level': 0, 'OpeningTime': row['WorkingStartTime'], 'ClosingTime': row['WorkingEndTime']})
+
+    ### AJOUTS INDISPONIBILITES EMPLOYES ###
+    for row in EmployeesUnavailDico:
+
+        debut = recuperationHeure(row["Start"])
+        fin = recuperationHeure(row["End"])
+
+        TasksEnhanced.append({'TaskId': 'Unavail' + row['EmployeeName'], 'Latitude': row['Latitude'],    'Longitude': row['Longitude'],
+                              'TaskDuration': fin-debut, 'Skill': None, 'Level': 0, 'OpeningTime': row['Start'], 'ClosingTime': row['End']})
+
+    return(TasksEnhanced)
 
 # Fonctions création du fichier solution
 
@@ -203,11 +229,12 @@ def nomFichierResolutionPlottable(nomFichier, nMethode):
     L = nomFichier.split('.')
     return 'Phase2/Solutions/Solution' + L[0][27:] + 'ByV' + str(nMethode) + 'plottable.txt'
 
-def lignesSolution(X, h, L, TasksDico, EmployeesDico):
+def lignesSolution(X, h, L, TasksDico, EmployeesDico, EmployeesUnavailDico):
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
-    Duree = vecteurDurees(TasksDico)
+    TasksEnhanced=ajoutTachesFictives2(TasksDico,EmployeesDico,EmployeesUnavailDico)
+    Duree = vecteurDurees(TasksEnhanced)
     premiereLigne = 'taskId;performed;employeeName;startTime;'
     listeDesLignes = [premiereLigne]
     n, _, y = X.shape
@@ -246,14 +273,14 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     return listeDesLignes
 
 
-def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico):
+def creationFichier(nomFichier, nMethode, X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDico):
     """nomFichier est le nom du fichier utilisée pour créer les variables globales.
     n_methode est le numéro de la méthode utilisée.
     X est un tableau en 3 dimensions où chaque coefficient permet de savoir si l'employé n est allé de la tâche i à la tâche j.
     Ne renvoie rien mais crée ou modifie le fichier .txt."""
     fichier = open(nomFichierResolution(nomFichier, nMethode), "w")
     fichier.write("\n".join(lignesSolution(
-        X, h, L, TasksDico, EmployeesDico)))
+        X, h, L, TasksDico, EmployeesDico, EmployeesUnavailDico)))
     fichier.close()
     return None
 
@@ -304,7 +331,8 @@ def lignesSolutionPlottable(X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDi
     """X et h sont des tableaux numpy.
     X est de dimension 3 et h de dimension 1.
     Renvoie la liste des lignes sous la forme souhaitée pour le fichier .txt."""
-    Duree = vecteurDurees(TasksDico)
+    TasksEnhanced=ajoutTachesFictives2(TasksDico,EmployeesDico,EmployeesUnavailDico)
+    Duree = vecteurDurees(TasksEnhanced)
     premiereLigne = 'taskId;performed;employeeName;startTime;'
     listeDesLignes = [premiereLigne]
     n, _, y = X.shape
