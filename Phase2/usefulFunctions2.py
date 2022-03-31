@@ -234,9 +234,9 @@ def lignesSolution(X, h, L, TasksDico, EmployeesDico):
     for numeroEmploye in range(n):
         i=0
         tachePrePauseTrouve = False
-        while (i < nombreTaches and not(tachePrePauseTrouve)):
+        while (i < y and not(tachePrePauseTrouve)):
             j = 0
-            while (j < nombreTaches and not(tachePrePauseTrouve)):
+            while (j < y and not(tachePrePauseTrouve)):
                 if L[numeroEmploye, i, j] == 1:
                     listeDesLignes.append(str(
                         EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(max([h[i] + Duree[i], 720]))) + ';')
@@ -335,9 +335,9 @@ def lignesSolutionPlottable(X, h, L, TasksDico, EmployeesDico,EmployeesUnavailDi
     for numeroEmploye in range(n):
         i=0
         tachePrePauseTrouve = False
-        while (i < nombreTaches and not(tachePrePauseTrouve)):
+        while (i < y and not(tachePrePauseTrouve)):
             j = 0
-            while (j < nombreTaches and not(tachePrePauseTrouve)):
+            while (j < y and not(tachePrePauseTrouve)):
                 if L[numeroEmploye, i, j] == 1:
                     listeDesLignes.append(str(
                         EmployeesDico[numeroEmploye]['EmployeeName']) + ';' + str(round(max([h[i] + Duree[i], 720]))) + ';')
