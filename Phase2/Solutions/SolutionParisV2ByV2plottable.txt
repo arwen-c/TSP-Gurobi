@@ -9,6 +9,7 @@ T7;0;;;
 T8;1;Valentin;652;
 T9;0;;;
 T10;1;Valentin;720;
+I0;1;Valentin;900;
  
 employeeName;lunchBreakStartTime;
 Valentin;780;
