@@ -6,6 +6,23 @@ from sympy import solve
 import math
 import pandas as pd
 
+def getsol(path):
+    '''construit un dictionnaire correspondant à une solution à partir d'un excel
+    '''
+    Tab = np.array(pd.read_excel(path, names=['Employé',	'TaskId',	'precedent',	'suivant',	'heure']))
+    S = {}
+    for i in range(len(Tab)):
+        name = Tab[i,0]
+        Taskid = Tab[i,1]
+        precedent = Tab[i,2]
+        suivant = Tab[i,3]
+        heure =Tab[i,4]
+        if name in S.keys():
+            S[name][Taskid] = {"precedent":precedent, "suivant":suivant, "heure":heure}
+        else :
+             S[name] = {Taskid:{"precedent":precedent, "suivant":suivant, "heure":heure}}
+    return S
+
 
 def extractionData(path):
     """Permet l'extraction des données depuis un fichier excel.
@@ -204,6 +221,7 @@ def getCreneaux(heure,creneauxTache):
 
 
 def MAJTempsSuivants(i0,solution_k,creneauxDispo_k,Duree,D):
+    solution_k = solution_k.copy()
     """Cette fonction permet de contracter les temps en aval d'une tache i0. Autrement dit elle tasse les heures en fin de journée à partir d'une tache i0 incluse"""
     iCourant = 0
     precedentCourant = solution_k[iCourant]["precedent"]
@@ -224,6 +242,7 @@ def MAJTempsSuivants(i0,solution_k,creneauxDispo_k,Duree,D):
 
 
 def MAJTempsPrecedents(i0,solution_k,creneauxDispo_k,Duree,D):
+    solution_k = solution_k.copy()
     """Cette fonction permet de contracter les temps en amont d'une tache i0. Autrement dit elle tasse les heures en début de journée à partir d'une tache i0 incluse"""
     iCourant = 0
     suivantCourant = solution_k[iCourant]["suivant"]
@@ -242,21 +261,58 @@ def MAJTempsPrecedents(i0,solution_k,creneauxDispo_k,Duree,D):
     return solution_k
 
 
+def insertionTache(i,precedent,suivant,solution_k,creneauxDispoTaches,Duree,D):
+    solution_k = solution_k.copy()
+    solution_k = MAJTempsPrecedents(precedent,solution_k,creneauxDispoTaches,Duree,D)
+    solution_k = MAJTempsSuivants(suivant,solution_k,creneauxDispoTaches,Duree,D)
+    solution_k[precedent]["suivant"] = i
+    solution_k[suivant]["precedent"] = i
+    solution_k[i] = {"precedent":precedent, "suivant":suivant}
+    h = solution_k[precedent]["heure"] + Duree[precedent] + D[precedent,i]/0.833
+    if estDansUnCreneau(h,creneauxDispoTaches[i]):
+        solution_k[i]["heure"] = int(h)
+    else:
+        L = [creneauxDispoTaches[i][j][0] for j in range(len(creneauxDispoTaches[i]))].sort()
+        for hmin in L:
+            found = 0
+            if h < hmin and found == 0:
+                found = 1
+                solution_k[i]["heure"] = int(hmin)
+    if solution_k[i]["heure"] + Duree[i] + D[i,suivant]/0.833 > solution_k[suivant]["heure"]:
+        print("insertion impossible")
+        return None
+    return solution_k
 
-# sol_test = {0:{"precedent" : 2, "suivant" : 3, "heure": 8*60}, 1:{"precedent" : 3, "suivant" : 2, "heure" : 8.5*60}, 2:{"precedent" : 1, "suivant" : 0, "heure" : 11*60}, 3:{"precedent" : 0, "suivant" : 1, "heure" : 10*60}}
+def suppressionTache(i,solution_k):
+    solution_k = solution_k.copy()
+    precedent = solution_k[i]["precedent"]
+    suivant = solution_k[i]["suivant"]
+    solution_k[precedent]["suivant"] = suivant
+    solution_k[suivant]["precedent"] = precedent
+    del solution_k[i]
+    return solution_k
 
-# creneauxDispo_test = [[[8*60,12*60],[13*60,18*60]]]*5
-# Duree = 30*np.ones((5,1))
-# D = np.array([[0, 2, 5, 1, 10],
-#               [2, 0, 4, 3, 6],
-#               [5, 4, 0, 6, 8],
-#               [1, 3, 6, 0, 11],
-#               [12, 3, 7, 8, 0]])
-# i0 = 3
-# tGlande = np.NaN*np.zeros((4,4))
 
-# print(insertionTache(4,3,1,sol_test,creneauxDispo_test,Duree,D))
-# print(suppressionTache(1,sol_test,creneauxDispo_test,Duree,D))
+        
+
+
+
+sol_test = {0:{"precedent" : 2, "suivant" : 3, "heure": 8*60}, 1:{"precedent" : 3, "suivant" : 2, "heure" : 8.5*60}, 2:{"precedent" : 1, "suivant" : 0, "heure" : 11*60}, 3:{"precedent" : 0, "suivant" : 1, "heure" : 10*60}}
+sol2 = sol_test.copy()
+creneauxDispo_test = [[[8*60,12*60],[13*60,18*60]]]*5
+Duree = 30*np.ones((5,1))
+D = np.array([[0, 2, 5, 1, 10],
+              [2, 0, 4, 3, 6],
+              [5, 4, 0, 6, 8],
+              [1, 3, 6, 0, 11],
+              [12, 3, 7, 8, 0]])
+i0 = 3
+tGlande = np.NaN*np.zeros((4,4))
+
+sol_test = insertionTache(4,3,1,sol_test,creneauxDispo_test,Duree,D)
+print(sol_test)
+print(suppressionTache(1,sol_test))
+print(sol2)
 
 
 # pour prendre en compte la pause dej en mettant une indispo employé à lieu non fixé none

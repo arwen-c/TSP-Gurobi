@@ -9,9 +9,38 @@ from usefulFunctions3 import *
 # d'autres améliorations, notamment sur la tailleMemoire sont proposées dans le poly de métaheuristique
 
 
-def rechercheTabou(capacite, matDistance, duree, debut, fin, nbreTaches, employeesDico, indispoDico, tachesDico, tailleMemoire):
-    solution = optiGlouton(capacite, matDistance, duree, debut,
-                           fin, nbreTaches, employeesDico, indispoDico, tachesDico)
+def rechercheTabou(solInit, capacite, matDistance, duree, debut, fin, nbreTaches, employeesDico, indispoDico, tachesDico, tailleMemoire):
+
+    ###### Étape 0: La première étape consiste à créer une solution initiale afin que l'algorithme puisse la parcourir et en trouver une meilleure.
+    # La solution initiale peut être considérée comme le point de départ de l'algorithme, dans la plupart des cas, 
+    # cette solution initiale est attribuée au hasard, cependant, nous allons utiliser une solution retournée par l'algorithme glouton.
+
+    
+
+    ###### Étape 1: Maintenant que nous avons la solution initiale, l'étape suivante consiste à créer la liste des solutions candidates à partir 
+    # de la solution courante 𝕊 (solution initiale à l'itération 0), nous appelons ces solutions voisins ou voisinage de 𝕊. 
+    # Pour trouver les solutions voisines à partir de la solution courante 𝕊, nous devons définir ce qu'on appelle une fonction de voisinage, 
+    # sous cette fonction chaque solution 𝕊 a un sous-ensemble de solutions associé. La fonction de voisinage peut faire l'une de ces opérations :
+    # 1. Inserer une tˆache non effectu ́ee dans un trous du planning d’un employ ́e
+    # 2. Supprimer une tˆache du planning d’un employ ́e
+    # 3. Intervertir deux arrˆetes d’un mˆeme employ ́e
+    # 4. changer d’employ ́e pour une tˆache donn ́ee
+    # 5. changer l’heure de la pause d ́ejeuner
+    # 6. Faire une tˆache qui n’est pas faite `a la place d’une autre tˆache
+
+    
+
+    ###### Étape 2: À partir de la liste des solutions de quartier créée à l'étape 1, 
+    # nous choisissons la meilleure solution admissible (non tabou ou répondant aux critères d'aspiration) en vérifiant chaque solution
+
+
+    ###### Étape 3: Vérifiez les critères d'arrêt définis,
+    #  cela peut être le nombre maximum d'itérations atteintes ou le temps d'exécution, si les critères d'arrêt ne sont pas remplis,
+    #  passez à l' étape 4 , si les critères d'arrêt sont remplis, terminez et retournez la meilleure solution.
+
+
+    ###### Étape 4: Mettez à jour la liste Tabu , les critères d'aspiration et passez à l' étape 1
+
     memoire = []
     posMemoire = 0
     continu = True  # critère d'arrêt : nombre d'itération max autorisé de 1000
@@ -71,63 +100,6 @@ def voisinage(solution,D,creneauxDispo):
     
     
 
-def insertionTache(i,precedent,suivant,solution_k,creneauxDispo_k,Duree,D):
-    """solution_k designe le graph de l'employé k idem pour creneauxDispo_k"""
-
-    ###### 1ere étape : tasser à gauche et à droite les heures pour maximiser le succès de l'insertion
-
-    solution_k = MAJTempsPrecedents(precedent,solution_k,creneauxDispo_k,Duree,D)
-    solution_k = MAJTempsSuivants(suivant,solution_k,creneauxDispo_k,Duree,D)
-
-    ###### 2eme étape : inserer
-
-    solution_k[precedent]["suivant"] = i
-    solution_k[suivant]["precedent"] = i
-    solution_k[i] = {"precedent":precedent,"suivant":suivant}
-    
-    if estDansUnCreneau(solution_k[precedent]["heure"] + Duree[precedent] + D[precedent,i]/0.833,creneauxDispo_k[i]):
-        solution_k[i]["heure"] = int(solution_k[precedent]["heure"] + Duree[precedent] + D[precedent,i]/0.833)
-
-    else:
-        debuts = [creneauxDispo_k[i][j][0] for j in range (len(creneauxDispo_k[i]))].sort()
-        found = 0
-        for hmin in debuts:
-            if hmin > solution_k[precedent]["heure"] + Duree[precedent] + D[precedent,i]/0.833 and found == 0:
-                solution_k[i]["heure"] = hmin
-                found = 1 
-
-    ####### 3eme étape : vérifier que la solution est faisable au niveau des indisponibilité des taches
-
-    if solution_k[i]["heure"] + Duree[i] + D[i,suivant]/0.833 > solution_k[suivant]["heure"]:
-        print("insertion impossible")
-        return None
-            
-    return solution_k
-
-def suppressionTache(i,solution_k,creneauxDispo_k,Duree,D):
-    precedent = solution_k[i]["precedent"]
-    suivant = solution_k[i]["suivant"]
-    solution_k[precedent]["suivant"] = suivant
-    solution_k[suivant]["precedent"] = precedent
-    del solution_k[i]
-
-    return solution_k
 
 
-sol_test = {0:{"precedent" : 2, "suivant" : 3, "heure": 8*60}, 1:{"precedent" : 3, "suivant" : 2, "heure" : 8.5*60}, 2:{"precedent" : 1, "suivant" : 0, "heure" : 11*60}, 3:{"precedent" : 0, "suivant" : 1, "heure" : 10*60}}
 
-# attention je ne dois pas prendre en compte la pause dej dans maj heuee
-
-creneauxDispo_test = [[[8*60,12*60],[13*60,18*60]]]*5
-Duree = 30*np.ones((5,1))
-D = np.array([[0, 2, 5, 1, 10],
-              [2, 0, 4, 3, 6],
-              [5, 4, 0, 6, 8],
-              [1, 3, 6, 0, 11],
-              [12, 3, 7, 8, 0]])
-i0 = 3
-tGlande = np.NaN*np.zeros((4,4))
-
-
-print(insertionTache(4,3,1,sol_test,creneauxDispo_test,Duree,D))
-print(suppressionTache(1,sol_test,creneauxDispo_test,Duree,D))
